@@ -168,19 +168,19 @@ int main(int argc, char** argv) {
         L_targ.SetPxPyPzE(px[0], py[0], pz[0], pe[0]);
         L_targ.RotateY(PI);
 
-        L_mummup = L_mum + L_mup;
+        L_mummup = L_mum + L_mup;   // The LorentzVector for the muon pair
         h_Minv1.Fill(L_mummup.M());
 
-        L_q = L_em - L_beam;
-        double tM = 2 * Mp * (L_prot.E() - Mp);
-        double Qp2 = L_mummup.M2();
-        double Q2 = -L_q.M2();
-        double nue = -L_q.E();
-        double xB = Q2 / (2 * Mp * nue);
-        double xiPrime = xB / (2 - xB);
-        double xi = xiPrime * (Q2 + Qp2) / Q2;
+        L_q = L_em - L_beam;             // The LorentzVector of Spacelaike photon
+        double tM = 2 * Mp * (L_prot.E() - Mp);  // Calculating the Mandelstam t
+        double Qp2 = L_mummup.M2();              // Calculating the Q2 Prime as the invariant mass square of muon pair
+        double Q2 = -L_q.M2();                   // Calculating the spacelike Q2
+        double nue = -L_q.E();                   // New, defined as the energy of the spacelike photon
+        double xB = Q2 / (2 * Mp * nue);         // Calculating the xB
+        double xiPrime = xB / (2 - xB);          // Calculating the xiPrime as xB/(2-xB)
+        double xi = xiPrime * (Q2 + Qp2) / Q2;   // Calculating xi as xiPrime*(Q2 +   Qp2)/Q2
 
-        double xx_GPD = 2 * xiPrime - xi;
+        double xx_GPD = 2 * xiPrime - xi;        // This is x that GPDs depend on defined as 2*xiPrime  - xi
 
         //cout<<"xx_GPD = "<<xx_GPD<<endl;
 
