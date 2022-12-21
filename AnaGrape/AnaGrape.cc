@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 
+#include <TF1.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TFile.h>
@@ -25,6 +26,8 @@ bool mumAcc(TLorentzVector&);
 bool mupAcc(TLorentzVector&);
 bool protAcc(TLorentzVector&);
 
+TF1 *f_mumAccThP;
+
 /*
  * 
  */
@@ -35,6 +38,8 @@ int main(int argc, char** argv) {
         cout << "Please provide the 'Run' number " << endl;
         return 1;
     }
+    f_mumAccThP = new TF1("f_mumAccThP", "[0] + [1]/(x-[2])", 0., 25);
+    f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
 
     const double PI = TMath::Pi();
     const double radian = TMath::RadToDeg();
@@ -46,6 +51,14 @@ int main(int argc, char** argv) {
     const double nDays = 100;
     const double totLumi = InstLumin * secondPerDay*nDays;
     const double pbn = 1.e-36;
+
+    const int nQp2bins = 4;
+    const int nQ2bins = 4;
+    const double Qp2_edges[nQp2bins + 1] = {0.8, 1.6, 2.4, 3.2, 4.};
+    const double Q2_edges[nQ2bins + 1] = {1., 1.6, 2.4, 3.2, 4.};
+
+    TH1D h_Qp2_Edges("h_Qp2_Edges", "", nQp2bins, Qp2_edges);
+    TH1D h_Q2_Edges("h_Q2_Edges", "", nQ2bins, Q2_edges);
 
 
 
@@ -100,6 +113,34 @@ int main(int argc, char** argv) {
     TH2D h_th_P_p2("h_th_P_p2", "", 200, 0., 4.5, 200, 0., 80);
     TH2D h_th_P_p3("h_th_P_p3", "", 200, 0., 4.5, 200, 0., 80);
 
+    TH2D h_th_P_em1("h_th_P_em1", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mum1("h_th_P_mum1", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mup1("h_th_P_mup1", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_em2("h_th_P_em2", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mum2("h_th_P_mum2", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mup2("h_th_P_mup2", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_Q2_xB1("h_Q2_xB1", "", 200, 0., 1., 200, 0., 10.);
+    TH2D h_Q2_xB2("h_Q2_xB2", "", 200, 0., 1., 200, 0., 10.);
+    TH2D h_Q2_xB3("h_Q2_xB3", "", 200, 0., 1., 200, 0., 10.);
+
+    TH2D h_xiprime_vs_xi1("h_xiprime_vs_xi1", "", 200, 0., 0.5, 200, -0.5, 0.5);
+    TH2D h_Qp2_tM1("h_Qp2_tM1", "", 200, 0., 2., 200, 0., 8.);
+    TH2D h_Qp2_tM2("h_Qp2_tM2", "", 200, 0., 2., 200, 0., 8.);
+
+    TH2D h_xB_tM1("h_xB_tM1", "", 200, 0., 1.5, 200, 0., 1.);
+    TH2D h_xB_tM2("h_xB_tM2", "", 200, 0., 1.5, 200, 0., 1.);
+
+    TH2D h_xi_xxGPD1("h_xi_xxGPD1", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD2("h_xi_xxGPD2", "", 200, -1., 1., 200, 0., 1.);
+
+    TH2D h_xi_xxGPD2_[nQp2bins];
+    TH2D h_xi_xxGPD3_[nQp2bins];
+
+    for (int i = 0; i < nQp2bins; i++) {
+        h_xi_xxGPD2_[i] = TH2D(Form("h_xi_xxGPD2_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
+        h_xi_xxGPD3_[i] = TH2D(Form("h_xi_xxGPD3_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
+    }
+
     int iFile = 0;
 
     int nev = tr1->GetEntries();
@@ -134,6 +175,27 @@ int main(int argc, char** argv) {
         double tM = 2 * Mp * (L_prot.E() - Mp);
         double Qp2 = L_mummup.M2();
         double Q2 = -L_q.M2();
+        double nue = -L_q.E();
+        double xB = Q2 / (2 * Mp * nue);
+        double xiPrime = xB / (2 - xB);
+        double xi = xiPrime * (Q2 + Qp2) / Q2;
+
+        double xx_GPD = 2 * xiPrime - xi;
+
+        //cout<<"xx_GPD = "<<xx_GPD<<endl;
+
+        double xi_1Prime = (Q2 - Qp2 - tM / 2.) / (2 * Q2 / xB - Q2 - Qp2 - tM);
+        double xi_1 = (Q2 + Qp2) / (2 * Q2 / xB - Q2 - Qp2 - tM);
+
+        //cout<<xiPrime<<"   "<<xi_1Prime<<endl;
+
+        double th_em = L_em.Theta() * radian;
+        double p_em = L_em.P();
+
+        double th_mup = L_mup.Theta() * radian;
+        double p_mup = L_mup.P();
+        double th_mum = L_mum.Theta() * radian;
+        double p_mum = L_mum.P();
 
         double th_prot = L_prot.Theta() * radian;
         double p_prot = L_prot.P();
@@ -147,13 +209,55 @@ int main(int argc, char** argv) {
         h_thP_Qp2_1.Fill(Qp2, th_prot);
         h_thP_tM_1.Fill(tM, th_prot);
         h_th_P_p1.Fill(p_prot, th_prot);
+        h_th_P_em1.Fill(p_em, th_em);
+        h_th_P_mup1.Fill(p_mup, th_mup);
+        h_th_P_mum1.Fill(p_mum, th_mum);
+        h_xB_tM1.Fill(tM, xB);
+
+        if (Q2 > Qp2) {
+            h_xi_xxGPD1.Fill(xx_GPD, xi);
+        }
+
+        h_xiprime_vs_xi1.Fill(xi, xiPrime);
+        h_Q2_xB1.Fill(xB, Q2);
+
+        int Qp2Bin = h_Qp2_Edges.FindBin(Qp2) - 1;
+        int Q2Bin = h_Q2_Edges.FindBin(Q2) - 1;
+
+        h_Qp2_tM1.Fill(tM, Qp2);
 
         if (em_Acc && mum_Acc && mup_Acc) {
             h_Qp2_vs_Q2_2.Fill(Q2, Qp2);
             h_thP_Qp2_2.Fill(Qp2, th_prot);
             h_thP_tM_2.Fill(tM, th_prot);
+            h_xi_xxGPD2.Fill(xx_GPD, xi);
             h_th_P_p2.Fill(p_prot, th_prot);
+            h_th_P_em2.Fill(p_em, th_em);
+            h_th_P_mup2.Fill(p_mup, th_mup);
+            h_th_P_mum2.Fill(p_mum, th_mum);
+            h_Q2_xB2.Fill(xB, Q2);
 
+            if (Qp2 > 0.3 && Qp2 < 0.6) {
+                h_Q2_xB3.Fill(xB, Q2);
+            }
+
+            if (xB > 0.12 && xB < 0.22 && tM > 0.1 && tM < 0.4) {
+                h_Qp2_tM2.Fill(tM, Qp2);
+
+
+                if (Q2 > 2. && Q2 < 3.) {
+                    if (Qp2Bin >= 0 && Qp2Bin < nQp2bins) {
+                        h_xi_xxGPD2_[Qp2Bin].Fill(xx_GPD, xi);
+                    }
+                }
+
+                if (Qp2 > 2 && Qp2 < 3.) {
+                    if (Q2Bin >= 0 && Q2Bin < nQ2bins) {
+                        h_xi_xxGPD3_[Q2Bin].Fill(xx_GPD, xi);
+                    }
+                }
+            }
+            h_xB_tM2.Fill(tM, xB);
             if (Qp2 > 2) {
                 h_thP_tM_3.Fill(tM, th_prot);
                 h_th_P_p3.Fill(p_prot, th_prot);
@@ -190,7 +294,8 @@ bool mumAcc(TLorentzVector& L) {
     const double P_max = 11.; // GeV
     const double P_min = 1.5; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max &&
+           L.Theta() * TMath::RadToDeg() > f_mumAccThP->Eval(L.P());
 }
 
 bool mupAcc(TLorentzVector& L) {
