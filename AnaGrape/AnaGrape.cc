@@ -15,6 +15,7 @@
 #include <TMath.h>
 #include <TChain.h>
 #include <TRandom.h>
+#include <TVector3.h>
 #include <TLorentzVector.h>
 
 #include <cstdlib>
@@ -42,7 +43,7 @@ int main(int argc, char** argv) {
     f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
 
     const double PI = TMath::Pi();
-    const double radian = TMath::RadToDeg();
+    const double r2d = TMath::RadToDeg();
     const double Mp = 0.9383;
     const double me = 0.00051;
 
@@ -146,15 +147,24 @@ int main(int argc, char** argv) {
     TH2D h_xi_xxGPD2_[nQp2bins];
     TH2D h_xi_xxGPD3_[nQp2bins];
     TH2D h_xi_xxGPD_bin2_[nQp2bins]; // xi_xxGPD in the kine bin 2
-    TH2D h_xi_xxGPD_bin3_[nQp2bins]; // xi_xxGPD in the kine bin 3
+    TH2D h_xi_xxGPD_bin3_[nQp2bins_bin3]; // xi_xxGPD in the kine bin 3
+    TH1D h_Phi_LH_bin1_Qp2_[nQp2bins];
+    TH1D h_Phi_LH_bin1_Q2_[nQp2bins];
+    TH1D h_Phi_LH_bin2_Qp2_[nQp2bins];
+    TH1D h_Phi_LH_bin3_Qp2_[nQp2bins_bin3];
 
     for (int i = 0; i < nQp2bins; i++) {
         h_xi_xxGPD2_[i] = TH2D(Form("h_xi_xxGPD2_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
         h_xi_xxGPD3_[i] = TH2D(Form("h_xi_xxGPD3_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
         h_xi_xxGPD_bin2_[i] = TH2D(Form("h_xi_xxGPD_bin2_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
+
+        h_Phi_LH_bin1_Qp2_[i] = TH1D(Form("h_Phi_LH_bin1_Qp2_%d", i), "", 12, 0, 360);
+        h_Phi_LH_bin1_Q2_[i] = TH1D(Form("h_Phi_LH_bin1_Q2_%d", i), "", 12, 0, 360);
+        h_Phi_LH_bin2_Qp2_[i] = TH1D(Form("h_Phi_LH_bin2_Qp2_%d", i), "", 12, 0, 360);
     }
     for (int i = 0; i < nQp2bins_bin3; i++) {
         h_xi_xxGPD_bin3_[i] = TH2D(Form("h_xi_xxGPD_bin3_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
+        h_Phi_LH_bin3_Qp2_[i] = TH1D(Form("h_Phi_LH_bin3_Qp2_%d", i), "", 12, 0, 360);
     }
 
     int iFile = 0;
@@ -188,6 +198,9 @@ int main(int argc, char** argv) {
         h_Minv1.Fill(L_mummup.M());
 
         L_q = L_em - L_beam; // The LorentzVector of Spacelaike photon
+        TVector3 v3_beam_Eprime = L_beam.Vect().Cross(L_em.Vect());
+        TVector3 v3_q_qprime = L_q.Vect().Cross(L_mummup.Vect());
+        double Phi_LH = L_em.Vect().Dot(v3_q_qprime) > 0 ? v3_beam_Eprime.Angle(v3_q_qprime) * r2d : 360. - v3_beam_Eprime.Angle(v3_q_qprime) * r2d;
         double tM = 2 * Mp * (L_prot.E() - Mp); // Calculating the Mandelstam t
         double Qp2 = L_mummup.M2(); // Calculating the Q2 Prime as the invariant mass square of muon pair
         double Q2 = -L_q.M2(); // Calculating the spacelike Q2
@@ -205,15 +218,15 @@ int main(int argc, char** argv) {
 
         //cout<<xiPrime<<"   "<<xi_1Prime<<endl;
 
-        double th_em = L_em.Theta() * radian;
+        double th_em = L_em.Theta() * r2d;
         double p_em = L_em.P();
 
-        double th_mup = L_mup.Theta() * radian;
+        double th_mup = L_mup.Theta() * r2d;
         double p_mup = L_mup.P();
-        double th_mum = L_mum.Theta() * radian;
+        double th_mum = L_mum.Theta() * r2d;
         double p_mum = L_mum.P();
 
-        double th_prot = L_prot.Theta() * radian;
+        double th_prot = L_prot.Theta() * r2d;
         double p_prot = L_prot.P();
 
         h_Qp2_vs_Q2_1.Fill(Q2, Qp2);
@@ -265,12 +278,14 @@ int main(int argc, char** argv) {
                 if (Q2 > 2. && Q2 < 3.) {
                     if (Qp2Bin >= 0 && Qp2Bin < nQp2bins) {
                         h_xi_xxGPD2_[Qp2Bin].Fill(xx_GPD, xi);
+                        h_Phi_LH_bin1_Qp2_[Qp2Bin].Fill(Phi_LH);
                     }
                 }
 
                 if (Qp2 > 2 && Qp2 < 3.) {
                     if (Q2Bin >= 0 && Q2Bin < nQ2bins) {
                         h_xi_xxGPD3_[Q2Bin].Fill(xx_GPD, xi);
+                        h_Phi_LH_bin1_Q2_[Q2Bin].Fill(Phi_LH);
                     }
                 }
             }
@@ -286,6 +301,7 @@ int main(int argc, char** argv) {
                     int Qp2bn_bin2 = h_Qp2_Edges_bin2.FindBin(Qp2) - 1;
                     if (Qp2bn_bin2 >= 0 && Qp2bn_bin2 < nQp2bins) {
                         h_xi_xxGPD_bin2_[Qp2bn_bin2].Fill(xx_GPD, xi);
+                        h_Phi_LH_bin2_Qp2_[Qp2bn_bin2].Fill(Phi_LH);
                     }
                 }
 
@@ -299,6 +315,7 @@ int main(int argc, char** argv) {
                     int Qp2bn_bin3 = h_Qp2_Edges_bin3.FindBin(Qp2) - 1;
                     if (Qp2bn_bin3 >= 0 && Qp2bn_bin3 < nQp2bins_bin3) {
                         h_xi_xxGPD_bin3_[Qp2bn_bin3].Fill(xx_GPD, xi);
+                        h_Phi_LH_bin3_Qp2_[Qp2bn_bin3].Fill(Phi_LH);
                     }
                 }
             }
