@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
     const double nDays = 100;
     const double totLumi = InstLumin * secondPerDay*nDays;
     const double pbn = 1.e-36;
+    const double Qp2Cut_EPIC = 1.2; // GeV
 
     const int nQp2bins = 4;
     const int nQ2bins = 4;
@@ -72,7 +73,7 @@ int main(int argc, char** argv) {
 
     int run = atoi(argv[1]);
 
-    // Beloe L_em is the one in the acceptance, and will be determined event by event
+    // Below L_em is the one in the acceptance, and will be determined event by event
     TLorentzVector L_targ, L_beam, L_em, L_mum, L_mup, L_prot, L_mummup, L_q, L_W;
 
     Double_t xsec[2];
@@ -93,7 +94,6 @@ int main(int argc, char** argv) {
     cout << "crs = " << xsec[0] << endl;
 
 
-
     TChain *tr1 = new TChain();
     tr1->Add(Form("../Data/Run_%d/grape_Run%d.root/h1", run, run));
 
@@ -108,6 +108,7 @@ int main(int argc, char** argv) {
 
     TFile file_out(Form("AnaGrape_%d.root", run), "Recreate");
     TH1D h_Minv1("h_Minv1", "", 200, 0., 4.);
+    TH1D h_Minv2("h_Minv2", "", 200, 0., 4.);
     TH2D h_Qp2_vs_Q2_1("h_Qp2_vs_Q2_1", "", 200, 0., 10., 200, 0., 10);
     TH2D h_Qp2_vs_Q2_2("h_Qp2_vs_Q2_2", "", 200, 0., 10., 200, 0., 10);
     TH2D h_Qp2_vs_Q2_3("h_Qp2_vs_Q2_3", "", 200, 0., 10., 200, 0., 10);
@@ -128,6 +129,9 @@ int main(int argc, char** argv) {
     TH2D h_th_P_em2("h_th_P_em2", "", 200, 0., 11., 200, 0., 40.);
     TH2D h_th_P_mum2("h_th_P_mum2", "", 200, 0., 11., 200, 0., 40.);
     TH2D h_th_P_mup2("h_th_P_mup2", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_em3("h_th_P_em3", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mum3("h_th_P_mum3", "", 200, 0., 11., 200, 0., 40.);
+    TH2D h_th_P_mup3("h_th_P_mup3", "", 200, 0., 11., 200, 0., 40.);
     TH2D h_Q2_xB1("h_Q2_xB1", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB2("h_Q2_xB2", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB3("h_Q2_xB3", "", 200, 0., 1., 200, 0., 10.);
@@ -207,15 +211,17 @@ int main(int argc, char** argv) {
         double nue = -L_q.E(); // New, defined as the energy of the spacelike photon
         double xB = Q2 / (2 * Mp * nue); // Calculating the xB
         double xiPrime = xB / (2 - xB); // Calculating the xiPrime as xB/(2-xB)
-        double xi = xiPrime * (Q2 + Qp2) / Q2; // Calculating xi as xiPrime*(Q2 +   Qp2)/Q2
+        double xi = xiPrime * (Q2 + Qp2) / (Q2); // Calculating xi as xiPrime*(Q2 + Qp2)/Q2
 
-        double xx_GPD = 2 * xiPrime - xi; // This is x that GPDs depend on defined as 2*xiPrime  - xi
 
         //cout<<"xx_GPD = "<<xx_GPD<<endl;
 
         double xi_1Prime = (Q2 - Qp2 - tM / 2.) / (2 * Q2 / xB - Q2 - Qp2 - tM);
         double xi_1 = (Q2 + Qp2) / (2 * Q2 / xB - Q2 - Qp2 - tM);
-
+                
+        double xx_GPD = 2 * xiPrime - xi; // This is x that GPDs depend on defined as 2*xiPrime  - xi
+        
+        //cout<<xi<<"   "<<xi_1<<endl;
         //cout<<xiPrime<<"   "<<xi_1Prime<<endl;
 
         double th_em = L_em.Theta() * r2d;
@@ -233,7 +239,7 @@ int main(int argc, char** argv) {
         bool em_Acc = emAcc(L_em);
         bool mum_Acc = mumAcc(L_mum);
         bool mup_Acc = mupAcc(L_mup);
-        bool prot_Acc = protAcc(L_mup);
+        bool prot_Acc = protAcc(L_prot);
 
         h_thP_Qp2_1.Fill(Qp2, th_prot);
         h_thP_tM_1.Fill(tM, th_prot);
@@ -255,7 +261,10 @@ int main(int argc, char** argv) {
 
         h_Qp2_tM1.Fill(tM, Qp2);
 
-        if (em_Acc && mum_Acc && mup_Acc) {
+        if (em_Acc && mum_Acc && mup_Acc /* && prot_Acc */ ) {
+            
+            h_Minv2.Fill(L_mummup.M());
+            
             h_Qp2_vs_Q2_2.Fill(Q2, Qp2);
             h_thP_Qp2_2.Fill(Qp2, th_prot);
             h_thP_tM_2.Fill(tM, th_prot);
@@ -266,6 +275,14 @@ int main(int argc, char** argv) {
             h_th_P_mum2.Fill(p_mum, th_mum);
             h_Q2_xB2.Fill(xB, Q2);
             h_xB_tM2.Fill(tM, xB);
+            
+            if( Qp2 > Qp2Cut_EPIC ) {
+                h_th_P_p3.Fill(p_prot, th_prot);
+                h_th_P_em3.Fill(p_em, th_em);
+                h_th_P_mup3.Fill(p_mup, th_mup);
+                h_th_P_mum3.Fill(p_mum, th_mum);
+            }
+            
 
             if (Qp2 > 0.3 && Qp2 < 0.6) {
                 h_Q2_xB3.Fill(xB, Q2);
@@ -377,7 +394,7 @@ bool protAcc(TLorentzVector& L) {
     const double th_max = 120; // deg
     const double th_min = 40.; // deg
     const double P_max = 11.; // GeV
-    const double P_min = 1.5; // GeV
+    const double P_min = 0.3; // GeV
 
     return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
 }

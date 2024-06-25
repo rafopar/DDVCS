@@ -114,7 +114,7 @@ int DrawPlots() {
     c1->Print(Form("Figs/th_P_mup2_Run_%d.root", run));
 
     line1->SetLineColor(95);
-    line1->SetLineWidth(3);
+    line1->SetLineWidth(5);
     TH2D *h_xB_tM2 = (TH2D*) file_in.Get("h_xB_tM2");
     h_xB_tM2->SetTitle("; -t [GeV^{2}]; x_{B}");
     h_xB_tM2->SetAxisRange(0., 0.7, "Y");
