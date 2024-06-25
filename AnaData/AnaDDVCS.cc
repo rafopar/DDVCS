@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
 
     options.add_options()
             ("d,DataSet", "The Data set", cxxopts::value< std::string >())
+            ("s,ScaleTo", "Scale to a given Data Set", cxxopts::value< std::string >()->default_value(""))
+            ("n,nMax", "Number of events to process", cxxopts::value< int >()->default_value("10000000000"))
             ;
 
     auto parsed_options = options.parse(argc, argv);
@@ -62,7 +64,9 @@ int main(int argc, char** argv) {
         exit(1);
     }
     const std::string data_Set = parsed_options["DataSet"].as<std::string>();
+    const std::string ScaleToSet = parsed_options["ScaleTo"].as<std::string>();
 
+    const int nMaxEvents = parsed_options["nMax"].as<int>();
 
     sprintf(inputFile, "inpHipoFiles/Skim_ememep_%s.hipo", data_Set.c_str());
     //sprintf(inputFile, "Data_GEMC/Run_5/Run_5.hipo", data_Set.c_str());
@@ -72,13 +76,25 @@ int main(int argc, char** argv) {
     //sprintf(inputFile, "/volatile/clas12/rafopar/OSG_Validation/NewPortal/LUND_DDVCS/GRAPEDDVCS_NewPortal.hipo");
     //sprintf(inputFile, "/volatile/clas12/rafopar/OSG_Validation/NewPortal_OldSW/LUND_DDVCS/GRAPEDDVCS_NewPortal_OldSW.hipo");
 
-    bool isMC = strcmp(data_Set.c_str(), "S19") == 0 ? 0 : 1;
+    //bool isMC = strcmp(data_Set.c_str(), "S19") == 0 ? 0 : 1;
+    bool isMC = data_Set.find("MC") == std::string::npos ? 0 : 1;
 
     f_mumAccThP = new TF1("f_mumAccThP", "[0] + [1]/(x-[2])", 0., 25);
     f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
 
+    std::map<std::string, double> m_Ebeam;
+    m_Ebeam["F18_In_Early"] = 10.6;
+    m_Ebeam["F18_In"] = 10.6;
+    m_Ebeam["F18_Out"] = 10.6;
+    m_Ebeam["S19"] = 10.2;
+    m_Ebeam["MC_Run5"] = 10.2;
+    m_Ebeam["MC_Run6"] = 10.2;
+    m_Ebeam["MC_Run7"] = 10.2;
+    m_Ebeam["MC_Run8"] = 10.2;
+    m_Ebeam["MC_Run8_OutBend"] = 10.2;
+    double Eb = m_Ebeam[data_Set.c_str()];
+
     const double Hist_Pmax = 11.;
-    const double Eb = 10.2;
     const int nMax_samePID = 20;
     const double Mp = 0.9383;
     const double chi2PID_Prot_Max = 10.;
@@ -96,6 +112,9 @@ int main(int argc, char** argv) {
     const double Mmis_Max = 1.2;
     const double Mmis_Min = 0.8;
 
+    const double PmisCut = 1.4; // In GeV. Momenta of about 90% of protons is below this value
+    const double thMinCut = 15.; // Majority of protons fly above this value
+
     const double light_Speed = 29.9792458;
 
     /*
@@ -104,25 +123,61 @@ int main(int argc, char** argv) {
     const double rho = 0.07085; // gm*cm^{-3}
     const double l = 5.; // cm
     const double N_A = 6.022e23;
-    const double charge_S19 = 50.5319e-3; // mC
+    const double charge_S19 = 50.5319e-3; // C
     const double em_charge = 1.6e-19; // 
     const double N_em_S19 = charge_S19 / em_charge;
     const double N_targ = rho * l*N_A;
     // =============================================
     double scale = 0.; // MC will be scaled with a given variable to match the data.
 
-    if (strcmp(data_Set.c_str(), "S19") == 0) {
-        scale = 1.;
-    } else if (strcmp(data_Set.c_str(), "GRAPE_Run5") == 0) {
-        const double xSec = 0.115823e-36; //bn
-        scale = xSec * N_em_S19*N_targ;
-    } else if (strcmp(data_Set.c_str(), "GRAPE_Run6") == 0) {
-        const double xSec = 2.12652e-36; //bn
-        scale = xSec * N_em_S19*N_targ;
-    } else if (strcmp(data_Set.c_str(), "GRAPE_Run8") == 0) {
-        const double xSec = 4.50346e-36; //bn
-        scale = xSec * N_em_S19*N_targ;
+    /*
+     * GRAPE x-sections for different GRAPE runs
+     */
+    std::map<std::string, double > m_GRAPE_xSec;
+
+    m_GRAPE_xSec[ "MC_Run5" ] = 0.115823e-36;
+    m_GRAPE_xSec[ "MC_Run5" ] = 0.115823e-36;
+    m_GRAPE_xSec[ "MC_Run8" ] = 4.50346e-36;
+    m_GRAPE_xSec[ "MC_Run8_OutBend" ] = 4.50346e-36;
+
+    /*
+     * Accumulated charge for different data sets: F18_In, F18_In_Early, F18_Out, S19
+     */
+
+    std::map< std::string, double > m_Data_Charge;
+
+    m_Data_Charge["S19"] = 50.5319e-3;
+    m_Data_Charge["F18_In"] = 37.0593097e-3;
+    m_Data_Charge["F18_In_Early"] = 6.389618e-3;
+    m_Data_Charge["F18_Out"] = 34.0826e-3;
+
+    if (isMC) {
+        if (m_GRAPE_xSec.count(data_Set.c_str()) == 0) {
+            cout << "The data set \"" << data_Set.c_str() << "\" is unrecognized. Exiting. " << endl;
+            exit(1);
+        }
+
+        if (m_Data_Charge.count(ScaleToSet.c_str()) == 0) {
+            cout << "No or wrong \"Scale to\" data set is provided. Exiting" << endl;
+            exit(1);
+        }
+
+
+        scale = m_GRAPE_xSec[data_Set.c_str()] * N_targ * m_Data_Charge[ScaleToSet.c_str()] / em_charge;
     }
+
+    //    if (strcmp(data_Set.c_str(), "S19") == 0) {
+    //        scale = 1.;
+    //    } else if (strcmp(data_Set.c_str(), "MC_Run5") == 0) {
+    //        const double xSec = 0.115823e-36; //bn
+    //        scale = xSec * N_em_S19*N_targ;
+    //    } else if (strcmp(data_Set.c_str(), "MC_Run6") == 0) {
+    //        const double xSec = 2.12652e-36; //bn
+    //        scale = xSec * N_em_S19*N_targ;
+    //    } else if (strcmp(data_Set.c_str(), "MC_Run8") == 0) {
+    //        const double xSec = 4.50346e-36; //bn
+    //        scale = xSec * N_em_S19*N_targ;
+    //    }
 
     TLorentzVector L_beam;
     L_beam.SetPxPyPzE(0., 0., Eb, Eb);
@@ -146,6 +201,28 @@ int main(int argc, char** argv) {
     TH2D h_th_P_ep1("h_th_P_ep1", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
     TH2D h_th_P_prot1("h_th_P_prot1", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
 
+    TH2D h_th_P_em1_2("h_th_P_em1_2", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em2_2("h_th_P_em2_2", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em2("h_th_P_em2", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_ep2("h_th_P_ep2", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_prot2("h_th_P_prot2", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+
+    TH2D h_th_P_em1_3("h_th_P_em1_3", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em2_3("h_th_P_em2_3", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em3("h_th_P_em3", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_ep3("h_th_P_ep3", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_prot3("h_th_P_prot3", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+
+    TH2D h_th_P_em1_4("h_th_P_em1_4", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em2_4("h_th_P_em2_4", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em4("h_th_P_em4", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_ep4("h_th_P_ep4", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+
+    TH2D h_th_P_em1_5("h_th_P_em1_5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em2_5("h_th_P_em2_5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_em5("h_th_P_em5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+    TH2D h_th_P_ep5("h_th_P_ep5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
+
     TH2D h_beta_P_prot1("h_beta_P_prot1", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 1.5);
     TH1D h_E_PCal_em1("h_E_PCal_em1", "", 200, 0., 1.);
     TH1D h_E_PCal_ep1("h_E_PCal_ep1", "", 200, 0., 1.);
@@ -165,6 +242,29 @@ int main(int argc, char** argv) {
 
     TH1D h_Mmis1("h_Mmis1", "", 200, 0., 4.);
     Hlist.Add(&h_Mmis1);
+    TH2D h_th_VS_Mmis1("h_th_VS_Mmis1", "", 200, 0., 65., 200, 0., 4.);
+    Hlist.Add(&h_th_VS_Mmis1);
+    TH2D h_th_VS_Mmis2("h_th_VS_Mmis2", "", 200, 0., 65., 200, 0., 4.);
+    Hlist.Add(&h_th_VS_Mmis2);
+    TH2D h_th_VS_Mmis3("h_th_VS_Mmis3", "", 200, 0., 65., 200, 0., 4.);
+    Hlist.Add(&h_th_VS_Mmis3);
+    TH2D h_th_VS_Mmis4("h_th_VS_Mmis4", "", 200, 0., 65., 200, 0., 4.);
+    Hlist.Add(&h_th_VS_Mmis4);
+
+    TH2D h_Mmis_PMis1("h_Mmis_PMis1", "", 200, 0., 8., 200, 0., 4.);
+    Hlist.Add(&h_Mmis_PMis1);
+    TH2D h_Mmis_PMis2("h_Mmis_PMis2", "", 200, 0., 8., 200, 0., 4.);
+    Hlist.Add(&h_Mmis_PMis2);
+    TH2D h_Mmis_PMis3("h_Mmis_PMis3", "", 200, 0., 8., 200, 0., 4.);
+    Hlist.Add(&h_Mmis_PMis3);
+
+    TH2D h_th_P_Mis1("h_th_P_Mis1", "", 200, 0., 8., 200, 0., 65);
+    Hlist.Add(&h_th_P_Mis1);
+    TH2D h_th_P_Mis2("h_th_P_Mis2", "", 200, 0., 8., 200, 0., 65);
+    Hlist.Add(&h_th_P_Mis2);
+    TH2D h_th_P_Mis3("h_th_P_Mis3", "", 200, 0., 8., 200, 0., 65);
+    Hlist.Add(&h_th_P_Mis3);
+
     TH1D h_Mmis2("h_Mmis2", "", 200, 0., 4.);
     Hlist.Add(&h_Mmis2);
     TH1D h_Mmis3("h_Mmis3", "", 200, 0., 4.);
@@ -175,6 +275,8 @@ int main(int argc, char** argv) {
     Hlist.Add(&h_Minv12_1);
     TH2D h_Minv12_2("h_Minv12_2", "", 200, 0., 2.5, 200, 0., 2.5);
     Hlist.Add(&h_Minv12_2);
+    TH2D h_Minv12_3("h_Minv12_3", "", 200, 0., 2.5, 200, 0., 2.5);
+    Hlist.Add(&h_Minv12_3);
     TH1D h_vt_Diff_em1("h_vt_Diff_em1", "", 200, -0.5, 0.5);
     Hlist.Add(&h_vt_Diff_em1);
     TH2D h_vt_Diff_emep1("h_vt_Diff_emep1", "", 200, -2., 2., 200, -2., 2.);
@@ -225,9 +327,9 @@ int main(int argc, char** argv) {
 
             evCounter = evCounter + 1;
 
-            //            if (evCounter > 15500) {
-            //                break;
-            //            }
+            if (evCounter > nMaxEvents) {
+                break;
+            }
             if (evCounter % 10000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
@@ -405,10 +507,26 @@ int main(int argc, char** argv) {
                 double m_emep1 = L_emep1.M();
                 double m_emep2 = L_emep2.M();
 
-                h_Mmis1.Fill(L_mis.M());
+                double th_mis = L_mis.Theta() * TMath::RadToDeg();
+                double Mmis = L_mis.M();
+                double Pmis = L_mis.P();
+
+
+                h_Mmis1.Fill(Mmis);
                 h_Minv12_1.Fill(m_emep1, m_emep2);
 
-                if (L_mis.M() > Mmis_Min && L_mis.M() < Mmis_Max) {
+                h_th_VS_Mmis1.Fill(th_mis, Mmis);
+                h_Mmis_PMis1.Fill(Pmis, Mmis);
+                h_th_P_Mis1.Fill(Pmis, th_mis);
+
+                h_th_P_em1_2.Fill(part_em1.p(), part_em1.th());
+                h_th_P_em2_2.Fill(part_em2.p(), part_em2.th());
+                h_th_P_em2.Fill(part_em1.p(), part_em1.th());
+                h_th_P_em2.Fill(part_em2.p(), part_em2.th());
+                h_th_P_ep2.Fill(part_ep.p(), part_ep.th());
+
+
+                if (Mmis > Mmis_Min && Mmis < Mmis_Max) {
                     h_Minv12_2.Fill(m_emep1, m_emep2);
                 }
 
@@ -424,15 +542,45 @@ int main(int argc, char** argv) {
 
                     if (m_emep1 > 0.25 && m_emep2 > 0.25) { // This is to skip low mass events which seems are not produced at the target
                         //if (m_emep1 > 1. && m_emep2 > 1.) { // This is to skip low mass events which seems are not produced at the target
-                        h_Mmis3.Fill(L_mis.M());
+                        h_Mmis3.Fill(Mmis);
+                        h_th_VS_Mmis3.Fill(th_mis, Mmis);
+                        h_Mmis_PMis3.Fill(Pmis, Mmis);
+                        h_th_P_Mis3.Fill(Pmis, th_mis);
+
+                        h_th_P_em1_3.Fill(part_em1.p(), part_em1.th());
+                        h_th_P_em2_3.Fill(part_em2.p(), part_em2.th());
+                        h_th_P_em3.Fill(part_em1.p(), part_em1.th());
+                        h_th_P_em3.Fill(part_em2.p(), part_em2.th());
+                        h_th_P_ep3.Fill(part_ep.p(), part_ep.th());
+
+                        if (Pmis < PmisCut) {
+                            h_th_VS_Mmis4.Fill(th_mis, Mmis);
+                            h_th_P_em1_4.Fill(part_em1.p(), part_em1.th());
+                            h_th_P_em2_4.Fill(part_em2.p(), part_em2.th());
+                            h_th_P_em4.Fill(part_em1.p(), part_em1.th());
+                            h_th_P_em4.Fill(part_em2.p(), part_em2.th());
+                            h_th_P_ep4.Fill(part_ep.p(), part_ep.th());
+
+                            if (th_mis > thMinCut && Mmis > Mmis_Min && Mmis < Mmis_Max) {
+                                h_Minv12_3.Fill(m_emep1, m_emep2);
+                                h_th_P_em1_5.Fill(part_em1.p(), part_em1.th());
+                                h_th_P_em2_5.Fill(part_em2.p(), part_em2.th());
+                                h_th_P_em5.Fill(part_em1.p(), part_em1.th());
+                                h_th_P_em5.Fill(part_em2.p(), part_em2.th());
+                                h_th_P_ep5.Fill(part_ep.p(), part_ep.th());
+                            }
+                        }
 
                         if (n_prot == 1) {
-                            h_Mmis4.Fill(L_mis.M());
+                            h_Mmis4.Fill(Mmis);
                         }
                     }
 
                     if (n_prot == 1) {
                         h_Mmis2.Fill(L_mis.M());
+                        h_Mmis_PMis2.Fill(Pmis, Mmis);
+                        h_th_VS_Mmis2.Fill(th_mis, Mmis);
+                        h_th_P_Mis2.Fill(Pmis, th_mis);
                     }
                 }
 
@@ -499,7 +647,8 @@ int main(int argc, char** argv) {
     }
 
 
-    if (strcmp(data_Set.c_str(), "GRAPE_Run5") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run6") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run8") == 0) {
+    //if (strcmp(data_Set.c_str(), "GRAPE_Run5") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run6") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run8") == 0) {
+    if (isMC) {
 
         cout << "evCounter = " << evCounter << endl;
 
