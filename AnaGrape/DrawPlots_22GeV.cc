@@ -255,15 +255,15 @@ int DrawPlots_22GeV( int run ) {
     line1->SetLineColor(95);
     line1->SetLineWidth(3);
     
-    const int Qp2_Max = 5.;
-    const int Qp2_Min = 4.;
-    const int Q2_Max = 5;
-    const int Q2_Min = 4;
+    const double Qp2_Max = 4.5;
+    const double Qp2_Min = 4.;
+    const double Q2_Max = 3;
+    const double Q2_Min = 2.5;
 
     const int nQ2bins_new = 4;
     const int nQp2bins_new = 4;
     const double Q2_edges_new[nQ2bins_new + 1] = {2., 3.5, 5., 7., 10.};
-    const double Qp2_edges_new[nQp2bins_new + 1] = {1.44, 3., 4., 6., 10.};
+    const double Qp2_edges_new[nQp2bins_new + 1] = {1.44, 3., 4., 6., 9.};
     
     const double tMcut = 0.4;
 
@@ -309,8 +309,9 @@ int DrawPlots_22GeV( int run ) {
     h_xi_xxGPD2->Draw("Scat");
     for (int i = 0; i < nQ2bins_new; i++) {
         h_xi_xxGPD_newQ2Scan_[i] = (TH2D*) file_in->Get(Form("h_xi_xxGPD_newQ2Scan_%d", i));
-        h_xi_xxGPD_newQ2Scan_[i]->SetMarkerColor(i + 2);
-        lat1->SetTextColor(i + 2);
+        int col = i == 3? i + 3 : i + 2;
+        h_xi_xxGPD_newQ2Scan_[i]->SetMarkerColor(col);
+        lat1->SetTextColor(col);
         h_xi_xxGPD_newQ2Scan_[i]->Draw("Same scat");
         lat1->DrawLatex(0.65, 0.4 - 0.05 * i, Form("Q^{2}#in (%1.1f-%1.1f)GeV", Q2_edges_new[i], Q2_edges_new[i + 1]));
     }
@@ -383,9 +384,10 @@ int DrawPlots_22GeV( int run ) {
     h_xi_xxGPD2->Draw("Scat");
     for (int i = 0; i < nQp2bins_new; i++) {
         h_xi_xxGPD_newQp2Scan_[i] = (TH2D*) file_in->Get(Form("h_xi_xxGPD_newQp2Scan_%d", i));
-        h_xi_xxGPD_newQp2Scan_[i]->SetMarkerColor(i + 2);
+        int col = i == 3? i + 3 : i + 2;
+        h_xi_xxGPD_newQp2Scan_[i]->SetMarkerColor(col);
         h_xi_xxGPD_newQp2Scan_[i]->Draw("Same scat");
-        lat1->SetTextColor(i + 2);
+        lat1->SetTextColor(col);
         lat1->DrawLatex(0.65, 0.4 - 0.05 * i, Form("Q^{'2}#in (%1.1f-%1.1f)GeV", Qp2_edges_new[i], Qp2_edges_new[i + 1]));
     }
     c1->Print(Form("Figs/xi_vs_x_New_Qp2Scan_22GeV_Run_%d.pdf", run));
@@ -446,5 +448,97 @@ int DrawPlots_22GeV( int run ) {
 
     }
 
+    
+    // Plots for \xi vs x binning
+
+    const int n_xi_x_bins = 2;
+    const int n_xi_x_Q2bins = 2;
+
+    TH2D * h_xi_xxGPD_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH1D * h_Phi_LH_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH2D * h_Qp2_Q2_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH2D * h_tM_xB_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+
+    TGraphErrors * gr_Asym_xi_x_bins[n_xi_x_bins][n_xi_x_Q2bins];
+
+    ofstream out_xi_x_bins("Dumps/xi_x_Q2_bins_22GeV.dat");
+
+    out_xi_x_bins << "xi_xBin  Q2 bin" << setw(12) << "Q2" << setw(10) << "xB" << setw(12) << "Qp2" << setw(12) << "tM" << endl;
+    for (int i = 0; i < n_xi_x_bins; i++) {
+        for (int j = 0; j < n_xi_x_Q2bins; j++) {
+            h_xi_xxGPD_xi_x_[i][j] = (TH2D*) file_in->Get(Form("h_xi_xxGPD_xi_x_%d_%d", i, j));
+            h_xi_xxGPD_xi_x_[i][j]->SetMarkerColor(i+2);
+            h_Phi_LH_xi_x_[i][j] = (TH1D*) file_in->Get(Form("h_Phi_LH_xi_x_%d_%d", i, j));
+            h_Qp2_Q2_xi_x_[i][j] = (TH2D*) file_in->Get(Form("h_Qp2_Q2_xi_x_%d_%d", i, j));
+            h_Qp2_Q2_xi_x_[i][j]->SetMarkerColor(i+1 + 10*j);
+            h_Qp2_Q2_xi_x_[i][j]->SetMarkerStyle(i+21);
+            h_Qp2_Q2_xi_x_[i][j]->SetTitle("; Q^{2} [GeV^{2}]; Q^{'2} [GeV^{2}]");
+            h_tM_xB_xi_x_[i][j] = (TH2D*) file_in->Get(Form("h_tM_xB_xi_x_%d_%d", i, j));
+            h_tM_xB_xi_x_[i][j]->SetMarkerColor(i+2);
+            h_tM_xB_xi_x_[i][j]->SetTitle("; -t [GeV^{2}]; x_{B}");
+
+            double Q2 = h_Qp2_Q2_xi_x_[i][j]->GetMean(1);
+            double Qp2 = h_Qp2_Q2_xi_x_[i][j]->GetMean(2);
+            double tM = h_tM_xB_xi_x_[i][j]->GetMean(1);
+            double xB = h_tM_xB_xi_x_[i][j]->GetMean(2);
+
+            out_xi_x_bins << i << setw(12) << j << setw(12) << Q2 << setw(12) << xB << setw(12) << Qp2 << setw(12) << tM << endl;
+
+            gr_Asym_xi_x_bins[i][j] = new TGraphErrors();
+            gr_Asym_xi_x_bins[i][j]->SetMarkerColor(4);
+            gr_Asym_xi_x_bins[i][j]->SetMarkerStyle(20);
+            gr_Asym_xi_x_bins[i][j]->SetMarkerSize(2);
+            gr_Asym_xi_x_bins[i][j]->SetTitle("; #phi_{LH} [deg]; BSA");
+
+            ifstream inp_asym(Form("Dumps/Asym_xi_x_bins_%d_%d_22GeV.dat", i, j));
+
+            ofstream histDump(Form("Dumps/Phi_LH_xi_x_Q2_%d_%d_22GeV", i, j));
+            for (int bin = 0; bin < h_Phi_LH_xi_x_[i][j]->GetNbinsX(); bin++) {
+                double N_evBin = h_Phi_LH_xi_x_[i][j]->GetBinContent(bin + 1);
+                histDump << setw(3) << h_Phi_LH_xi_x_[i][j]->GetBinCenter(bin + 1) << setw(9) << N_evBin << endl;
+
+                double phi, asym;
+                inp_asym>> phi;
+                inp_asym>> asym;
+
+                double asymErr = (1. / pol) * sqrt((1 - pol * asym * pol * asym) / N_evBin);
+
+                gr_Asym_xi_x_bins[i][j]->SetPoint(bin, phi, asym);
+                gr_Asym_xi_x_bins[i][j]->SetPointError(bin, 0, asymErr);
+            }
+
+            gr_Asym_xi_x_bins[i][j]->Draw("AP");
+            lat1->DrawLatex(0.04, 0.93, Form("Q^{2}=%1.2f GeV^{2}  Q^{'2} = %1.2f GeV^{2}  xB=%1.2f  -t=%1.2f GeV^{2}", Q2, Qp2, xB, tM));
+            c1->Print(Form("Figs/Asym_xi_x_bins_%d_%d_22GeV.pdf", i, j));
+            c1->Print(Form("Figs/Asym_xi_x_bins_%d_%d_22GeV.png", i, j));
+            c1->Print(Form("Figs/Asym_xi_x_bins_%d_%d_22GeV.root", i, j));
+        }
+    }
+
+
+    h_xi_xxGPD2->Draw("Scat");
+    h_xi_xxGPD_xi_x_[0][0]->Draw("Same scat");
+    h_xi_xxGPD_xi_x_[1][0]->Draw("Same scat");
+    c1->Print("Figs/Xi_x_bins_on_xi_x_22GeV.pdf");
+    c1->Print("Figs/Xi_x_bins_on_xi_x_22GeV.png");
+    c1->Print("Figs/Xi_x_bins_on_xi_x_22GeV.root");
+
+    h_Qp2_Q2_xi_x_[0][0]->Draw("Scat");
+    h_Qp2_Q2_xi_x_[0][1]->SetMarkerColor(9);
+    h_Qp2_Q2_xi_x_[0][1]->Draw("Same Scat");
+    h_Qp2_Q2_xi_x_[1][0]->Draw("Same Scat");
+    h_Qp2_Q2_xi_x_[1][1]->Draw("Same Scat");
+    c1->Print("Figs/Qp2_Q2_With_xi_x_bins_22GeV.pdf");
+    c1->Print("Figs/Qp2_Q2_With_xi_x_bins_22GeV.png");
+    c1->Print("Figs/Qp2_Q2_With_xi_x_bins_22GeV.root");
+    
+    h_tM_xB_xi_x_[0][0]->Draw("Scat");
+    h_tM_xB_xi_x_[1][0]->Draw("Same Scat");
+    c1->Print("Figs/xB_tM_xi_x_bins_22GeV.pdf");
+    c1->Print("Figs/xB_tM_xi_x_bins_22GeV.png");
+    c1->Print("Figs/xB_tM_xi_x_bins_22GeV.root");
+    
+    
+    
     return 0;
 }

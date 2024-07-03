@@ -102,6 +102,9 @@ int main(int argc, char** argv) {
     TH2D h_Qp2_vs_Q2_2("h_Qp2_vs_Q2_2", "", 200, 0., 10., 200, 0., 10);
     TH2D h_Qp2_vs_Q2_3("h_Qp2_vs_Q2_3", "", 200, 0., 10., 200, 0., 10);
     TH2D h_Qp2_vs_Q2_6("h_Qp2_vs_Q2_6", "", 200, 0., 10., 200, 0., 10);
+    TH2D h_Qp2_vs_Q2_7("h_Qp2_vs_Q2_7", "", 200, 0., 10., 200, 0., 10);
+    TH2D h_Qp2_vs_Q2_8("h_Qp2_vs_Q2_8", "", 200, 0., 10., 200, 0., 10);
+    TH2D h_Qp2_vs_Q2_9("h_Qp2_vs_Q2_9", "", 200, 0., 10., 200, 0., 10);
 
     TH2D h_Q2_xB1("h_Q2_xB1", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB2("h_Q2_xB2", "", 200, 0., 1., 200, 0., 10.);
@@ -129,9 +132,12 @@ int main(int argc, char** argv) {
 
     TH2D h_xB_tM1("h_xB_tM1", "", 200, 0., 1.5, 200, 0., 1.);
     TH2D h_xB_tM2("h_xB_tM2", "", 200, 0., 1.5, 200, 0., 1.);
+    TH2D h_xB_tM8("h_xB_tM8", "", 200, 0., 1.5, 200, 0., 1.);
+    TH2D h_xB_tM9("h_xB_tM9", "", 200, 0., 1.5, 200, 0., 1.);
 
     TH2D h_xi_xxGPD1("h_xi_xxGPD1", "", 200, -1., 1., 200, 0., 1.);
     TH2D h_xi_xxGPD2("h_xi_xxGPD2", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD8("h_xi_xxGPD8", "", 200, -1., 1., 200, 0., 1.);
 
     TH2D h_xi_xxGPD2_[nQp2bins];
     TH2D h_xi_xxGPD3_[nQp2bins];
@@ -146,15 +152,15 @@ int main(int argc, char** argv) {
     }
 
     // When the Qp2 is in between Qp2_Min and Qp2_Max, we will scan over Q2, i.e. will have nQ2bins, and for each fill phi_LH and "\xi vs x" histograms
-    const int Qp2_Max = 5.;
-    const int Qp2_Min = 4.;
-    const int Q2_Max = 5;
-    const int Q2_Min = 4;
+    const double Qp2_Max = 4.5;
+    const double Qp2_Min = 4.;
+    const double Q2_Max = 3;
+    const double Q2_Min = 2.5;
 
     const int nQ2bins_new = 4;
     const int nQp2bins_new = 4;
     const double Q2_edges_new[nQ2bins_new + 1] = {2., 3.5, 5., 7., 10.};
-    const double Qp2_edges_new[nQp2bins + 1] = {1.44, 3., 4., 6., 10.};
+    const double Qp2_edges_new[nQp2bins + 1] = {1.44, 3., 4., 6., 9.};
 
     TH1D h_Q2_Edges_new("h_Q2_Edges_new", "", nQ2bins_new, Q2_edges_new);
     TH1D h_Qp2_Edges_new("h_Qp2_Edges_new", "", nQp2bins_new, Qp2_edges_new);
@@ -171,9 +177,9 @@ int main(int argc, char** argv) {
     }
 
     TH2D h_xi_xxGPD_newQp2Scan_[nQp2bins]; // Scan over Qp2 for a fixed Q2
-    TH1D h_Phi_LH_newQp2Scan_[nQp2bins];   // Scan over Qp2 for a fixed Q2
-    TH2D h_Qp2_Q2_newQp2Scan_[nQ2bins];    // We need this to find the avg value for Michel's code
-    TH2D h_tM_xB_newQp2Scan_[nQ2bins];     // We need this to find the avg value for Michel's code
+    TH1D h_Phi_LH_newQp2Scan_[nQp2bins]; // Scan over Qp2 for a fixed Q2
+    TH2D h_Qp2_Q2_newQp2Scan_[nQ2bins]; // We need this to find the avg value for Michel's code
+    TH2D h_tM_xB_newQp2Scan_[nQ2bins]; // We need this to find the avg value for Michel's code
     for (int i = 0; i < nQp2bins_new; i++) {
         h_xi_xxGPD_newQp2Scan_[i] = TH2D(Form("h_xi_xxGPD_newQp2Scan_%d", i), "", 200, -0.5, 0.5, 200, 0., 0.5);
         h_Phi_LH_newQp2Scan_[i] = TH1D(Form("h_Phi_LH_newQp2Scan_%d", i), "", 12, 0, 360);
@@ -181,8 +187,41 @@ int main(int argc, char** argv) {
         h_tM_xB_newQp2Scan_[i] = TH2D(Form("h_tM_xB_newQp2Scan_%d", i), "", 200, 0., 1.2, 200, 0., 1.);
     }
 
+    // New Binning on \xi and x instead of Q2, Qp2, -t and xB
+
+    const double bin0_x_max = -0.06;
+    const double bin0_x_min = -0.08;
+    const double bin0_xi_max = 0.24;
+    const double bin0_xi_min = 0.23;
+
+    const double bin1_x_max = 0.08;
+    const double bin1_x_min = 0.06;
+    const double bin1_xi_max = 0.24;
+    const double bin1_xi_min = 0.23;
+
+    const double t_Max_xi_xiStudy = 0.5;
+    const int n_xi_x_bins = 2;
+    const int n_xi_x_Q2bins = 2;
+
+
+    TH2D h_xi_xxGPD_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH1D h_Phi_LH_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH2D h_Qp2_Q2_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH2D h_tM_xB_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+
+    for (int i = 0; i < n_xi_x_bins; i++) {
+        for (int j = 0; j < n_xi_x_bins; j++) {
+            h_xi_xxGPD_xi_x_[i][j] = TH2D(Form("h_xi_xxGPD_xi_x_%d_%d", i, j), "", 200, -0.5, 0.5, 200, 0., 0.5);
+            h_Phi_LH_xi_x_[i][j] = TH1D(Form("h_Phi_LH_xi_x_%d_%d", i, j), "", 12, 0, 360);
+            h_Qp2_Q2_xi_x_[i][j] = TH2D(Form("h_Qp2_Q2_xi_x_%d_%d", i, j), "", 200, 0., 10., 200, 0., 10.);
+            h_tM_xB_xi_x_[i][j] = TH2D(Form("h_tM_xB_xi_x_%d_%d", i, j), "", 200, 0., 1.2, 200, 0., 1.);
+        }
+    }
+
+
 
     int nev = tr1->GetEntries();
+    //nev = 1500000;
 
     for (int i_ev = 0; i_ev < nev; i_ev++) {
         //for (int i_ev = 0; i_ev < 100; i_ev++) {
@@ -311,6 +350,47 @@ int main(int argc, char** argv) {
 
             }
 
+
+            if (tM < t_Max_xi_xiStudy) {
+
+                int bin_xi_x = -1;
+                int bin_Q2 = -1;
+
+                if (xx_GPD > bin0_x_min && xx_GPD < bin0_x_max && xi > bin0_xi_min && xi < bin0_xi_max) {
+                    bin_xi_x = 0;
+
+                    bin_Q2 = Qp2 > 11.5 -Q2 / 1.85 ? 1 : 0;
+
+                } else if (xx_GPD > bin1_x_min && xx_GPD < bin1_x_max && xi > bin1_xi_min && xi < bin1_xi_max) {
+                    bin_xi_x = 1;
+
+                    bin_Q2 = Qp2 > 15.5 -Q2 / 0.55 ? 1 : 0;
+                }
+
+                if (bin_xi_x >= 0 && bin_Q2 >= 0) {
+                    h_Phi_LH_xi_x_[bin_xi_x][bin_Q2].Fill(Phi_LH);
+                    h_xi_xxGPD_xi_x_[bin_xi_x][bin_Q2].Fill(xx_GPD, xi);
+                    h_Qp2_Q2_xi_x_[bin_xi_x][bin_Q2].Fill(Q2, Qp2);
+                    h_tM_xB_xi_x_[bin_xi_x][bin_Q2].Fill(tM, xB);
+                }
+
+            }
+
+            if (xx_GPD > -0.08 && xx_GPD < -0.06 && xi > 0.23 && xi < 0.24) {
+                h_Qp2_vs_Q2_8.Fill(Q2, Qp2);
+                h_xB_tM8.Fill(tM, xB);
+            } else if (xx_GPD > 0.06 && xx_GPD < 0.08 && xi > 0.23 && xi < 0.24) {
+                h_Qp2_vs_Q2_9.Fill(Q2, Qp2);
+                h_xB_tM9.Fill(tM, xB);
+            }
+
+
+            if (tM > 0.06 && tM < 0.08) {
+                h_Qp2_vs_Q2_7.Fill(Q2, Qp2);
+                h_xi_xxGPD8.Fill(xx_GPD, xi);
+            }
+
+
             if (xB > 0.12 && xB < 0.22 && tM > 0.1 && tM < 0.4) {
 
                 h_Qp2_vs_Q2_3.Fill(Q2, Qp2);
@@ -334,8 +414,6 @@ int main(int argc, char** argv) {
                         h_xi_xxGPD3_[Q2Bin].Fill(xx_GPD, xi);
                     }
                 }
-
-
             }
         }
 
