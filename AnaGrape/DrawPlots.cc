@@ -347,7 +347,7 @@ int DrawPlots(int run) {
         c1->Print(Form("Figs/Phi_LH_Q2Scan_Bin_%d_Run_%d.root", i, run));
         ofstream histDump(Form("Dumps/Phi_LH_Q2Scan_Bin_%d_Run_%d.dat", i, run));
         ifstream inp_asym(Form("Dumps/Asym_Q2Scan_Bin%d.dat", i));
-        ofstream out_Asum(Form("Dumps/AsymWithErrors_Q2Scan_Bin%d_22GeV.dat", i));
+        ofstream out_Asum(Form("Dumps/AsymWithErrors_Q2Scan_Bin%d.dat", i));
         gr_A_LH_newQ2Scan_[i] = new TGraphErrors();
         gr_A_LH_newQ2Scan_[i]->SetMarkerColor(4);
         gr_A_LH_newQ2Scan_[i]->SetMarkerStyle(20);
@@ -425,7 +425,7 @@ int DrawPlots(int run) {
 
         ofstream histDump(Form("Dumps/Phi_LH_Qp2Scan_Bin_%d_Run_%d.dat", i, run));
         ifstream inp_asym(Form("Dumps/Asym_Qp2Scan_Bin%d.dat", i));
-        ofstream out_Asum(Form("Dumps/AsymWithErrors_Qp2Scan_Bin%d_22GeV.dat", i));
+        ofstream out_Asum(Form("Dumps/AsymWithErrors_Qp2Scan_Bin%d.dat", i));
         gr_A_LH_newQp2Scan_[i] = new TGraphErrors();
         gr_A_LH_newQp2Scan_[i]->SetMarkerColor(4);
         gr_A_LH_newQp2Scan_[i]->SetMarkerStyle(20);
@@ -511,7 +511,7 @@ int DrawPlots(int run) {
 
             ifstream inp_asym(Form("Dumps/Asym_xi_x_bins_%d_%d.dat", i, j));
             ofstream histDump(Form("Dumps/Phi_LH_xi_x_Q2_%d_%d", i, j));
-            ofstream out_Asum(Form("Dumps/AsymWithErrors_xi_x_bins_%d_%d_22GeV.dat", i, j));
+            ofstream out_Asum(Form("Dumps/AsymWithErrors_xi_x_bins_%d_%d.dat", i, j));
             
             for (int bin = 0; bin < h_Phi_LH_xi_x_[i][j]->GetNbinsX(); bin++) {
                 double N_evBin = h_Phi_LH_xi_x_[i][j]->GetBinContent(bin + 1);
