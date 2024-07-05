@@ -333,7 +333,8 @@ int DrawPlots_22GeV( int run ) {
         c1->Print(Form("Figs/Phi_LH_Q2Scan_Bin_%d_22GeV_Run_%d.root", i, run));
         ofstream histDump(Form("Dumps/Phi_LH_Q2Scan_Bin_%d_22GeV_Run_%d.dat", i, run));
         ifstream inp_asym(Form("Dumps/Asym_Q2Scan_Bin%d_22GeV.dat", i));
-
+        ofstream out_Asum(Form("Dumps/AsymWithErrors_Q2Scan_Bin%d_22GeV.dat", i));
+        
         gr_A_LH_newQ2Scan_[i] = new TGraphErrors();
         gr_A_LH_newQ2Scan_[i]->SetMarkerColor(4);
         gr_A_LH_newQ2Scan_[i]->SetMarkerStyle(20);
@@ -353,6 +354,7 @@ int DrawPlots_22GeV( int run ) {
 
             gr_A_LH_newQ2Scan_[i]->SetPoint(bin, phi, asym);
             gr_A_LH_newQ2Scan_[i]->SetPointError(bin, 0, asymErr);
+            out_Asum<<setw(5)<<phi<<setw(12)<<asym<<setw(12)<<asymErr<<endl;
         }
 
         c1->Clear();
@@ -407,7 +409,8 @@ int DrawPlots_22GeV( int run ) {
 
         ofstream histDump(Form("Dumps/Phi_LH_Qp2Scan_Bin_%d_22GeV_Run_%d.dat", i, run));
         ifstream inp_asym(Form("Dumps/Asym_Qp2Scan_Bin%d_22GeV.dat", i));
-
+        ofstream out_Asum(Form("Dumps/AsymWithErrors_Qp2Scan_Bin%d_22GeV.dat", i));
+        
         gr_A_LH_newQp2Scan_[i] = new TGraphErrors();
         gr_A_LH_newQp2Scan_[i]->SetMarkerColor(4);
         gr_A_LH_newQp2Scan_[i]->SetMarkerStyle(20);
@@ -427,6 +430,7 @@ int DrawPlots_22GeV( int run ) {
 
             gr_A_LH_newQ2Scan_[i]->SetPoint(bin, phi, asym);
             gr_A_LH_newQ2Scan_[i]->SetPointError(bin, 0, asymErr);
+            out_Asum<<setw(5)<<phi<<setw(12)<<asym<<setw(12)<<asymErr<<endl;
         }
 
         c1->Clear();
@@ -491,6 +495,7 @@ int DrawPlots_22GeV( int run ) {
             gr_Asym_xi_x_bins[i][j]->SetTitle("; #phi_{LH} [deg]; BSA");
 
             ifstream inp_asym(Form("Dumps/Asym_xi_x_bins_%d_%d_22GeV.dat", i, j));
+            ofstream out_Asum(Form("Dumps/AsymWithErrors_xi_x_bins_%d_%d_22GeV.dat", i, j));
 
             ofstream histDump(Form("Dumps/Phi_LH_xi_x_Q2_%d_%d_22GeV", i, j));
             for (int bin = 0; bin < h_Phi_LH_xi_x_[i][j]->GetNbinsX(); bin++) {
@@ -505,6 +510,7 @@ int DrawPlots_22GeV( int run ) {
 
                 gr_Asym_xi_x_bins[i][j]->SetPoint(bin, phi, asym);
                 gr_Asym_xi_x_bins[i][j]->SetPointError(bin, 0, asymErr);
+                out_Asum<<setw(5)<<phi<<setw(12)<<asym<<setw(12)<<asymErr<<endl;
             }
 
             gr_Asym_xi_x_bins[i][j]->Draw("AP");

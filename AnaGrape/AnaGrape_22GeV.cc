@@ -189,15 +189,15 @@ int main(int argc, char** argv) {
 
     // New Binning on \xi and x instead of Q2, Qp2, -t and xB
 
-    const double bin0_x_max = -0.06;
-    const double bin0_x_min = -0.08;
-    const double bin0_xi_max = 0.24;
-    const double bin0_xi_min = 0.23;
+    const double bin0_x_max = -0.05;
+    const double bin0_x_min = -0.09;
+    const double bin0_xi_max = 0.245;
+    const double bin0_xi_min = 0.225;
 
-    const double bin1_x_max = 0.08;
-    const double bin1_x_min = 0.06;
-    const double bin1_xi_max = 0.24;
-    const double bin1_xi_min = 0.23;
+    const double bin1_x_max = 0.09;
+    const double bin1_x_min = 0.05;
+    const double bin1_xi_max = 0.245;
+    const double bin1_xi_min = 0.225;
 
     const double t_Max_xi_xiStudy = 0.5;
     const int n_xi_x_bins = 2;
