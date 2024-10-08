@@ -22,6 +22,7 @@ using namespace std;
 void SliceFit(TH2D* inp_hist, double min_X, double max_X, int nBins, TF1 *f_Fit, std::string keyWord);
 
 void DumpFitParameters(TF1*, std::string keyWord);
+template <typename T> void FormatHist(T h);
 
 /*
  * 
@@ -34,93 +35,105 @@ int main(int argc, char** argv) {
     }
 
     gStyle->SetOptStat(0);
-    
+
     TCanvas *c1 = new TCanvas("c1", "", 950, 950);
-    c1->SetTopMargin(0.02);
-    c1->SetRightMargin(0.03);
-    c1->SetLeftMargin(0.14);
+    c1->SetTopMargin(0.04);
+    c1->SetRightMargin(0.04);
+    c1->SetLeftMargin(0.15);
+    c1->SetBottomMargin(0.13);
+
+    //    c1->SetTopMargin(0.02);
+    //    c1->SetRightMargin(0.03);
+    //    c1->SetLeftMargin(0.14);
 
     int run = atoi(argv[1]);
 
     TFile file_in(Form("AnaDDVCS_Run_%d.root", run), "Read");
-    TF1 *f_Pol4 = new TF1("f_Pol4", "[0] + x*( [1] + x*( [2] + x*([3] + x*[4] ) ) )", 0., 80.);
-    f_Pol4->SetNpx(4500);
 
-    TF1 *f_Pol5 = new TF1("f_Pol5", "[0] + x*( [1] + x*( [2] + x*([3] + x*([4] + x*[5]) ) ) )", 0., 80.);
-    f_Pol5->SetNpx(4500);
+    TF1 *f_Eloss = new TF1("f_Eloss", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0]))", 0., 80.);
+    f_Eloss->SetNpx(4500);
 
-    TF1 *f_Pol6 = new TF1("f_Pol6", "[0] + x*( [1] + x*( [2] + x*([3] + x*([4] + x*([5] + x*[6])) ) ) )", 0., 80.);
-    f_Pol6->SetNpx(4500);
+    TF1 *f_ThCorr = new TF1("f_ThCorr", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0])) + [5]/((x-[0])*(x-[0])*(x-[0]))", 0., 80.);
+    f_ThCorr->SetNpx(4500);
 
+    TF1 *f_PhiCorr = new TF1("f_PhiCorr", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0]))", 0., 80.);
+    f_PhiCorr->SetNpx(4500);
+    
     TH2D *h_dPP_P_mup1 = (TH2D*) file_in.Get("h_dPP_P_mup1");
     h_dPP_P_mup1->SetTitle("; P_{Rec}(#mu^{+}) [GeV] ;  (P_{Rec} - P_{MC})/P_{MC}");
-    SliceFit(h_dPP_P_mup1, 0.2, 6.25, 30, f_Pol6, Form("dPP_P_mup1_Run_%d", run) );
-    
+    SliceFit(h_dPP_P_mup1, 0.2, 6.25, 30, f_Eloss, Form("dPP_P_mup1_Run_%d", run));
+
     c1->cd();
+    FormatHist(h_dPP_P_mup1);
+
     h_dPP_P_mup1->Draw();
-    f_Pol6->Draw("Same");
+    f_Eloss->Draw("Same");
     c1->Print(Form("Figs/mup_ElossFit_Run_%d.pdf", run));
     c1->Print(Form("Figs/mup_ElossFit_Run_%d.png", run));
     c1->Print(Form("Figs/mup_ElossFit_Run_%d.root", run));
-    DumpFitParameters(f_Pol6, Form("mup_ElossFunc_Pars_Run_%d", run));
-    
+    //DumpFitParameters(f_Eloss, Form("mup_ElossFunc_Pars_Run_%d", run));
+
     TH2D *h_dPP_P_mum1 = (TH2D*) file_in.Get("h_dPP_P_mum1");
     h_dPP_P_mum1->SetTitle("; P_{Rec}(#mu^{-}) [GeV] ;  (P_{Rec} - P_{MC})/P_{MC}");
-    SliceFit(h_dPP_P_mum1, 0.0, 6.25, 30, f_Pol6, Form("dPP_P_mum1_Run_%d", run) );
+    SliceFit(h_dPP_P_mum1, 0.05, 6.25, 30, f_Eloss, Form("dPP_P_mum1_Run_%d", run));
 
     c1->cd();
+    FormatHist(h_dPP_P_mum1);
     h_dPP_P_mum1->Draw();
-    f_Pol6->Draw("Same");
+    f_Eloss->Draw("Same");
     c1->Print(Form("Figs/mum_ElossFit_Run_%d.pdf", run));
     c1->Print(Form("Figs/mum_ElossFit_Run_%d.png", run));
     c1->Print(Form("Figs/mum_ElossFit_Run_%d.root", run));
-    DumpFitParameters(f_Pol6, Form("mum_ElossFunc_Pars_Run_%d", run));
-    
-    TH2D *h_DeltaTheta_Theta_mup1 = (TH2D*)file_in.Get("h_DeltaTheta_Theta_mup1");
+    //DumpFitParameters(f_Eloss, Form("mum_ElossFunc_Pars_Run_%d", run));
+
+    TH2D *h_DeltaTheta_Theta_mup1 = (TH2D*) file_in.Get("h_DeltaTheta_Theta_mup1");
     h_DeltaTheta_Theta_mup1->SetTitle("; #theta_{Rec} [deg]; #theta_{Rec} - #theta_{MC} [deg]");
-    SliceFit(h_DeltaTheta_Theta_mup1, 3, 50, 20, f_Pol6, Form("DeltaTheta_Theta_mup_Run_%d", run) );
+    SliceFit(h_DeltaTheta_Theta_mup1, 2, 50, 14, f_ThCorr, Form("DeltaTheta_Theta_mup_Run_%d", run));
     c1->cd();
     h_DeltaTheta_Theta_mup1->Draw();
-    f_Pol6->Draw("Same");
+    FormatHist(h_DeltaTheta_Theta_mup1);
+    f_ThCorr->Draw("Same");
     c1->Print(Form("Figs/DeltaTheta_Theta_mup1_Run_%d.pdf", run));
     c1->Print(Form("Figs/DeltaTheta_Theta_mup1_Run_%d.png", run));
-    c1->Print(Form("Figs/DeltaTheta_Theta_mup1_Run_%d.root", run));    
-    DumpFitParameters(f_Pol6, Form("mup_DeltaTheta_Corr_Run_%d", run));
-    
-    TH2D *h_DeltaTheta_Theta_mum1 = (TH2D*)file_in.Get("h_DeltaTheta_Theta_mum1");
+    c1->Print(Form("Figs/DeltaTheta_Theta_mup1_Run_%d.root", run));
+    //DumpFitParameters(f_ThCorr, Form("mup_DeltaTheta_Corr_Run_%d", run));
+
+    TH2D *h_DeltaTheta_Theta_mum1 = (TH2D*) file_in.Get("h_DeltaTheta_Theta_mum1");
     h_DeltaTheta_Theta_mum1->SetTitle("; #theta_{Rec} [deg]; #theta_{Rec} - #theta_{MC} [deg]");
-    SliceFit(h_DeltaTheta_Theta_mum1, 6, 60, 20, f_Pol6, Form("DeltaTheta_Theta_mum_Run_%d", run) );
+    SliceFit(h_DeltaTheta_Theta_mum1, 6, 60, 14, f_ThCorr, Form("DeltaTheta_Theta_mum_Run_%d", run));
     c1->cd();
     h_DeltaTheta_Theta_mum1->Draw();
-    f_Pol6->Draw("Same");
+    FormatHist(h_DeltaTheta_Theta_mum1);
+    f_ThCorr->Draw("Same");
     c1->Print(Form("Figs/DeltaTheta_Theta_mum1_Run_%d.pdf", run));
     c1->Print(Form("Figs/DeltaTheta_Theta_mum1_Run_%d.png", run));
-    c1->Print(Form("Figs/DeltaTheta_Theta_mum1_Run_%d.root", run));    
-    DumpFitParameters(f_Pol6, Form("mum_DeltaTheta_Corr_Run_%d", run));
-    
-    TH2D *h_DeltaPhi_Pt_mup1 = (TH2D*)file_in.Get("h_DeltaPhi_Pt_mup1");
+    c1->Print(Form("Figs/DeltaTheta_Theta_mum1_Run_%d.root", run));
+    //DumpFitParameters(f_ThCorr, Form("mum_DeltaTheta_Corr_Run_%d", run));
+
+    TH2D *h_DeltaPhi_Pt_mup1 = (TH2D*) file_in.Get("h_DeltaPhi_Pt_mup1");
     h_DeltaPhi_Pt_mup1->SetTitle("; P_{t} [GeV]; #phi_{Rec} - #phi_{MC} [deg]");
-    SliceFit(h_DeltaPhi_Pt_mup1, 0, 1.5, 20, f_Pol6, Form("DeltaPhi_Pt_mup_Run_%d", run) );
+    SliceFit(h_DeltaPhi_Pt_mup1, 0, 1.5, 14, f_PhiCorr, Form("DeltaPhi_Pt_mup_Run_%d", run));
     c1->cd();
     h_DeltaPhi_Pt_mup1->Draw();
-    f_Pol6->Draw("Same");
+    FormatHist(h_DeltaPhi_Pt_mup1);
+    f_PhiCorr->Draw("Same");
     c1->Print(Form("Figs/DeltaPhi_Pt_mup1_Run_%d.pdf", run));
     c1->Print(Form("Figs/DeltaPhi_Pt_mup1_Run_%d.png", run));
     c1->Print(Form("Figs/DeltaPhi_Pt_mup1_Run_%d.root", run));
-    DumpFitParameters(f_Pol6, Form("mup_DeltaPhi_Corr_Run_%d", run));
-    
-    TH2D *h_DeltaPhi_Pt_mum1 = (TH2D*)file_in.Get("h_DeltaPhi_Pt_mum1");
+    //DumpFitParameters(f_PhiCorr, Form("mup_DeltaPhi_Corr_Run_%d", run));
+
+    TH2D *h_DeltaPhi_Pt_mum1 = (TH2D*) file_in.Get("h_DeltaPhi_Pt_mum1");
     h_DeltaPhi_Pt_mum1->SetTitle("; P_{t} [GeV]; #phi_{Rec} - #phi_{MC} [deg]");
-    SliceFit(h_DeltaPhi_Pt_mum1, 0, 1.5, 20, f_Pol6, Form("DeltaPhi_Pt_mum_Run_%d", run) );
+    SliceFit(h_DeltaPhi_Pt_mum1, 0, 1.5, 14, f_PhiCorr, Form("DeltaPhi_Pt_mum_Run_%d", run));
     c1->cd();
     h_DeltaPhi_Pt_mum1->Draw();
-    f_Pol6->Draw("Same");
+    FormatHist(h_DeltaPhi_Pt_mum1);
+    f_PhiCorr->Draw("Same");
     c1->Print(Form("Figs/DeltaPhi_Pt_mum1_Run_%d.pdf", run));
     c1->Print(Form("Figs/DeltaPhi_Pt_mum1_Run_%d.png", run));
     c1->Print(Form("Figs/DeltaPhi_Pt_mum1_Run_%d.root", run));
-    DumpFitParameters(f_Pol6, Form("mum_DeltaPhi_Corr_Run_%d", run));
-    
-    
+    //DumpFitParameters(f_PhiCorr, Form("mum_DeltaPhi_Corr_Run_%d", run));
+
     return 0;
 }
 
@@ -137,7 +150,7 @@ void SliceFit(TH2D* inp_hist, double min_X, double max_X, int nBins, TF1 *f_Fit,
     TCanvas *c_tmp = new TCanvas("c_tmp", "", 950, 950);
 
     c_tmp->Print(Form("Figs/debugPlots_%s.pdf[", keyWord.c_str()));
-    
+
     for (int i = 0; i < nBins; i++) {
 
         double x1 = min_X + i*delta_X;
@@ -153,7 +166,7 @@ void SliceFit(TH2D* inp_hist, double min_X, double max_X, int nBins, TF1 *f_Fit,
         inp_hist->SetAxisRange(x1, x2);
         double avg_x = inp_hist->GetMean(1);
         inp_hist->GetXaxis()->UnZoom();
-    
+
         c_tmp->Print(Form("Figs/debugPlots_%s.pdf", keyWord.c_str()));
         double *xx = sp1->GetPositionX();
         double *yy = sp1->GetPositionY();
@@ -181,20 +194,32 @@ void SliceFit(TH2D* inp_hist, double min_X, double max_X, int nBins, TF1 *f_Fit,
 
     gr.Fit(f_Fit, "MeV", "", min_X, max_X);
     inp_hist->Draw();
-    gr.Draw("P Same");    
+    gr.Draw("P Same");
     c_tmp->Print(Form("Figs/debugPlots_%s.pdf", keyWord.c_str()));
-    
+
     c_tmp->Print(Form("Figs/debugPlots_%s.pdf]", keyWord.c_str()));
 }
 
-void DumpFitParameters(TF1* f, std::string keyWord){
+void DumpFitParameters(TF1* f, std::string keyWord) {
     ofstream out_dat(Form("Pars/%s.dat", keyWord.c_str()), std::ios::out | std::ios::trunc);
-    
+
     int nPar = f->GetNpar();
-    
-    for( int i = 0; i < nPar; i++ ){
-        out_dat<<i<<"  "<<f->GetParameter(i)<<endl;
+
+    for (int i = 0; i < nPar; i++) {
+        out_dat << i << "  " << f->GetParameter(i) << endl;
     }
-    
+
     out_dat.close();
+}
+
+template <typename T>
+void FormatHist(T h){
+
+    //TH2D *h = new TH2D("dsd", "", 100, 0, 100, 200, 0, 100);
+    
+    h->SetTitleSize(0.05, "X");
+    h->SetTitleSize(0.05, "Y");
+    h->SetLabelSize(0.05, "X");
+    h->SetLabelSize(0.05, "Y");
+    h->GetYaxis()->SetTitleOffset(1.35);
 }

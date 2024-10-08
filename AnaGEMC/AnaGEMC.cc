@@ -46,6 +46,8 @@ void InitFunction(TF1*, std::string kewWord);
  */
 void RotateTheta(TLorentzVector& L, double angle);
 
+int findX_Xi_Bin(double x, double xi);
+
 struct MCPart {
     int pid;
     double px;
@@ -71,6 +73,20 @@ int main(int argc, char** argv) {
     const double Mmu = 0.10566;
     const double Mp = 0.9383;
 
+    const double bin0_x_max = -0.05;
+    const double bin0_x_min = -0.09;
+    const double bin0_xi_max = 0.245;
+    const double bin0_xi_min = 0.225;
+
+    const double bin1_x_max = 0.09;
+    const double bin1_x_min = 0.05;
+    const double bin1_xi_max = 0.245;
+    const double bin1_xi_min = 0.225;
+
+    const double t_Max_xi_xiStudy = 0.5;
+
+    const int n_Xi_X_bins = 2;
+
     int run = atoi(argv[1]);
 
     std::map<int, double> m_Eb;
@@ -80,18 +96,23 @@ int main(int argc, char** argv) {
     double Eb = m_Eb[run];
 
     /*
-     *  Defining a patter pol6 function, then all coorection functions will clone this, and then
-     *  set corresponding parameter values.
+     * Th is functions looks like works well for Eloss: [0] + [1]*x + [2]/x + [3]/(x*x) + [4]/(x*x*x)
      */
-    TF1 *f_Pol6 = new TF1("f_Pol6", "[0] + x*( [1] + x*( [2] + x*([3] + x*([4] + x*([5] + x*[6])) ) ) )", 0., 80.);
-    f_Pol6->SetNpx(4500);
+    TF1 *f_Eloss = new TF1("f_Eloss", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0]))", 0., 80.);
+    f_Eloss->SetNpx(4500);
 
-    TF1 *f_Elos_mup = (TF1*) f_Pol6->Clone("f_Elos_mup");
-    TF1 *f_Elos_mum = (TF1*) f_Pol6->Clone("f_Elos_mum");
-    TF1 *f_ThCorr_mup = (TF1*) f_Pol6->Clone("f_ThCorr_mup");
-    TF1 *f_ThCorr_mum = (TF1*) f_Pol6->Clone("f_ThCorr_mum");
-    TF1 *f_PhiCorr_mup = (TF1*) f_Pol6->Clone("f_PhiCorr_mup");
-    TF1 *f_PhiCorr_mum = (TF1*) f_Pol6->Clone("f_PhiCorr_mum");
+    TF1 *f_ThCorr = new TF1("f_ThCorr", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0])) + [5]/((x-[0])*(x-[0])*(x-[0]))", 0., 80.);
+    f_ThCorr->SetNpx(4500);
+
+    TF1 *f_PhiCorr = new TF1("f_PhiCorr", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0]))", 0., 80.);
+    f_PhiCorr->SetNpx(4500);
+    
+    TF1 *f_Elos_mup = (TF1*) f_Eloss->Clone("f_Elos_mup");
+    TF1 *f_Elos_mum = (TF1*) f_Eloss->Clone("f_Elos_mum");
+    TF1 *f_ThCorr_mup = (TF1*) f_ThCorr->Clone("f_ThCorr_mup");
+    TF1 *f_ThCorr_mum = (TF1*) f_ThCorr->Clone("f_ThCorr_mum");
+    TF1 *f_PhiCorr_mup = (TF1*) f_PhiCorr->Clone("f_PhiCorr_mup");
+    TF1 *f_PhiCorr_mum = (TF1*) f_PhiCorr->Clone("f_PhiCorr_mum");
 
     /*
      * Now let's initialize these functions with paramaters
@@ -103,7 +124,7 @@ int main(int argc, char** argv) {
     InitFunction(f_PhiCorr_mup, Form("mup_DeltaPhi_Corr_Run_%d", run));
     InitFunction(f_PhiCorr_mum, Form("mum_DeltaPhi_Corr_Run_%d", run));
 
-    TLorentzVector L_em_mc, L_mum_mc, L_mup_mc, L_p;
+    TLorentzVector L_em_mc, L_mum_mc, L_mup_mc, L_p_mc;
     TLorentzVector L_em_rec, L_mum_rec, L_mup_rec; // Recon LorentzVectors
     TLorentzVector L_em_cor, L_mum_cor, L_mup_cor; // Corrected LorentzVectors (Elos, delta_theta and delta_phi)
     TLorentzVector L_beam, L_targ;
@@ -143,6 +164,40 @@ int main(int argc, char** argv) {
 
     TH2D h_N_mup_mum1("h_N_mup_mum1", "", 11, -0.5, 10.5, 11, -0.5, 10.5);
 
+    TH1D h_Delta_tM1("h_Delta_tM1", "", 200, -1.5, 2);
+    TH1D h_Delta_tM_Constrian1("h_Delta_tM_Constrian1", "", 200, -1.5, 2);
+    TH1D h_Delta_tM_FixMom1("h_Delta_tM_FixMom1", "", 200, -1.5, 2);
+    TH1D h_Delta_tM_FixMom_Constrain1("h_Delta_tM_FixMom_Constrain1", "", 200, -1.5, 2);
+    TH1D h_Delta_tM_FixEnergy1("h_Delta_tM_FixEnergy1", "", 200, -1.5, 2);
+    TH1D h_Delta_tM_FixEnergy_Constrain1("h_Delta_tM_FixEnergy_Constrain1", "", 200, -1.5, 2);
+
+
+    TH2D h_Qp2_vs_Q2_Rec1("h_Qp2_vs_Q2_Rec1", "", 200, 0., 10., 200, 0., 10);
+    TH2D h_Qp2_vs_Q2_Rec2("h_Qp2_vs_Q2_Rec2", "", 200, 0., 10., 200, 0., 10);
+    TH2D h_Qp2_vs_Q2_Rec3("h_Qp2_vs_Q2_Rec3", "", 200, 0., 10., 200, 0., 10);
+
+    TH2D h_xB_tM_Rec1("h_xB_tM_Rec1", "", 200, 0., 1.5, 200, 0., 1.);
+
+    TH2D h_xi_xxGPD1("h_xi_xxGPD1", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD2("h_xi_xxGPD2", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD7("h_xi_xxGPD7", "", 200, -1., 1., 200, 0., 1.);
+
+    TH2D h_xi_xxGPD_bin_[n_Xi_X_bins];
+    TH2D h_Qp2_Q2_bin_[n_Xi_X_bins];
+
+    for (int i = 0; i < n_Xi_X_bins; i++) {
+        h_xi_xxGPD_bin_[i] = TH2D(Form("h_xi_xxGPD_bin_%d", i), "", 200, -1., 1., 200, 0., 1.);
+        h_Qp2_Q2_bin_[i] = TH2D(Form("h_Qp2_Q2_bin_%d", i), "", 200, 0., 10., 200, 0., 10.);
+    }
+
+
+    TH2D h_xi_xxGPD_MC1("h_xi_xxGPD_MC1", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD_MC2("h_xi_xxGPD_MC2", "", 200, -1., 1., 200, 0., 1.);
+    TH2D h_xi_xxGPD_MC3("h_xi_xxGPD_MC3", "", 200, -1., 1., 200, 0., 1.);
+
+    TH2D h_dP_P_MC_prot1("h_dP_P_MC_prot1", "", 200, 0., 0.25 * Eb, 200, -0.65, 0.65);
+    TH2D h_dE_E_MC_prot1("h_dE_E_MC_prot1", "", 200, 0., 0.25 * Eb, 200, -0.65, 0.65);
+
     hipo::reader reader;
     //reader.open("Data/Skim_ZeroSuppr_2247_All.hipo");
     reader.open(Form("Data/DDVCS_Run%d_All.hipo", run));
@@ -174,9 +229,9 @@ int main(int argc, char** argv) {
 
             evCounter = evCounter + 1;
 
-//                        if (evCounter > 200000) {
-//                            break;
-//                        }
+//            if (evCounter > 200000) {
+//                break;
+//            }
             if (evCounter % 10000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
@@ -300,8 +355,25 @@ int main(int argc, char** argv) {
             L_em_mc.SetPxPyPzE(mc_em.px, mc_em.py, mc_em.pz, mc_em.p);
             L_mum_mc.SetPxPyPzE(mc_mum.px, mc_mum.py, mc_mum.pz, sqrt(mc_mum.p * mc_mum.p + Mmu * Mmu));
             L_mup_mc.SetPxPyPzE(mc_mup.px, mc_mup.py, mc_mup.pz, sqrt(mc_mup.p * mc_mup.p + Mmu * Mmu));
-            L_p.SetPxPyPzE(mc_p.px, mc_p.py, mc_p.pz, sqrt(mc_p.p * mc_p.p + Mp * Mp));
+            L_p_mc.SetPxPyPzE(mc_p.px, mc_p.py, mc_p.pz, sqrt(mc_p.p * mc_p.p + Mp * Mp));
             h_MC_th_P_em1.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
+
+
+            TLorentzVector L_q_MC = L_beam - L_em_mc;
+            TLorentzVector L_mumu_MC = L_mum_mc + L_mup_mc;
+            double Q2_MC = -L_q_MC.M2();
+            double Qp2_MC = L_mumu_MC.M2();
+            double nue_MC = L_q_MC.E();
+            double xB_MC = Q2_MC / (2 * Mp * nue_MC);
+            double xiPrime_MC = xB_MC / (2 - xB_MC);
+            double xi_MC = xiPrime_MC * (Q2_MC + Qp2_MC) / (Q2_MC);
+
+            //cout<<"Q2 = "<<Q2_MC<<"     Qp2_MC "<<Qp2_MC<<"  nue_MC = "<<nue_MC<<endl;
+
+
+            double xx_GPD_MC = 2 * xiPrime_MC - xi_MC; // This is x that GPDs depend on defined as 2*xiPrime  - xi
+
+            h_xi_xxGPD_MC1.Fill(xx_GPD_MC, xi_MC);
 
             bool em_acc = emAcc(L_em_mc);
             //cout<<L_em_mc.Px()<<"   "<<L_em_mc.Py()<<
@@ -320,6 +392,8 @@ int main(int argc, char** argv) {
 
                 double th_mup_MC = L_mup_mc.Theta() * TMath::RadToDeg();
                 double th_mum_MC = L_mum_mc.Theta() * TMath::RadToDeg();
+
+                double tM_MC = 2 * Mp * (L_p_mc.E() - Mp);
 
                 double pt_mup_Rec = sqrt(rec_mup.px() * rec_mup.px() + rec_mup.py() * rec_mup.py());
                 double pt_mum_Rec = sqrt(rec_mum.px() * rec_mum.px() + rec_mum.py() * rec_mum.py());
@@ -383,7 +457,7 @@ int main(int argc, char** argv) {
 
                 double mup_delta_th_corr = f_ThCorr_mup->Eval(th_mup_Rec);
                 RotateTheta(L_mup_cor, mup_delta_th_corr);
-                
+
 
                 double mum_delta_th_corr = f_ThCorr_mum->Eval(th_mum_Rec);
                 RotateTheta(L_mum_cor, mum_delta_th_corr);
@@ -392,18 +466,102 @@ int main(int argc, char** argv) {
                 double Mx2Corr2 = L_mis_corr2.M2();
                 h_Mmis_corr2.Fill(Mx2Corr2);
 
-                
+
                 double mup_delta_Phi = -f_PhiCorr_mup->Eval(pt_mup_Rec);
                 //cout<<"Before Rotation the angle is "<<L_mup_cor.Theta()*TMath::RadToDeg()<<"  "<<L_mup_cor.Phi()*TMath::RadToDeg()<<endl;
-                L_mup_cor.RotateZ( mup_delta_Phi*TMath::DegToRad() );
+                L_mup_cor.RotateZ(mup_delta_Phi * TMath::DegToRad());
                 //cout<<"After Rotation the angle is "<<L_mup_cor.Theta()*TMath::RadToDeg()<<"  "<<L_mup_cor.Phi()*TMath::RadToDeg()<<endl;
-                
+
                 double mum_delta_Phi = -f_PhiCorr_mum->Eval(pt_mum_Rec);
-                L_mum_cor.RotateZ( mum_delta_Phi*TMath::DegToRad() );
-                
+                L_mum_cor.RotateZ(mum_delta_Phi * TMath::DegToRad());
+
                 TLorentzVector L_mis_corr3 = L_beam + L_targ - L_em_rec - L_mup_cor - L_mum_cor;
                 double Mx2Corr3 = L_mis_corr3.M2();
-                h_Mmis_corr3.Fill(Mx2Corr3);                
+                h_Mmis_corr3.Fill(Mx2Corr3);
+
+                h_dP_P_MC_prot1.Fill(L_p_mc.P(), (L_mis_corr3.P() - L_p_mc.P()) / L_p_mc.P());
+                h_dE_E_MC_prot1.Fill(L_p_mc.E(), (L_mis_corr3.E() - L_p_mc.E()) / L_p_mc.E());
+
+                TLorentzVector L_mis_Prot_FixMomentum = L_mis_corr3;
+                TLorentzVector L_mis_Prot_FixEnergy = L_mis_corr3;
+
+                // In the case of L_mis_Prot_FixMomentum, we will correct the energy, assuming the momentum
+                // measurement is more precise
+                L_mis_Prot_FixMomentum.SetE(sqrt(L_mis_Prot_FixMomentum.P() * L_mis_Prot_FixMomentum.P() + Mp * Mp));
+
+                double corrected_P = sqrt(L_mis_Prot_FixEnergy.E() * L_mis_Prot_FixEnergy.E() - Mp * Mp);
+                double correctionScale_P = corrected_P / L_mis_Prot_FixEnergy.P();
+                L_mis_Prot_FixEnergy.SetPxPyPzE(L_mis_Prot_FixEnergy.Px() * correctionScale_P, L_mis_Prot_FixEnergy.Py() * correctionScale_P, L_mis_Prot_FixEnergy.Pz() * correctionScale_P,
+                        L_mis_Prot_FixEnergy.E());
+
+                /*
+                 *  At this point kinematic corrections are applied.
+                 *  We will look into phase space coverage, and estimation of uncertainties.
+                 */
+
+                TLorentzVector L_q_Rec = L_beam - L_em_rec; // The LorentzVector of Spacelike photon
+                TLorentzVector L_mumu_cor = L_mum_cor + L_mup_cor;
+
+                double Q2_Rec = -L_q_Rec.M2();
+                double nue_Rec = L_q_Rec.E();
+
+                double Qp2_Rec = L_mumu_cor.M2();
+
+                double xB_Rec = Q2_Rec / (2 * Mp * nue_Rec); // Calculating the xB
+                double xiPrime_Rec = xB_Rec / (2 - xB_Rec); // Calculating the xiPrime as xB/(2-xB)
+                double xi_Rec = xiPrime_Rec * (Q2_Rec + Qp2_Rec) / (Q2_Rec); // Calculating xi as xiPrime*(Q2 + Qp2)/Q2
+
+                double xx_GPD_Rec = 2 * xiPrime_Rec - xi_Rec; // This is x that GPDs depend on defined as 2*xiPrime - xi
+
+                double tM_Rec = -(L_mis_corr3 - L_targ).M2();
+
+                double tM_Rec_FixMom = -(L_mis_Prot_FixMomentum - L_targ).M2();
+                double tM_Rec_FixMomConstrain = 2 * Mp * (L_mis_Prot_FixMomentum.E() - Mp);
+
+                double tM_Rec_FixEnergy = -(L_mis_Prot_FixEnergy - L_targ).M2();
+                double tM_Rec_FixEnergyConstrain = 2 * Mp * (L_mis_Prot_FixEnergy.E() - Mp);
+
+                /*
+                 *  We constrain below the mass of the missing particle to the
+                 * proton mass. We should expect better resolution with this 
+                 * way of calculation of tM
+                 */
+                double tM_RecConstrain = 2 * Mp * (sqrt(L_mis_corr3.P() * L_mis_corr3.P() + Mp * Mp) - Mp);
+
+                h_Delta_tM1.Fill(tM_Rec - tM_MC);
+                h_Delta_tM_Constrian1.Fill(tM_RecConstrain - tM_MC);
+
+                h_Delta_tM_FixMom1.Fill(tM_Rec_FixMom - tM_MC);
+                h_Delta_tM_FixMom_Constrain1.Fill(tM_Rec_FixMomConstrain - tM_MC);
+                h_Delta_tM_FixEnergy1.Fill(tM_Rec_FixEnergy - tM_MC);
+                h_Delta_tM_FixEnergy_Constrain1.Fill(tM_Rec_FixEnergyConstrain - tM_MC);
+
+                //cout<<tM_Rec_FixEnergyConstrain<< "   " << tM_Rec_FixEnergy << "   "<< tM_Rec<<"   " << tM_Rec_FixEnergyConstrain - tM_Rec_FixEnergy<<endl;
+
+                h_Qp2_vs_Q2_Rec1.Fill(Q2_Rec, Qp2_Rec);
+
+                h_xB_tM_Rec1.Fill(tM_Rec, xB_Rec);
+
+
+                h_xi_xxGPD1.Fill(xx_GPD_Rec, xi_Rec);
+                h_xi_xxGPD_MC2.Fill(xx_GPD_MC, xi_MC);
+
+
+
+                //cout<<xx_GPD_MC<<"   "<<xi_MC<<endl;
+
+                int x_xi_Bin = findX_Xi_Bin(xx_GPD_Rec, xi_Rec);
+
+                if (x_xi_Bin >= 0) {
+                    h_xi_xxGPD_bin_[x_xi_Bin].Fill(xx_GPD_Rec, xi_Rec);
+                    h_Qp2_Q2_bin_[x_xi_Bin].Fill(Q2_Rec, Qp2_Rec);
+                }
+
+                if (xx_GPD_MC < bin0_x_max && xx_GPD_MC > bin0_x_min && xi_MC > bin0_xi_min && xi_MC < bin0_xi_max) {
+                    h_xi_xxGPD2.Fill(xx_GPD_Rec, xi_Rec);
+                    h_xi_xxGPD_MC3.Fill(xx_GPD_MC, xi_MC);
+                }
+
             }
 
         }
@@ -453,4 +611,26 @@ void RotateTheta(TLorentzVector& L, double theta) {
     TVector3 rotation_axis = momentum_proj_xy.Cross(L.Vect());
 
     L.Rotate(theta * TMath::DegToRad(), rotation_axis);
+}
+
+int findX_Xi_Bin(double x, double xi) {
+    const double bin0_x_max = -0.05;
+    const double bin0_x_min = -0.09;
+    const double bin0_xi_max = 0.245;
+    const double bin0_xi_min = 0.225;
+
+    const double bin1_x_max = 0.09;
+    const double bin1_x_min = 0.05;
+    const double bin1_xi_max = 0.245;
+    const double bin1_xi_min = 0.225;
+
+    int bin = -1;
+
+    if (x > bin0_x_min && x < bin0_x_max && xi > bin0_xi_min && xi < bin0_xi_max) {
+        bin = 0;
+    } else if (x > bin1_x_min && x < bin1_x_max && xi > bin1_xi_min && xi < bin1_xi_max) {
+        bin = 1;
+    }
+
+    return bin;
 }
