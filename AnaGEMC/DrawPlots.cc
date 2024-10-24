@@ -92,13 +92,21 @@ int main(int argc, char** argv) {
     h_Mmis_corr3->SetLineWidth(2);
     FormatHist(h_Mmis_corr3);
     
+    TH1D *h_Mmis_AngleFixcorr1 = (TH1D*)file_in.Get("h_Mmis_AngleFixcorr1");
+    h_Mmis_AngleFixcorr1->SetTitle("; M_{X}^{2} [GeV^{2}]");
+    h_Mmis_AngleFixcorr1->SetLineColor(8);
+    h_Mmis_AngleFixcorr1->SetLineWidth(2);
+    FormatHist(h_Mmis_AngleFixcorr1);
+    
     TLegend *leg1 = new TLegend(0.5, 0.65, 0.91, 0.9);
     leg1->SetBorderSize(0);
     leg1->AddEntry(h_Mmis1, "Uncorrected");
     leg1->AddEntry(h_Mmis_corr1, "Mom. corrected");
     leg1->AddEntry(h_Mmis_corr2, "Mom & #theta corrected");
     leg1->AddEntry(h_Mmis_corr3, "Mom & #theta & #phi corrected");
-    h_Mmis_corr3->Draw();
+    leg1->AddEntry(h_Mmis_AngleFixcorr1, "Mom cor & #theta + #phi Fix");
+    h_Mmis_AngleFixcorr1->Draw();
+    h_Mmis_corr3->Draw("Same");
     h_Mmis_corr2->Draw("Same");
     h_Mmis_corr1->Draw("Same");
     h_Mmis1->Draw("Same");

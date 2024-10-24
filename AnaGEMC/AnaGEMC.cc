@@ -83,6 +83,7 @@ int main(int argc, char** argv) {
     const double bin1_xi_max = 0.245;
     const double bin1_xi_min = 0.225;
 
+    const double th_MuMax = 40; // We ignore angles above this value
     const double t_Max_xi_xiStudy = 0.5;
 
     const int n_Xi_X_bins = 2;
@@ -161,6 +162,7 @@ int main(int argc, char** argv) {
     TH1D h_Mmis_corr1("h_Mmis_corr1", "", 200, -1., 6.);
     TH1D h_Mmis_corr2("h_Mmis_corr2", "", 200, -1., 6.);
     TH1D h_Mmis_corr3("h_Mmis_corr3", "", 200, -1., 6.);
+    TH1D h_Mmis_AngleFixcorr1("h_Mmis_AngleFixcorr1", "", 200, -1., 6.);
 
     TH2D h_N_mup_mum1("h_N_mup_mum1", "", 11, -0.5, 10.5, 11, -0.5, 10.5);
 
@@ -306,11 +308,11 @@ int main(int argc, char** argv) {
             for (int ipart = 0; ipart < nPart; ipart++) {
                 RecParticle recp(bRecPart, bRecCalo, bRecCC, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart], ind_HTCC[ipart]);
 
-                if (recp.pid() == 211 || recp.pid() == -13) {
+                if ( (recp.pid() == 211 || recp.pid() == -13) && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000 && recp.th() < th_MuMax   ) {
                     v_recp_mup.push_back(recp);
                     h_th_P_mup1.Fill(recp.p(), recp.th());
                     n_mup = n_mup + 1;
-                } else if (recp.pid() == -211 || recp.pid() == 13) {
+                } else if ( (recp.pid() == -211 || recp.pid() == 13) && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000 && recp.th() < th_MuMax  ) {
                     v_recp_mum.push_back(recp);
                     h_th_P_mum1.Fill(recp.p(), recp.th());
                     n_mum = n_mum + 1;
@@ -447,11 +449,24 @@ int main(int argc, char** argv) {
                 double momScale = p_mup_corr / L_mup_rec.P();
                 L_mup_cor.SetPxPyPzE(L_mup_rec.Px() * momScale, L_mup_rec.Py() * momScale, L_mup_rec.Pz() * momScale, sqrt(p_mup_corr * p_mup_corr + Mmu * Mmu));
 
+
+                // LorentzVector that has only Momentum corrected, but angles are fixed to generated values
+                TLorentzVector L_mup_AngleFixCor = L_mup_cor;
+                L_mup_AngleFixCor.SetTheta( L_mup_mc.Theta() );
+                L_mup_AngleFixCor.SetPhi( L_mup_mc.Phi() );
+                
+                
                 double p_mum_corr = L_mum_rec.P() / (1 + f_Elos_mum->Eval(L_mum_rec.P()));
                 momScale = p_mum_corr / L_mum_rec.P();
                 L_mum_cor.SetPxPyPzE(L_mum_rec.Px() * momScale, L_mum_rec.Py() * momScale, L_mum_rec.Pz() * momScale, sqrt(p_mum_corr * p_mum_corr + Mmu * Mmu));
                 TLorentzVector L_mis_corr1 = L_beam + L_targ - L_em_rec - L_mup_cor - L_mum_cor;
 
+                // LorentzVector that has only Momentum corrected, but angles are fixed to generated values
+                TLorentzVector L_mum_AngleFixCor = L_mum_cor;
+                L_mum_AngleFixCor.SetTheta( L_mum_mc.Theta() );
+                L_mum_AngleFixCor.SetPhi( L_mum_mc.Phi() );
+                
+                
                 double Mx2Corr = L_mis_corr1.M2();
                 h_Mmis_corr1.Fill(Mx2Corr);
 
@@ -466,6 +481,10 @@ int main(int argc, char** argv) {
                 double Mx2Corr2 = L_mis_corr2.M2();
                 h_Mmis_corr2.Fill(Mx2Corr2);
 
+                
+                TLorentzVector L_Mis_Corr_AngleFix = L_beam + L_targ - L_em_rec - L_mup_AngleFixCor - L_mum_AngleFixCor;
+                double Mx2CorrAngleFix1 = L_Mis_Corr_AngleFix.M2();
+                h_Mmis_AngleFixcorr1.Fill(Mx2CorrAngleFix1);
 
                 double mup_delta_Phi = -f_PhiCorr_mup->Eval(pt_mup_Rec);
                 //cout<<"Before Rotation the angle is "<<L_mup_cor.Theta()*TMath::RadToDeg()<<"  "<<L_mup_cor.Phi()*TMath::RadToDeg()<<endl;
