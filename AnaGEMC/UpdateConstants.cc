@@ -7,6 +7,8 @@
 
 #include <cstdlib>
 
+#include <map>
+
 #include <TF1.h>
 #include <TH1D.h>
 #include <TH2D.h>
@@ -45,9 +47,18 @@ int main(int argc, char** argv) {
     //    c1->SetTopMargin(0.02);
     //    c1->SetRightMargin(0.03);
     //    c1->SetLeftMargin(0.14);
+    
+    
 
     int run = atoi(argv[1]);
 
+    std::map<int, double> m_Eb;
+    
+    m_Eb[17] = 10.6;
+    m_Eb[18] = 22;
+    
+    double Eb = m_Eb[run];
+    
     TFile file_in(Form("AnaDDVCS_Run_%d.root", run), "Read");
 
     TF1 *f_Eloss = new TF1("f_Eloss", "[1] + [2]*(x-[0]) + [3]/(x-[0]) + [4]/((x-[0])*(x-[0]))", 0., 80.);
@@ -61,7 +72,7 @@ int main(int argc, char** argv) {
     
     TH2D *h_dPP_P_mup1 = (TH2D*) file_in.Get("h_dPP_P_mup1");
     h_dPP_P_mup1->SetTitle("; P_{Rec}(#mu^{+}) [GeV] ;  (P_{Rec} - P_{MC})/P_{MC}");
-    SliceFit(h_dPP_P_mup1, 0.2, 6.25, 30, f_Eloss, Form("dPP_P_mup1_Run_%d", run));
+    SliceFit(h_dPP_P_mup1, 0.2, 0.6*Eb, 30, f_Eloss, Form("dPP_P_mup1_Run_%d", run));
 
     c1->cd();
     FormatHist(h_dPP_P_mup1);
@@ -75,7 +86,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_dPP_P_mum1 = (TH2D*) file_in.Get("h_dPP_P_mum1");
     h_dPP_P_mum1->SetTitle("; P_{Rec}(#mu^{-}) [GeV] ;  (P_{Rec} - P_{MC})/P_{MC}");
-    SliceFit(h_dPP_P_mum1, 0.05, 6.25, 30, f_Eloss, Form("dPP_P_mum1_Run_%d", run));
+    SliceFit(h_dPP_P_mum1, 0.05, 0.6*Eb, 30, f_Eloss, Form("dPP_P_mum1_Run_%d", run));
 
     c1->cd();
     FormatHist(h_dPP_P_mum1);
@@ -88,7 +99,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_DeltaTheta_Theta_mup1 = (TH2D*) file_in.Get("h_DeltaTheta_Theta_mup1");
     h_DeltaTheta_Theta_mup1->SetTitle("; #theta_{Rec} [deg]; #theta_{Rec} - #theta_{MC} [deg]");
-    SliceFit(h_DeltaTheta_Theta_mup1, 2, 50, 14, f_ThCorr, Form("DeltaTheta_Theta_mup_Run_%d", run));
+    SliceFit(h_DeltaTheta_Theta_mup1, 3, 40, 18, f_ThCorr, Form("DeltaTheta_Theta_mup_Run_%d", run));
     c1->cd();
     h_DeltaTheta_Theta_mup1->Draw();
     FormatHist(h_DeltaTheta_Theta_mup1);
@@ -100,7 +111,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_DeltaTheta_Theta_mum1 = (TH2D*) file_in.Get("h_DeltaTheta_Theta_mum1");
     h_DeltaTheta_Theta_mum1->SetTitle("; #theta_{Rec} [deg]; #theta_{Rec} - #theta_{MC} [deg]");
-    SliceFit(h_DeltaTheta_Theta_mum1, 6, 60, 14, f_ThCorr, Form("DeltaTheta_Theta_mum_Run_%d", run));
+    SliceFit(h_DeltaTheta_Theta_mum1, 6, 40, 18, f_ThCorr, Form("DeltaTheta_Theta_mum_Run_%d", run));
     c1->cd();
     h_DeltaTheta_Theta_mum1->Draw();
     FormatHist(h_DeltaTheta_Theta_mum1);
@@ -112,7 +123,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_DeltaPhi_Pt_mup1 = (TH2D*) file_in.Get("h_DeltaPhi_Pt_mup1");
     h_DeltaPhi_Pt_mup1->SetTitle("; P_{t} [GeV]; #phi_{Rec} - #phi_{MC} [deg]");
-    SliceFit(h_DeltaPhi_Pt_mup1, 0, 1.5, 14, f_PhiCorr, Form("DeltaPhi_Pt_mup_Run_%d", run));
+    SliceFit(h_DeltaPhi_Pt_mup1, 0, 0.15*Eb, 14, f_PhiCorr, Form("DeltaPhi_Pt_mup_Run_%d", run));
     c1->cd();
     h_DeltaPhi_Pt_mup1->Draw();
     FormatHist(h_DeltaPhi_Pt_mup1);
@@ -124,7 +135,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_DeltaPhi_Pt_mum1 = (TH2D*) file_in.Get("h_DeltaPhi_Pt_mum1");
     h_DeltaPhi_Pt_mum1->SetTitle("; P_{t} [GeV]; #phi_{Rec} - #phi_{MC} [deg]");
-    SliceFit(h_DeltaPhi_Pt_mum1, 0, 1.5, 14, f_PhiCorr, Form("DeltaPhi_Pt_mum_Run_%d", run));
+    SliceFit(h_DeltaPhi_Pt_mum1, 0, 0.15*Eb, 14, f_PhiCorr, Form("DeltaPhi_Pt_mum_Run_%d", run));
     c1->cd();
     h_DeltaPhi_Pt_mum1->Draw();
     FormatHist(h_DeltaPhi_Pt_mum1);
