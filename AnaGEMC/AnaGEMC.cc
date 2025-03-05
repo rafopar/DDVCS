@@ -96,6 +96,14 @@ int main(int argc, char** argv) {
     const double th_MuMin_MC = 7.1; // We ignore angles below this value
     const double th_MuMax = 40; // We ignore angles above this value
 
+    const int nMaxPCalStripsPos = 5;
+    const int nMaxECinStripsPos = 5;
+    const int nMaxECoutStripsPos = 5;
+    const int nMaxPCalStripsNeg = 7;
+    const int nMaxECinStripsNeg = 5;
+    const int nMaxECoutStripsNeg = 5;
+
+
     const int n_xi_x_bins = 2;
     const int n_xi_x_Q2bins = 2;
 
@@ -103,6 +111,7 @@ int main(int argc, char** argv) {
 
     std::map<int, double> m_Eb;
     m_Eb[17] = 10.6;
+    m_Eb[1701] = 10.6;
     m_Eb[18] = 22.;
     m_Eb[19] = 10.6;
     m_Eb[20] = 22.;
@@ -110,6 +119,10 @@ int main(int argc, char** argv) {
     m_Eb[9114] = 10.6;
     m_Eb[9115] = 22.;
     m_Eb[9116] = 22.;
+    m_Eb[1022] = 10.6; // This is a merged run of Run1 Inclusive AND Run 23 from GRAPE
+    m_Eb[1023] = 10.6; // This is a merged run of Run1 Inclusive AND Run 23 from GRAPE
+    m_Eb[2022] = 10.6; // This is a merged run of Run1 Inclusive AND Run 23 from GRAPE
+    m_Eb[2023] = 10.6; // This is a merged run of Run1 Inclusive AND Run 23 from GRAPE
 
     std::map<int, int> m_MC_mupPID;
     std::map<int, int> m_MC_mumPID;
@@ -123,15 +136,26 @@ int main(int argc, char** argv) {
     m_MC_mumPID[9115] = 13;
     m_MC_mupPID[17] = -13;
     m_MC_mumPID[17] = 13;
+    m_MC_mupPID[1701] = 211;
+    m_MC_mumPID[1701] = -211;
     m_MC_mupPID[18] = -13;
     m_MC_mumPID[18] = 13;
     m_MC_mupPID[19] = -13;
     m_MC_mumPID[19] = 13;
     m_MC_mupPID[20] = -13;
     m_MC_mumPID[20] = 13;
+    m_MC_mupPID[1022] = -13;
+    m_MC_mumPID[1022] = 13;
+    m_MC_mupPID[1023] = -13;
+    m_MC_mumPID[1023] = 13;
+    m_MC_mupPID[2022] = -13;
+    m_MC_mumPID[2022] = 13;
+    m_MC_mupPID[2023] = -13;
+    m_MC_mumPID[2023] = 13;
 
     std::map<int, double> m_tot_xSec;
     m_tot_xSec[17] = 0.0642577; // in pB
+    m_tot_xSec[1701] = 0.0642577; // in pB
     m_tot_xSec[18] = 0.0816628; // in pB
     m_tot_xSec[19] = 0.0104044; // in pB
     m_tot_xSec[20] = 0.0263213; // in pB
@@ -139,6 +163,10 @@ int main(int argc, char** argv) {
     m_tot_xSec[9114] = 10000.; // in pB, This is Rho with pi-pi+
     m_tot_xSec[9115] = 0.9; // in pB, This is Rho with mu-mu+
     m_tot_xSec[9116] = 9000.; // in pB, This is Rho with mu-mu+
+    m_tot_xSec[1022] = 0.0026611735; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
+    m_tot_xSec[1023] = 0.016686376; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
+    m_tot_xSec[2022] = 0.0042309827; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
+    m_tot_xSec[2023] = 0.0265295262; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
 
     std::map<int, double> m_Qp2_Q2Cut_Offset_bin0;
     std::map<int, double> m_Qp2_Q2Cut_Slope_bin0;
@@ -146,48 +174,67 @@ int main(int argc, char** argv) {
     std::map<int, double> m_Qp2_Q2Cut_Slope_bin1;
     // ****** 10.6 GeV *******
     m_Qp2_Q2Cut_Offset_bin0[17] = 4.6;
+    m_Qp2_Q2Cut_Offset_bin0[1701] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[19] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[9113] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[9114] = 4.6;
-    m_Qp2_Q2Cut_Slope_bin0[17] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[19] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[9113] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[9114] = -1./1.65;
-    
+    m_Qp2_Q2Cut_Offset_bin0[1023] = 4.6;
+    m_Qp2_Q2Cut_Offset_bin0[1022] = 4.6;
+    m_Qp2_Q2Cut_Offset_bin0[2023] = 4.6;
+    m_Qp2_Q2Cut_Offset_bin0[2022] = 4.6;
+    m_Qp2_Q2Cut_Slope_bin0[17] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[19] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[1022] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[1023] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[2022] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[2023] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[9113] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[9114] = -1. / 1.65;
+
+
     m_Qp2_Q2Cut_Offset_bin1[17] = 6.9;
+    m_Qp2_Q2Cut_Offset_bin1[1701] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[19] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[9113] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[9114] = 6.9;
-    m_Qp2_Q2Cut_Slope_bin1[17] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[19] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[9113] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[9114] = -1./0.55;
+    m_Qp2_Q2Cut_Offset_bin1[1022] = 6.9;
+    m_Qp2_Q2Cut_Offset_bin1[1023] = 6.9;
+    m_Qp2_Q2Cut_Offset_bin1[2022] = 6.9;
+    m_Qp2_Q2Cut_Offset_bin1[2023] = 6.9;
+    m_Qp2_Q2Cut_Slope_bin1[17] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[19] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[9113] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[9114] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[1022] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[1023] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[2022] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[2023] = -1. / 0.55;
     // ****** 22 GeV *******
     m_Qp2_Q2Cut_Offset_bin0[18] = 11.;
     m_Qp2_Q2Cut_Offset_bin0[20] = 11.;
     m_Qp2_Q2Cut_Offset_bin0[9115] = 11.;
     m_Qp2_Q2Cut_Offset_bin0[9116] = 11.;
-    m_Qp2_Q2Cut_Slope_bin0[18] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[20] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[9115] = -1./1.65;
-    m_Qp2_Q2Cut_Slope_bin0[9116] = -1./1.65;
-    
-    
+    m_Qp2_Q2Cut_Slope_bin0[18] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[20] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[9115] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[9116] = -1. / 1.65;
+
+
     m_Qp2_Q2Cut_Offset_bin1[18] = 13.5;
     m_Qp2_Q2Cut_Offset_bin1[20] = 13.5;
     m_Qp2_Q2Cut_Offset_bin1[9115] = 13.5;
     m_Qp2_Q2Cut_Offset_bin1[9116] = 13.5;
-    m_Qp2_Q2Cut_Slope_bin1[18] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[20] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[9115] = -1./0.55;
-    m_Qp2_Q2Cut_Slope_bin1[9116] = -1./0.55;
-  
+    m_Qp2_Q2Cut_Slope_bin1[18] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[20] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[9115] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[9116] = -1. / 0.55;
+
     double Qp2Q2_bin0_Offset = m_Qp2_Q2Cut_Offset_bin0[run];
     double Qp2Q2_bin0_Slope = m_Qp2_Q2Cut_Slope_bin0[run];
     double Qp2Q2_bin1_Offset = m_Qp2_Q2Cut_Offset_bin1[run];
     double Qp2Q2_bin1_Slope = m_Qp2_Q2Cut_Slope_bin1[run];
-    
-        
+
+
     /*
      * For the t Cut we use 0.5 GeV2 for 12 GeV, and 1 GeV for 22 GeV
      */
@@ -219,8 +266,6 @@ int main(int argc, char** argv) {
      */
     int MC_mupPID = m_MC_mupPID[run];
     int MC_mumPID = m_MC_mumPID[run];
-
-
 
     double tot_xSec = m_tot_xSec[run];
 
@@ -290,6 +335,10 @@ int main(int argc, char** argv) {
     TH2D h_MC_th_P_mum_det1("h_MC_th_P_mum_det1", "", 200, 0., 1.05 * Eb, 200, 0., 45.);
     TH2D h_MC_th_P_em_miss1("h_MC_th_P_em_miss1", "", 200, 0., 1.05 * Eb, 200, 0., 45.);
     TH2D h_MC_th_P_em_det1("h_MC_th_P_em_det1", "", 200, 0., 1.05 * Eb, 200, 0., 45.);
+    
+    TH2D h_MC_th_P_em_FS1("h_MC_th_P_em_FS1", "", 200, 0., 1.05 * Eb, 200, 0., 45.); // In the e-mu-mu+ Final state
+    TH2D h_MC_th_P_em_FS2("h_MC_th_P_em_FS2", "", 200, 0., 1.05 * Eb, 200, 0., 45.); // In the e-mu-mu+ Final state, after Mx2 cut
+    TH2D h_MC_th_P_em_FS3("h_MC_th_P_em_FS3", "", 200, 0., 1.05 * Eb, 200, 0., 45.); // In the e-mu-mu+ Final state, after the Mx2 and tM cut
 
     TH2D h_MC_th_P_em1("h_MC_th_P_em1", "", 200, 0., 1.05 * Eb, 200, 0., 45);
     TH2D h_MC_th_P_em2("h_MC_th_P_em2", "", 200, 0., 1.05 * Eb, 200, 0., 45);
@@ -347,7 +396,7 @@ int main(int argc, char** argv) {
 
     TH2D h_Q2_xB_Rec1("h_Q2_xB_Rec1", "", 200, 0., 0.6, 200, 0., 10.);
     TH2D h_Q2_xB_Rec2("h_Q2_xB_Rec2", "", 200, 0., 0.6, 200, 0., 10.);
-    
+
     TH2D h_xB_tM_Rec1("h_xB_tM_Rec1", "", 200, 0., 0.15 * Eb, 200, 0., 0.75);
 
     TH2D h_xi_xxGPD1("h_xi_xxGPD1", "", 200, -1., 1., 200, 0., 1.);
@@ -374,27 +423,29 @@ int main(int argc, char** argv) {
     TH1D h_Mmis_MC2("h_Mmis_MC2", "", 200, -1., 6.);
 
     TH1D h_Mumu_Corr1("h_Mumu_Corr1", "", 200, 0., 4.);
-    TH1D h_Mumu_Corr_AngleFix1("h_Mumu_Corr_AngleFix1", "", 200, 0., 0.35*Eb);
-    TH1D h_Mumu_Corr_AngleFix2("h_Mumu_Corr_AngleFix2", "", 200, 0., 0.35*Eb);
+    TH1D h_Mumu_Corr_AngleFix1("h_Mumu_Corr_AngleFix1", "", 200, 0., 0.35 * Eb);
+    TH1D h_Mumu_Corr_AngleFix2("h_Mumu_Corr_AngleFix2", "", 200, 0., 0.35 * Eb);
 
     TH2D h_xi_xxGPD_Rec1("h_xi_xxGPD_Rec1", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_Qp2_Q2_Rec1("h_Qp2_Q2_Rec1", "", 200, 0., 10., 200, 0., 16.);
 
+    TH2D h_MC_th_P_em_xi_x_[n_xi_x_bins][n_xi_x_Q2bins];
     TH2D h_xi_xxGPD_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
     TH1D h_Phi_LH_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
     TH2D h_Qp2_Q2_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
     TH2D h_tM_xB_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
 
     TH1D h_M_mumu_[n_xi_x_bins];
-    
+
     for (int i = 0; i < n_xi_x_bins; i++) {
-        
-        h_M_mumu_[i] = TH1D(Form("h_M_mumu_%d", i), "", 200, 0., 4.5 );
+
+        h_M_mumu_[i] = TH1D(Form("h_M_mumu_%d", i), "", 200, 0., 4.5);
         for (int j = 0; j < n_xi_x_Q2bins; j++) {
             h_xi_xxGPD_xi_x_[i][j] = TH2D(Form("h_xi_xxGPD_xi_x_%d_%d", i, j), "", 200, -0.5, 0.5, 200, 0., 0.5);
             h_Phi_LH_xi_x_[i][j] = TH1D(Form("h_Phi_LH_xi_x_%d_%d", i, j), "", 12, 0, 360);
-            h_Qp2_Q2_xi_x_[i][j] = TH2D(Form("h_Qp2_Q2_xi_x_%d_%d", i, j), "", 200, 0., 0.6*Eb, 200, 0., 0.6*Eb);
+            h_Qp2_Q2_xi_x_[i][j] = TH2D(Form("h_Qp2_Q2_xi_x_%d_%d", i, j), "", 200, 0., 0.6 * Eb, 200, 0., 0.6 * Eb);
             h_tM_xB_xi_x_[i][j] = TH2D(Form("h_tM_xB_xi_x_%d_%d", i, j), "", 200, 0., 1.2, 200, 0., 1.);
+            h_MC_th_P_em_xi_x_[i][j] = TH2D(Form("h_MC_th_P_em_xi_x_%d_%d", i, j), "",  200, 0., 1.05 * Eb, 200, 0., 45.);
         }
     }
 
@@ -430,9 +481,9 @@ int main(int argc, char** argv) {
 
             evCounter = evCounter + 1;
 
-//            if (evCounter > 200000) {
-//                break;
-//            }
+            //                        if (evCounter > 200000) {
+            //                            break;
+            //                        }
             if (evCounter % 10000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
@@ -507,17 +558,38 @@ int main(int argc, char** argv) {
             for (int ipart = 0; ipart < nPart; ipart++) {
                 RecParticle recp(bRecPart, bRecCalo, bRecCC, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart], ind_HTCC[ipart]);
 
+                int nStrip_PCal = recp.duPCal() + recp.dvPCal() + recp.dwPCal();
+                int nStrip_ECin = recp.duECin() + recp.dvECin() + recp.dwECin();
+                int nStrip_ECout = recp.duECout() + recp.dvECout() + recp.dwECout();
+
+                bool hitAllLayers = (nStrip_PCal >= 3) && (nStrip_ECin >= 3) && (nStrip_ECout >= 3);
+
                 if ((recp.pid() == 211 || recp.pid() == -13) && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000 && recp.th() < th_MuMax) {
+
+                    bool MIP_Signature = nStrip_PCal <= nMaxPCalStripsPos && nStrip_ECin < nMaxECinStripsPos && nStrip_ECout < nMaxECoutStripsPos;
+
+                    if (!MIP_Signature && hitAllLayers) {
+                        continue;
+                    }
+
                     v_recp_mup.push_back(recp);
                     h_th_P_mup1.Fill(recp.p(), recp.th());
                     n_mup = n_mup + 1;
                 } else if ((recp.pid() == -211 || recp.pid() == 13) && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000 && recp.th() < th_MuMax) {
+
+                    bool MIP_Signature = nStrip_PCal <= nMaxPCalStripsNeg && nStrip_ECin < nMaxECinStripsNeg && nStrip_ECout < nMaxECoutStripsNeg;
+
+                    if (!MIP_Signature && hitAllLayers) {
+                        continue;
+                    }
+
                     v_recp_mum.push_back(recp);
                     h_th_P_mum1.Fill(recp.p(), recp.th());
                     n_mum = n_mum + 1;
                 }
             }
 
+            vector<MCPart> v_mc_em; // for merged LUND files we can have more than 1 electron in the Final State
             MCPart mc_em, mc_mum, mc_mup, mc_p;
             for (int imc = 0; imc < nMCPart; imc++) {
                 MCPart curPart;
@@ -540,7 +612,10 @@ int main(int argc, char** argv) {
                 curPart.vz = double(bMCPart.getFloat("vz", imc));
 
                 if (curPart.pid == 11) {
+
                     mc_em = curPart;
+                    v_mc_em.push_back(curPart);
+
                 } else if (curPart.pid == MC_mumPID) {
                     mc_mum = curPart;
                 } else if (curPart.pid == MC_mupPID) {
@@ -555,7 +630,18 @@ int main(int argc, char** argv) {
             }
 
 
+            /* 
+             * Let's find out which e- is inside the acceptance, so we will use that one for further analysis
+             */
 
+            for (auto curPart : v_mc_em) {
+                TLorentzVector L_em_mc_tmp;
+                L_em_mc_tmp.SetPxPyPzE(curPart.px, curPart.py, curPart.pz, curPart.p);
+                
+                if( emAcc(L_em_mc_tmp) ){
+                    mc_em = curPart;
+                }
+            }
 
             h_N_mup_mum1.Fill(n_mum, n_mup);
 
@@ -565,6 +651,10 @@ int main(int argc, char** argv) {
             L_p_mc.SetPxPyPzE(mc_p.px, mc_p.py, mc_p.pz, sqrt(mc_p.p * mc_p.p + Mp * Mp));
             h_MC_th_P_em1.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
 
+
+            /*
+             * Skip events when one of muons goes through the gap between the Moeller cone and the Tungsten shield
+             */
             if (L_mum_mc.Theta() * TMath::RadToDeg() < th_MuMin_MC || L_mup_mc.Theta() * TMath::RadToDeg() < th_MuMin_MC) {
                 continue;
             }
@@ -617,6 +707,13 @@ int main(int argc, char** argv) {
 
             //cout<<L_mum_mc.Theta()<<"   "<<L_mum_mc.Phi()<<"   "<<L_mum_mc.M()<<endl;
 
+            /* 
+             * Just mu-mu+ topology
+             */
+            if( n_mum == 1 && n_mup == 1 ){
+                
+            }
+            
             if (n_mum == 1 && n_mup == 1 && em_acc) {
 
                 RecParticle rec_mup = v_recp_mup.at(0);
@@ -647,6 +744,7 @@ int main(int argc, char** argv) {
                 double deltaPhi_mum = phi_mum_rec - L_mum_mc.Phi() * TMath::RadToDeg();
                 deltaPhi_mum = TMath::Abs(deltaPhi_mum) < 180 ? deltaPhi_mum : deltaPhi_mum - 360 * (TMath::Abs(deltaPhi_mum) / deltaPhi_mum);
 
+                h_MC_th_P_em_FS1.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
                 h_th_P_mup2.Fill(rec_mup.p(), th_mup_Rec);
                 h_th_P_mum2.Fill(rec_mum.p(), th_mum_Rec);
                 h_MC_th_P_em2.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
@@ -842,7 +940,8 @@ int main(int argc, char** argv) {
                     continue;
                 }
 
-                                
+                h_MC_th_P_em_FS2.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
+
                 //cout<<xx_GPD_MC<<"   "<<xi_MC<<endl;
                 h_Q2_xB_Rec2.Fill(xB_Rec, Q2_Rec);
                 h_Mumu_Corr_AngleFix2.Fill(L_MuMu_CorrAngleFix.M());
@@ -862,6 +961,8 @@ int main(int argc, char** argv) {
                 if (tM_AngleFix < t_Max_xi_xiStudy) {
                     // cout << "Kuku" << endl;
 
+                    h_MC_th_P_em_FS3.Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
+                    
                     h_xi_xxGPD_Rec1.Fill(xx_GPD_Rec, xi_Rec);
                     h_Qp2_Q2_Rec1.Fill(Q2_Rec, Qp2_Rec);
 
@@ -870,25 +971,26 @@ int main(int argc, char** argv) {
 
                     if (xx_GPD_Rec > bin0_x_min && xx_GPD_Rec < bin0_x_max && xi_Rec > bin0_xi_min && xi_Rec < bin0_xi_max) {
                         bin_xi_x = 0;
-                        bin_Q2 = Qp2_Rec > Qp2Q2_bin0_Offset + Q2_Rec*Qp2Q2_bin0_Slope ? 1 : 0;
+                        bin_Q2 = Qp2_Rec > Qp2Q2_bin0_Offset + Q2_Rec * Qp2Q2_bin0_Slope ? 1 : 0;
                         //bin_Q2 = Qp2_Rec > 4.6 - Q2_Rec / 1.65 ? 1 : 0;
                     } else if (xx_GPD_Rec > bin1_x_min && xx_GPD_Rec < bin1_x_max && xi_Rec > bin1_xi_min && xi_Rec < bin1_xi_max) {
                         bin_xi_x = 1;
-                        bin_Q2 = Qp2_Rec > Qp2Q2_bin1_Offset + Q2_Rec*Qp2Q2_bin1_Slope ? 1 : 0;
+                        bin_Q2 = Qp2_Rec > Qp2Q2_bin1_Offset + Q2_Rec * Qp2Q2_bin1_Slope ? 1 : 0;
                         //bin_Q2 = Qp2_Rec > 6.9 - Q2_Rec / 0.55 ? 1 : 0;
                     }
 
                     //cout<<bin_xi_x<<"   "<<bin_Q2<<endl;
 
-                    if(bin_xi_x >= 0 && bin_Q2 >= 0 ) {
+                    if (bin_xi_x >= 0 && bin_Q2 >= 0) {
                         h_M_mumu_[bin_xi_x].Fill(L_MuMu_CorrAngleFix.M());
                     }
-                    
+
                     if (bin_xi_x >= 0 && bin_Q2 >= 0) {
                         h_Phi_LH_xi_x_[bin_xi_x][bin_Q2].Fill(Phi_LH_Rec);
                         h_xi_xxGPD_xi_x_[bin_xi_x][bin_Q2].Fill(xx_GPD_Rec, xi_Rec);
                         h_Qp2_Q2_xi_x_[bin_xi_x][bin_Q2].Fill(Q2_Rec, Qp2_Rec);
                         h_tM_xB_xi_x_[bin_xi_x][bin_Q2].Fill(tM_AngleFix, xB_Rec);
+                        h_MC_th_P_em_xi_x_[bin_xi_x][bin_Q2].Fill(L_em_mc.P(), L_em_mc.Theta() * TMath::RadToDeg());
                     }
 
 

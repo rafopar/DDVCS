@@ -47,6 +47,12 @@ int main(int argc, char** argv) {
 
     int run = atoi(argv[1]);
 
+    int m_cols[2][2];
+    m_cols[0][0] = 4;
+    m_cols[0][1] = 2;
+    m_cols[1][0] = 6;
+    m_cols[1][1] = 3;
+    
     TCanvas c1("c1", "", 950, 950);
     c1.SetTopMargin(0.04);
     c1.SetRightMargin(0.04);
@@ -299,6 +305,7 @@ int main(int argc, char** argv) {
     TH1D * h_Phi_LH_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
     TH2D * h_Qp2_Q2_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
     TH2D * h_tM_xB_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; // 
+    TH2D *h_MC_th_P_em_xi_x_[n_xi_x_bins][n_xi_x_Q2bins]; //
 
     TGraphErrors * gr_Asym_xi_x_bins[n_xi_x_bins][n_xi_x_Q2bins];
 
@@ -316,7 +323,13 @@ int main(int argc, char** argv) {
             h_tM_xB_xi_x_[i][j] = (TH2D*) file_in.Get(Form("h_tM_xB_xi_x_%d_%d", i, j));
             h_tM_xB_xi_x_[i][j]->SetMarkerColor(i + 2);
             h_tM_xB_xi_x_[i][j]->SetTitle("; -t [GeV^{2}]; x_{B}");
-
+            h_MC_th_P_em_xi_x_[i][j] = (TH2D*)file_in.Get(Form("h_MC_th_P_em_xi_x_%d_%d", i, j));
+            h_MC_th_P_em_xi_x_[i][j]->SetTitle("; P(e^{-}) [GeV]; #theta (e^{-}) [GeV]");
+            h_MC_th_P_em_xi_x_[i][j]->SetMarkerColor(m_cols[i][j]);
+            h_MC_th_P_em_xi_x_[i][j]->SetMarkerStyle(21);
+            h_MC_th_P_em_xi_x_[i][j]->SetMarkerSize(0.4);
+            
+            
             double Q2 = h_Qp2_Q2_xi_x_[i][j]->GetMean(1);
             double Qp2 = h_Qp2_Q2_xi_x_[i][j]->GetMean(2);
             double tM = h_tM_xB_xi_x_[i][j]->GetMean(1);
@@ -402,7 +415,27 @@ int main(int argc, char** argv) {
     c1.Print(Form("Figs/xB_tM_xi_x_bins_Run_%d.root", run));
 
     
+    TH2D *h_MC_th_P_em_FS1 = (TH2D*)file_in.Get("h_MC_th_P_em_FS1");
+    h_MC_th_P_em_FS1->SetTitle("; P(e^{-}) [GeV]; #theta (e^{-}) [GeV]");
+    h_MC_th_P_em_FS1->SetAxisRange(0., 35., "Y");
+    h_MC_th_P_em_FS1->SetAxisRange(0., 8., "X");
+    h_MC_th_P_em_FS1->Draw("Scat");
+    h_MC_th_P_em_xi_x_[0][0]->Draw("Same Scat");
+    h_MC_th_P_em_xi_x_[0][1]->Draw("Same Scat");
+    h_MC_th_P_em_xi_x_[1][0]->Draw("Same Scat");
+    h_MC_th_P_em_xi_x_[1][1]->Draw("Same Scat");
+    lat1->SetTextColor(m_cols[0][0]);
+    lat1->DrawLatex(0.75, 0.86, "Bin(0,0)");
+    lat1->SetTextColor(m_cols[0][1]);
+    lat1->DrawLatex(0.75, 0.81, "Bin(0,1)");
+    lat1->SetTextColor(m_cols[1][0]);
+    lat1->DrawLatex(0.75, 0.76, "Bin(1,0)");
+    lat1->SetTextColor(m_cols[1][1]);
+    lat1->DrawLatex(0.75, 0.71, "Bin(1,1)");
     
+    c1.Print(Form("Figs/th_P_em_xi_x_bins_%d.pdf", run));
+    c1.Print(Form("Figs/th_P_em_xi_x_bins_%d.png", run));
+    c1.Print(Form("Figs/th_P_em_xi_x_bins_%d.root", run));
     
     return 0;
 }
