@@ -128,6 +128,10 @@ int main(int argc, char** argv) {
     TH2D h_cosTh_phi_pi_mum_MC2("h_cosTh_phi_pi_mum_MC2", "", 50, -45., 45., 50., cosThMax, 1.);
     TH2D h_cosTh_phi_pi_mum_MC3("h_cosTh_phi_pi_mum_MC3", "", 50, -45., 45., 50., cosThMax, 1.);
 
+    TH1D h_vz_pi_MC1("h_vz_pi_MC1", "", 1200, -6., 6.);
+    TH1D h_vy_pi_MC1("h_vy_pi_MC1", "", 1200, -6., 6.);
+    TH1D h_vx_pi_MC1("h_vx_pi_MC1", "", 1200, -6., 6.);
+    
     TH2D h_cosTh_P_pi_mup_Loose_MC2("h_cosTh_P_pi_mup_Loose_MC2", "", 15, 0., Emax, 15., cosThMax, 1.);
     TH2D h_cosTh_P_pi_mum_Loose_MC2("h_cosTh_P_pi_mum_Loose_MC2", "", 15, 0., Emax, 15., cosThMax, 1.);
 
@@ -364,6 +368,10 @@ int main(int argc, char** argv) {
             mc_pi.theta = atan(sqrt(mc_pi.px * mc_pi.px + mc_pi.py * mc_pi.py) / mc_pi.pz) * TMath::RadToDeg();
             mc_pi.phi = atan2(mc_pi.py, mc_pi.px) * TMath::RadToDeg();
 
+            h_vz_pi_MC1.Fill(mc_pi.vz);
+            h_vy_pi_MC1.Fill(mc_pi.vy);
+            h_vx_pi_MC1.Fill(mc_pi.vx);
+            
             h_cosTh_P_pi_MC1.Fill(mc_pi.p, cos(mc_pi.theta * d2r));
             h_cosTh_phi_pi_MC1.Fill(mc_pi.phi, cos(mc_pi.theta * d2r));
 

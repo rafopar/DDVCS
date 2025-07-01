@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     TH2D *h_cosTh_P_pi_mup_Ratio = (TH2D*) h_cosTh_P_pi_mup_MC2->Clone("h_cosTh_P_pi_mup_Ratio");
     h_cosTh_P_pi_mup_Ratio->Divide(h_cosTh_P_pi_MC1);
     h_cosTh_P_pi_mup_Ratio->Scale(100.);
-    h_cosTh_P_pi_mup_Ratio->SetMaximum(1.05);
+    //h_cosTh_P_pi_mup_Ratio->SetMaximum(1.85);
     h_cosTh_P_pi_mup_Ratio->Draw("colz");
     c1->Print(Form("Figs/pion_mup_Survive_Efficiency_%s.pdf", Identifier.c_str()));
     c1->Print(Form("Figs/pion_mup_Survive_Efficiency_%s.png", Identifier.c_str()));
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_cosTh_P_pi_mup_InDirectSurvive = (TH2D*) h_cosTh_P_pi_mup_Ratio->Clone("h_cosTh_P_pi_mup_InDirectSurvive");
     h_cosTh_P_pi_mup_InDirectSurvive->Add(h_cosTh_P_pi_mup_DirectSurvive, -1.);
-    h_cosTh_P_pi_mup_InDirectSurvive->SetMaximum(1);
+    //h_cosTh_P_pi_mup_InDirectSurvive->SetMaximum(1);
     h_cosTh_P_pi_mup_InDirectSurvive->Draw("colz");
     c1->Print(Form("Figs/cosTh_P_pi_mup_InDirectSurvive_%s.pdf", Identifier.c_str()));
     c1->Print(Form("Figs/cosTh_P_pi_mup_InDirectSurvive_%s.png", Identifier.c_str()));
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
     TH2D *h_cosTh_P_pi_mup_Loose_Ratio = (TH2D*) h_cosTh_P_pi_mup_Loose_MC2->Clone("h_cosTh_P_pi_mup_Loose_Ratio");
     h_cosTh_P_pi_mup_Loose_Ratio->Divide(h_cosTh_P_pi_MC1);
     h_cosTh_P_pi_mup_Loose_Ratio->Scale(100.);
-    h_cosTh_P_pi_mup_Loose_Ratio->SetMaximum(1.05);
+    //h_cosTh_P_pi_mup_Loose_Ratio->SetMaximum(1.05);
     h_cosTh_P_pi_mup_Loose_Ratio->Draw("colz");
     c1->Print(Form("Figs/pion_mup_Loose_Survive_Efficiency_%s.pdf", Identifier.c_str()));
     c1->Print(Form("Figs/pion_mup_Loose_Survive_Efficiency_%s.png", Identifier.c_str()));
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
     TH2D *h_cosTh_P_pi_mum_Loose_Ratio = (TH2D*) h_cosTh_P_pi_mum_Loose_MC2->Clone("h_cosTh_P_pi_mum_Loose_Ratio");
     h_cosTh_P_pi_mum_Loose_Ratio->Divide(h_cosTh_P_pi_MC1);
     h_cosTh_P_pi_mum_Loose_Ratio->Scale(100.);
-    h_cosTh_P_pi_mum_Loose_Ratio->SetMaximum(1.05);
+    //h_cosTh_P_pi_mum_Loose_Ratio->SetMaximum(2.55);
     h_cosTh_P_pi_mum_Loose_Ratio->Draw("colz");
     c1->Print(Form("Figs/pion_mum_Loose_Survive_Efficiency_%s.pdf", Identifier.c_str()));
     c1->Print(Form("Figs/pion_mum_Loose_Survive_Efficiency_%s.png", Identifier.c_str()));

@@ -51,11 +51,11 @@ void DrawInclusiveCoincidence() {
     mh_Mmis_[RunElasticMerge]->SetLineColor(2);
     mh_Mmis_[RunQuasiElasticMerge]->SetLineColor(6);
 
-    TLegend *leg1 = new TLegend(0.55, 0.65, 0.93, 0.93);
+    TLegend *leg1 = new TLegend(0.4, 0.65, 0.95, 0.8);
     leg1->SetBorderSize(0);
     leg1->AddEntry(mh_Mmis_[RunBH], "BH");
-    leg1->AddEntry(mh_Mmis_[RunElasticMerge], "Coincidence w/ elast");
-    leg1->AddEntry(mh_Mmis_[RunQuasiElasticMerge], "Coincidence w/ quasi-elast");
+    //leg1->AddEntry(mh_Mmis_[RunElasticMerge], "Coincidence w/ elast");
+    //leg1->AddEntry(mh_Mmis_[RunQuasiElasticMerge], "Coincidence w/ quasi-elast");
     leg1->AddEntry(h_BgrSum, "Coincidence w/ el + quasi-elast");
 
     TLatex *lat1 = new TLatex();
@@ -70,8 +70,8 @@ void DrawInclusiveCoincidence() {
     double integ_BgrSum = h_BgrSum->Integral(binLeft1, binRight1);
     
     mh_Mmis_[RunBH]->Draw();
-    mh_Mmis_[RunElasticMerge]->Draw("Same");
-    mh_Mmis_[RunQuasiElasticMerge]->Draw("Same");
+    //mh_Mmis_[RunElasticMerge]->Draw("Same");
+    //mh_Mmis_[RunQuasiElasticMerge]->Draw("Same");
     h_BgrSum->Draw("Same");
     leg1->Draw();
     lat1->DrawLatex(0.45, 0.93, Form("Tot contribution is %1.1f %%", 100.*integ_BgrSum/integ_BH ));

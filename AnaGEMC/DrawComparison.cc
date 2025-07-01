@@ -37,7 +37,8 @@ int main(int argc, char** argv) {
     c4->SetTopMargin(0.02);
     c4->SetRightMargin(0.02);
 
-    std::vector<int> v_runs = {17, 19, 9113, 9114};
+    //std::vector<int> v_runs = {17, 19, 9113, 9114};
+    std::vector<int> v_runs = {17, 19};
     std::vector<int> v_22GeVruns = {18, 20, 9115, 9116};
 
     std::map<int, TH1D*> m_h_MX2;
@@ -64,13 +65,13 @@ int main(int argc, char** argv) {
     m_colHist_22GeV[9116] = 8;
 
     std::map<int, std::string> m_Description;
-    m_Description[17] = "DDVCS";
+    m_Description[17] = "Elastic";
     m_Description[19] = "Quasi-elastic DDVCS";
     m_Description[9113] = "#rho #rightarrow #mu^{-}#mu^{+}";
     m_Description[9114] = "#rho #rightarrow #pi^{-}#pi^{+}";
 
     std::map<int, std::string> m_Description_22GeV;
-    m_Description_22GeV[18] = "DDVCS";
+    m_Description_22GeV[18] = "Elastic";
     m_Description_22GeV[20] = "Quasi-elastic DDVCS";
     m_Description_22GeV[9115] = "#rho #rightarrow #mu^{-}#mu^{+}";
     m_Description_22GeV[9116] = "#rho #rightarrow #pi^{-}#pi^{+}";

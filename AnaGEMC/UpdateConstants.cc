@@ -55,6 +55,12 @@ int main(int argc, char** argv) {
     std::map<int, double> m_Eb;
     
     m_Eb[17] = 10.6;
+    m_Eb[32] = 11.;
+    m_Eb[32001] = 11.;
+    m_Eb[32002] = 11.;
+    m_Eb[32003] = 11.;
+    m_Eb[32004] = 11.;
+    m_Eb[32005] = 11.;
     m_Eb[18] = 22;
     
     double Eb = m_Eb[run];
@@ -86,7 +92,7 @@ int main(int argc, char** argv) {
 
     TH2D *h_dPP_P_mum1 = (TH2D*) file_in.Get("h_dPP_P_mum1");
     h_dPP_P_mum1->SetTitle("; P_{Rec}(#mu^{-}) [GeV] ;  (P_{Rec} - P_{MC})/P_{MC}");
-    SliceFit(h_dPP_P_mum1, 0.05, 0.6*Eb, 30, f_Eloss, Form("dPP_P_mum1_Run_%d", run));
+    SliceFit(h_dPP_P_mum1, 0.06, 0.55*Eb, 30, f_Eloss, Form("dPP_P_mum1_Run_%d", run));
 
     c1->cd();
     FormatHist(h_dPP_P_mum1);
