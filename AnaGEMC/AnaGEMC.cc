@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 #include <cstdlib>
+#include <iomanip>
 
 #include <TF1.h>
 #include <TH2D.h>
@@ -39,11 +40,16 @@ using namespace std;
 bool emAcc(TLorentzVector&);
 bool protAcc(TLorentzVector&);
 
+double smearMuTheta(double P, double theta_MC);
+double smearMuPhi(double P, double phi_MC);
+
 void SmearElectron(TLorentzVector &);
 
 void SmearProton(TLorentzVector &);
 
 void InitFunction(TF1*, std::string kewWord);
+
+void writeMC2LUND(ofstream&, hipo::bank &);
 
 /*
  * Rotates the LorentzVector L by an angle "angle", n a way
@@ -79,6 +85,7 @@ int main(int argc, char** argv) {
     const double Mmu = 0.10566;
     const double Mp = 0.9383;
     const double r2d = TMath::RadToDeg();
+    const double d2r = TMath::DegToRad();
 
     const double InstLumin = 1.e37;
     const double secondPerDay = 3600 * 24;
@@ -106,6 +113,8 @@ int main(int argc, char** argv) {
 
     const double th_MuMin_MC = 7.1; // We ignore angles below this value
     const double th_MuMax = 40; // We ignore angles above this value
+    const double cosThMax = cos(41 * TMath::DegToRad());
+    const double minMuMon = 2.;
 
     const int nMaxPCalStripsPos = 5;
     const int nMaxECinStripsPos = 5;
@@ -116,48 +125,19 @@ int main(int argc, char** argv) {
 
     const double rho_l_NA = 2.1361275e+23; // rho*l*N_A, rho = 0.07085 g/cm3, l = 5 cm, N_A = 6.03e23
 
+
     const int n_xi_x_bins = 2;
     const int n_xi_x_Q2bins = 2;
 
     const int n_x_bins = 2;
     const int n_xi_bins = 2;
 
-    int run = atoi(argv[1]);    
+    const double thMuSmear = 2.4254; // [deg] from Tongtong's slide
+    const double phiMuSmear = 6.3625; // [deg] from Tongtong's slide
+
+    int run = atoi(argv[1]);
 
     std::map<int, double> m_Eb;
-//    m_Eb[17] = 10.6;
-//    m_Eb[1701] = 10.6;
-//    m_Eb[18] = 22.;
-//    m_Eb[19] = 10.6;
-//    m_Eb[20] = 22.;
-//    m_Eb[22] = 10.6;
-//    m_Eb[23] = 10.6;
-//    m_Eb[24] = 10.6;
-//    m_Eb[26] = 10.6;
-//    m_Eb[27] = 10.6;
-//    m_Eb[27001] = 10.6;
-//    m_Eb[27002] = 10.6;
-//    m_Eb[32] = 11.;
-//    m_Eb[32001] = 11.;
-//    m_Eb[32002] = 11.;
-//    m_Eb[32003] = 11.;
-//    m_Eb[32004] = 11.;
-//    m_Eb[32005] = 11.;
-//    m_Eb[32006] = 11.;
-//    m_Eb[32007] = 11.;
-//    m_Eb[33005] = 11.;
-//    m_Eb[30005] = 11.;
-//    m_Eb[5117] = 10.6; // RG-A run
-//    m_Eb[5125] = 10.6; // RG-A run
-//    m_Eb[5126] = 10.6; // RG-A run
-//    m_Eb[5128] = 10.6; // RG-A run
-//    m_Eb[5130] = 10.6; // RG-A run
-//    m_Eb[5163] = 10.6; // RG-A run
-//    m_Eb[5165] = 10.6; // RG-A run
-//    m_Eb[5166] = 10.6; // RG-A run
-//    m_Eb[5167] = 10.6; // RG-A run
-//    m_Eb[5169] = 10.6; // RG-A run
-//    m_Eb[5191] = 10.6; // RG-A run
     m_Eb[9113] = 10.6;
     m_Eb[9114] = 10.6;
     m_Eb[9115] = 22.;
@@ -169,131 +149,8 @@ int main(int argc, char** argv) {
 
     std::map<int, int> m_MC_mupPID;
     std::map<int, int> m_MC_mumPID;
-//    m_MC_mupPID[5117] = 211;
-//    m_MC_mumPID[5117] = -211;
-//    m_MC_mupPID[5125] = 211;
-//    m_MC_mumPID[5125] = -211;
-//    m_MC_mupPID[5126] = 211;
-//    m_MC_mumPID[5126] = -211;
-//    m_MC_mupPID[5128] = 211;
-//    m_MC_mumPID[5128] = -211;
-//    m_MC_mupPID[5130] = 211;
-//    m_MC_mumPID[5130] = -211;
-//    m_MC_mupPID[5163] = 211;
-//    m_MC_mumPID[5163] = -211;
-//    m_MC_mupPID[5165] = 211;
-//    m_MC_mumPID[5165] = -211;
-//    m_MC_mupPID[5166] = 211;
-//    m_MC_mumPID[5166] = -211;
-//    m_MC_mupPID[5167] = 211;
-//    m_MC_mumPID[5167] = -211;
-//    m_MC_mupPID[5169] = 211;
-//    m_MC_mumPID[5169] = -211;
-//    m_MC_mupPID[5191] = 211;
-//    m_MC_mumPID[5191] = -211;
-//    m_MC_mupPID[9114] = 211;
-//    m_MC_mumPID[9114] = -211;
-//    m_MC_mupPID[9116] = 211;
-//    m_MC_mumPID[9116] = -211;
-//    m_MC_mupPID[9113] = -13;
-//    m_MC_mumPID[9113] = 13;
-//    m_MC_mupPID[9115] = -13;
-//    m_MC_mumPID[9115] = 13;
-//    m_MC_mupPID[17] = -13;
-//    m_MC_mumPID[17] = 13;
-//    m_MC_mupPID[1701] = 211;
-//    m_MC_mumPID[1701] = -211;
-//    m_MC_mupPID[18] = -13;
-//    m_MC_mumPID[18] = 13;
-//    m_MC_mupPID[19] = -13;
-//    m_MC_mumPID[19] = 13;
-//    m_MC_mupPID[20] = -13;
-//    m_MC_mumPID[20] = 13;
-//    m_MC_mupPID[22] = -13;
-//    m_MC_mumPID[22] = 13;
-//    m_MC_mupPID[23] = -13;
-//    m_MC_mumPID[23] = 13;
-//    m_MC_mupPID[24] = -13;
-//    m_MC_mumPID[24] = 13;
-//    m_MC_mupPID[26] = -13;
-//    m_MC_mumPID[26] = 13;
-//    m_MC_mupPID[27] = -13;
-//    m_MC_mumPID[27] = 13;
-//    m_MC_mupPID[27001] = -13;
-//    m_MC_mumPID[27001] = 13;
-//    m_MC_mupPID[27002] = -13;
-//    m_MC_mumPID[27002] = 13;
-//    m_MC_mupPID[32] = -13;
-//    m_MC_mumPID[32] = 13;
-//    m_MC_mupPID[32001] = -13;
-//    m_MC_mumPID[32001] = 13;
-//    m_MC_mupPID[32002] = -13;
-//    m_MC_mumPID[32002] = 13;
-//    m_MC_mupPID[32003] = -13;
-//    m_MC_mumPID[32003] = 13;
-//    m_MC_mupPID[32004] = -13;
-//    m_MC_mumPID[32004] = 13;
-//    m_MC_mupPID[32005] = -13;
-//    m_MC_mumPID[32005] = 13;
-//    m_MC_mupPID[33005] = -13;
-//    m_MC_mumPID[33005] = 13;
-//    m_MC_mupPID[30005] = -13;
-//    m_MC_mumPID[30005] = 13;
-//    m_MC_mupPID[32006] = -13;
-//    m_MC_mumPID[32006] = 13;
-//    m_MC_mupPID[32007] = -13;
-//    m_MC_mumPID[32007] = 13;
-//    m_MC_mupPID[1022] = -13;
-//    m_MC_mumPID[1022] = 13;
-//    m_MC_mupPID[1023] = -13;
-//    m_MC_mumPID[1023] = 13;
-//    m_MC_mupPID[2022] = -13;
-//    m_MC_mumPID[2022] = 13;
-//    m_MC_mupPID[2023] = -13;
-//    m_MC_mumPID[2023] = 13;
 
     std::map<int, double> m_tot_xSec;
-//    m_tot_xSec[17] = 0.0642577; // in pB
-//    m_tot_xSec[32] = 0.235491; // in pB
-//    m_tot_xSec[30005] = 4.6051; // in pB
-//    m_tot_xSec[32001] = 0.235491; // in pB
-//    m_tot_xSec[32002] = 0.235491; // in pB
-//    m_tot_xSec[32003] = 0.235491; // in pB
-//    m_tot_xSec[32004] = 0.235491; // in pB
-//    m_tot_xSec[32005] = 0.235491; // in pB
-//    m_tot_xSec[32006] = 0.235491; // in pB
-//    m_tot_xSec[32007] = 0.235491; // in pB
-//    m_tot_xSec[33005] = 0.226409; // in pB
-//    m_tot_xSec[1701] = 0.0642577; // in pB
-//    m_tot_xSec[18] = 0.0816628; // in pB
-//    m_tot_xSec[19] = 0.0104044; // in pB
-//    m_tot_xSec[20] = 0.0263213; // in pB
-//    m_tot_xSec[22] = 0.695867; // in pB
-//    m_tot_xSec[23] = 4.3633; // in pB
-//    m_tot_xSec[24] = 0.0209843; // in pB
-//    m_tot_xSec[26] = 19.2589; // in pB
-//    m_tot_xSec[27] = 193.797; // in pB
-//    m_tot_xSec[27001] = 193.797; // in pB
-//    m_tot_xSec[27002] = 193.797; // in pB
-//    m_tot_xSec[9113] = 1; // in pB, for Rho, the number is from Harut
-//    m_tot_xSec[9114] = 10000.; // in pB, This is Rho with pi-pi+
-//    m_tot_xSec[9115] = 0.9; // in pB, This is Rho with mu-mu+
-//    m_tot_xSec[9116] = 9000.; // in pB, This is Rho with mu-mu+
-//    m_tot_xSec[1022] = 0.0026611735; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
-//    m_tot_xSec[1023] = 0.016686376; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
-//    m_tot_xSec[2022] = 0.0042309827; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
-//    m_tot_xSec[2023] = 0.0265295262; // in pB, Obtained as sigma_1*sigma_2*4ns*10^{37}
-//    m_tot_xSec[5117] = 41900; // this is from the RG-A run 5117
-//    m_tot_xSec[5125] = 41900; // this is from the RG-A run 5125
-//    m_tot_xSec[5126] = 41231; // this is from the RG-A run 5126
-//    m_tot_xSec[5128] = 41231; // this is from the RG-A run 5126
-//    m_tot_xSec[5130] = 35910; // this is from the RG-A run 5130
-//    m_tot_xSec[5163] = 41305; // this is from the RG-A run 5163
-//    m_tot_xSec[5165] = 41377; // this is from the RG-A run 5166
-//    m_tot_xSec[5166] = 41377; // this is from the RG-A run 5166
-//    m_tot_xSec[5167] = 40116; // this is from the RG-A run 5167
-//    m_tot_xSec[5169] = 40631; // this is from the RG-A run 5169
-//    m_tot_xSec[5191] = 43779; // this is from the RG-A run 5191
 
 
     /*
@@ -329,13 +186,13 @@ int main(int argc, char** argv) {
         while (iss >> entry) {
             v_entries.push_back(entry);
         }
-        
+
         int arun = std::stoi(v_entries[0]);
         double aEb = std::stof(v_entries[1]);
         double axSec = std::stof(v_entries[2]);
         int amcMumPID = std::stoi(v_entries[3]);
         int amcMupPID = std::stoi(v_entries[4]);
-        
+
         //cout<<"Run = "<<arun<<"   Eb = "<<aEb<<endl;
 
         m_Eb[arun] = aEb;
@@ -627,6 +484,13 @@ int main(int argc, char** argv) {
     TH1D h_Mmumu_MC3("h_Mmumu_MC3", "", 40, 0., 4.);
     TH1D h_Mmumu_MC4("h_Mmumu_MC4", "", 40, 0., 4.);
     TH1D h_Mmumu_MC5("h_Mmumu_MC5", "", 40, 0., 4.);
+    TH1D h_Mmumu_MC6("h_Mmumu_MC6", "", 40, 0., 4.); // with a condition that P > 2 GeV
+
+    TH2D h_cosTh_P_mup_MC1("h_cosTh_P_mup_MC1", "", 200, 0., 12., 200., cosThMax, 1.);
+    TH2D h_cosTh_P_mum_MC1("h_cosTh_P_mum_MC1", "", 200, 0., 12., 200., cosThMax, 1.);
+
+    TH2D h_cosTh_P_mup_MC2("h_cosTh_P_mup_MC2", "", 200, 0., 12., 200., cosThMax, 1.);
+    TH2D h_cosTh_P_mum_MC2("h_cosTh_P_mum_MC2", "", 200, 0., 12., 200., cosThMax, 1.);
 
     TH1D h_N_em_MC1("h_N_em_MC1", "", 5, -0.5, 4.5);
     TH1D h_MC_vz1("h_MC_vz1", "", 200, -15., 15.);
@@ -689,12 +553,17 @@ int main(int argc, char** argv) {
     TH2D h_dPP_P_mup_Test1("h_dPP_P_mup_Test1", "", 200, 0., 1.05 * Eb, 200, -0.9, 0.05);
     TH2D h_dPP_P_mup_Test2("h_dPP_P_mup_Test2", "", 200, 0., 1.05 * Eb, 200, -0.9, 0.05);
 
-
     TH2D h_DeltaP_P_mup1("h_DeltaP_P_mup1", "", 200, 0., 1.05 * Eb, 200, -2, 0.05);
     TH2D h_DeltaP_P_mum1("h_DeltaP_P_mum1", "", 200, 0., 1.05 * Eb, 200, -2, 0.05);
 
     TH2D h_DeltaTheta_P_mup1("h_DeltaTheta_P_mup1", "", 200, 0., 1.05 * Eb, 200, -20., 20);
     TH2D h_DeltaTheta_P_mum1("h_DeltaTheta_P_mum1", "", 200, 0., 1.05 * Eb, 200, -20., 20);
+
+    TH2D h_DeltaTheta_PMC_mup1("h_DeltaTheta_PMC_mup1", "", 200, 0., 1.05 * Eb, 200, -20., 20);
+    TH2D h_DeltaTheta_PMC_mum1("h_DeltaTheta_PMC_mum1", "", 200, 0., 1.05 * Eb, 200, -20., 20);
+
+    TH2D h_DeltaPhi_PMC_mup1("h_DeltaPhi_PMC_mup1", "", 200, 0., 1.05 * Eb, 200, -40., 40);
+    TH2D h_DeltaPhi_PMC_mum1("h_DeltaPhi_PMC_mum1", "", 200, 0., 1.05 * Eb, 200, -40., 40);
 
     TH2D h_DeltaTheta_Theta_mup1("h_DeltaTheta_Theta_mup1", "", 200, 0., 65, 200, -20., 40);
     TH2D h_DeltaTheta_Theta_mum1("h_DeltaTheta_Theta_mum1", "", 200, 0., 65, 200, -20., 40);
@@ -713,6 +582,7 @@ int main(int argc, char** argv) {
     TH1D h_Mmis_AngleFixcorr3("h_Mmis_AngleFixcorr3", "", 200, -1., 6.);
     TH1D h_Mmis_AngleFixcorr_test1("h_Mmis_AngleFixcorr_test1", "", 200, -1., 6.);
     TH1D h_Mmis_AngleFixcorr_NoESmear1("h_Mmis_AngleFixcorr_NoESmear1", "", 200, -1., 6.);
+    TH1D h_Mmis_AngleSmearcorr1("h_Mmis_AngleSmearcorr1", "", 200, -1., 6.);
 
     TH2D h_N_mup_mum1("h_N_mup_mum1", "", 11, -0.5, 10.5, 11, -0.5, 10.5);
 
@@ -829,6 +699,12 @@ int main(int argc, char** argv) {
     for (int i = 0; i < n_xi_bins; i++) {
         h_x_t_[i] = TH2D(Form("h_x_t_%d", i), "", 200, 0., 2.5, 200, -0.4, 0.55);
     }
+    
+    TH1D h_n_FMTTracks("h_n_FMTTracks", "", 9, -0.5, 8.5);
+
+
+    bool writeEvtnts2LUND = true;
+    ofstream outLUND(Form("FinalStateEvents_Run_%d.txt", run));
 
     hipo::reader reader;
     //reader.open("Data/Skim_ZeroSuppr_2247_All.hipo");
@@ -849,6 +725,7 @@ int main(int argc, char** argv) {
     hipo::bank bRecSC(factory.getSchema("REC::Scintillator"));
     hipo::bank bRecEV(factory.getSchema("REC::Event"));
     hipo::bank bRunConf(factory.getSchema("RUN::config"));
+    //hipo::bank bFMTTracks(factory.getSchema("FMT::Tracks"));
 
 
     // Start time
@@ -874,7 +751,11 @@ int main(int argc, char** argv) {
             event.getStructure(bRecPart);
             event.getStructure(bRecCalo);
             event.getStructure(bRunConf);
+            //event.getStructure(bFMTTracks);
 
+            //int n_FMTTRacks = bFMTTracks.getRows();
+            //h_n_FMTTracks.Fill(n_FMTTRacks);
+            
             int ev_Number = bRunConf.getInt("event", 0);
 
             map<int, int> ind_HTCC;
@@ -1092,6 +973,13 @@ int main(int argc, char** argv) {
             h_Mmumu_MC1.Fill(L_mumu_MC.M());
             //cout<<"Q2 = "<<Q2_MC<<"     Qp2_MC "<<Qp2_MC<<"  nue_MC = "<<nue_MC<<endl;
 
+            h_cosTh_P_mup_MC1.Fill(L_mup_mc.P(), cos(L_mup_mc.Theta()));
+            h_cosTh_P_mum_MC1.Fill(L_mum_mc.P(), cos(L_mum_mc.Theta()));
+
+            if (L_mup_mc.P() > minMuMon && L_mum_mc.P() > minMuMon) {
+                h_Mmumu_MC6.Fill(L_mumu_MC.M());
+            }
+
             TLorentzVector L_mis_MC = L_beam + L_targ - L_mumu_MC - L_em_mc;
             double MMis_mc = L_mis_MC.M2();
             h_Mmis_MC1.Fill(MMis_mc);
@@ -1232,6 +1120,14 @@ int main(int argc, char** argv) {
             L_mup_AngleFixCor.SetTheta(L_mup_mc.Theta());
             L_mup_AngleFixCor.SetPhi(L_mup_mc.Phi());
 
+            double thSmearMup = smearMuTheta(L_mup_mc.P(), L_mup_mc.Theta());
+            double phiSmearMup = smearMuPhi(L_mup_mc.P(), L_mup_mc.Phi());
+
+            // LorentzVector that has only Momentum corrected, but angles are fixed to generated values
+            TLorentzVector L_mup_AngleSmearCor = L_mup_Pcor;
+            L_mup_AngleSmearCor.SetTheta(thSmearMup);
+            L_mup_AngleSmearCor.SetPhi(phiSmearMup);
+
 
             //L_mup_Pcor, L_mup_PThcor, L_mup_PThPhicor;
             double p_mum_corr = L_mum_rec.P() / (1 + f_Elos_mum->Eval(L_mum_rec.P()));
@@ -1242,6 +1138,16 @@ int main(int argc, char** argv) {
             TLorentzVector L_mum_AngleFixCor = L_mum_Pcor;
             L_mum_AngleFixCor.SetTheta(L_mum_mc.Theta());
             L_mum_AngleFixCor.SetPhi(L_mum_mc.Phi());
+
+            double thSmearMum = smearMuTheta(L_mum_mc.P(), L_mum_mc.Theta());
+            double phiSmearMum = smearMuPhi(L_mum_mc.P(), L_mum_mc.Phi());
+            //            double thSmearMum = L_mum_mc.Theta() + gRandom->Gaus(0., thMuSmear * d2r);
+            //            double phiSmearMum = L_mum_mc.Phi() + gRandom->Gaus(0., phiMuSmear * d2r);
+
+            // LorentzVector that has Momentum corrected, and angles are smeared by Tongton's resolutions
+            TLorentzVector L_mum_AngleSmearCor = L_mum_Pcor;
+            L_mum_AngleSmearCor.SetTheta(thSmearMum);
+            L_mum_AngleSmearCor.SetPhi(phiSmearMum);
 
 
             /* 
@@ -1270,8 +1176,20 @@ int main(int argc, char** argv) {
 
             h_Mmumu_AngleFixCorr1.Fill((L_mum_AngleFixCor + L_mup_AngleFixCor).M());
             h_Mmumu_MC2.Fill(L_mumu_MC.M());
+            h_cosTh_P_mup_MC2.Fill(L_mup_mc.P(), cos(L_mup_mc.Theta()));
+            h_cosTh_P_mum_MC2.Fill(L_mum_mc.P(), cos(L_mum_mc.Theta()));
+
             if (!em_acc) {
                 continue;
+            }
+
+
+            /*
+             * Write events with e-\mu-\mu+ final state in the output LUND file
+             */
+
+            if (writeEvtnts2LUND) {
+                writeMC2LUND(outLUND, bMCPart);
             }
 
             h_Mmumu_MC3.Fill(L_mumu_MC.M());
@@ -1303,12 +1221,17 @@ int main(int argc, char** argv) {
             h_DeltaTheta_P_mup1.Fill(rec_mup.p(), th_mup_Rec - th_mup_MC);
             h_DeltaTheta_P_mum1.Fill(rec_mum.p(), th_mum_Rec - th_mum_MC);
 
+            h_DeltaTheta_PMC_mup1.Fill(L_mup_mc.P(), th_mup_Rec - th_mup_MC);
+            h_DeltaTheta_PMC_mum1.Fill(L_mum_mc.P(), th_mum_Rec - th_mum_MC);
+
             h_DeltaTheta_Theta_mup1.Fill(th_mup_Rec, th_mup_Rec - th_mup_MC);
             h_DeltaTheta_Theta_mum1.Fill(th_mum_Rec, th_mum_Rec - th_mum_MC);
 
             h_DeltaPhi_Pt_mup1.Fill(pt_mup_Rec, deltaPhi_mup);
             h_DeltaPhi_Pt_mum1.Fill(pt_mum_Rec, deltaPhi_mum);
 
+            h_DeltaPhi_PMC_mup1.Fill(L_mup_mc.P(), deltaPhi_mup);
+            h_DeltaPhi_PMC_mum1.Fill(L_mum_mc.P(), deltaPhi_mum);
 
             h_th_P_em2.Fill(L_em_rec.P(), L_em_rec.Theta() * TMath::RadToDeg());
 
@@ -1336,6 +1259,11 @@ int main(int argc, char** argv) {
             h_Mmis_AngleFixcorr1.Fill(Mx2CorrAngleFix1);
             h_Mmis_AngleFixcorr_WideRange1.Fill(Mx2CorrAngleFix1);
             h_Mmis_AngleFixcorr_NoESmear1.Fill((L_beam + L_targ - L_em_mc - L_mup_AngleFixCor - L_mum_AngleFixCor).M2());
+
+            TLorentzVector L_Mis_Corr_AngleSmear = (L_beam + L_targ - L_em_rec - L_mup_AngleSmearCor - L_mum_AngleSmearCor);
+            double Mx2CorrAngleSmear = L_Mis_Corr_AngleSmear.M2();
+
+            h_Mmis_AngleSmearcorr1.Fill(Mx2CorrAngleSmear);
 
             if (vz_cut) {
                 h_Mmis_AngleFixcorr_test1.Fill(Mx2CorrAngleFix1);
@@ -1713,4 +1641,45 @@ int findX_Xi_Bin(double x, double xi) {
     }
 
     return bin;
+}
+
+double smearMuTheta(double P, double theta_MC) {
+
+//    double sigma = -0.1067 + 15.38 / (P + 0.6497); // Tongtong's parametrization
+    double sigma = 0.12; // Tongtong's parametrization
+    double delta = gRandom->Gaus(0., sigma * TMath::DegToRad());
+    return theta_MC + delta;
+}
+
+double smearMuPhi(double P, double phi_MC) {
+
+    //double sigma = 2.705 + 17.6 / (P - 0.1258);
+    double sigma = 2.18;
+    double delta = gRandom->Gaus(0., sigma * TMath::DegToRad());
+    return phi_MC + delta;
+}
+
+void writeMC2LUND(ofstream &out, hipo::bank &b_MC) {
+    int nMC = b_MC.getRows();
+    const double Eb = 11.; // It actually doesn't matter
+
+    out << nMC << setw(5) << 1 << setw(5) << 1 << setw(5) << 0 << setw(9) << 0.85 << setw(5) << 11 << setw(10) << Eb << setw(9) << 2212 << setw(5) << 0 << setw(5) << 0 << endl;
+
+    for (int ip = 0; ip < nMC; ip++) {
+
+        int pid = b_MC.getInt("pid", ip);
+        double px = double(b_MC.getFloat("px", ip));
+        double py = double(b_MC.getFloat("py", ip));
+        double pz = double(b_MC.getFloat("pz", ip));
+
+        double vx = double(b_MC.getFloat("vx", ip));
+        double vy = double(b_MC.getFloat("vy", ip));
+        double vz = double(b_MC.getFloat("vz", ip));
+
+
+        out << ip + 1 << setw(5) << 0 << setw(5) << 1 << setw(9) << pid << setw(5) << 0 << setw(5) << 0 << setw(15) << px << setw(15) << py << setw(15) << pz << setw(15) << 0 << setw(15) << 0 << setw(5) << vx << setw(5) << setw(5) << vy << setw(15) << vz << endl;
+    }
+
+
+
 }

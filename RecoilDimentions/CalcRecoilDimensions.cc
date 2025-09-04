@@ -26,12 +26,16 @@ void CalcRecoilDimensions() {
     const double l_targ = 7.5; // cm
     
     int n_Tot_Strips = 0;
+    double TotArea = 0;
     for( int il = 0; il < nLayer; il++ ){
         
         double cur_R = minRadius + il*delta_R;
         double length = l_targ + cur_R*( 1./tan(th_Min) - 1./tan(th_Max) );
         
         double perimeter = 2*TMath::Pi()*cur_R;
+        
+        double area = length*perimeter;
+        TotArea = TotArea + area;
         int n_Z_Strips = int(perimeter/pitch_Z_Strips);
         
         int n_C_Strips = nSec*int(length/pitch_C_Strips);
@@ -41,7 +45,7 @@ void CalcRecoilDimensions() {
         
         cout<<"******** Layer "<<il<<" ********"<<endl;
         cout<<"* "<<endl;
-        cout<<"* Length "<<length<<" cm,  Perimeter "<<perimeter<<" cm"<<endl;
+        cout<<"* Length "<<length<<" cm,  Perimeter "<<perimeter<<" cm"<<"    Area = "<<length*perimeter<<" cm2"<<endl;
         cout<<"* C Strips "<<n_C_Strips<<",  Z strips "<<n_Z_Strips<<"  All Strips "<<n_Tot_StripsInLayer<<endl;
         cout<<"* "<<endl;
         
@@ -49,6 +53,7 @@ void CalcRecoilDimensions() {
 
     cout<<"* "<<endl;
     cout<<"* Total number of strips is  "<<n_Tot_Strips<<endl;
+    cout<<"* Total Area is  "<<TotArea<<" cm2"<<endl;
     cout<<"* "<<endl;
     
 }

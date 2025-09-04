@@ -67,6 +67,7 @@ int main(int argc, char** argv) {
     const double Qp2_Min = 2.5;
     const double Q2_Max = 2;
     const double Q2_Min = 1.5;
+    const double Qp2_ResFreeCut = 4.;
 
     const double Q2_edges_new[nQ2bins + 1] = {1., 1.3, 1.7, 2.5, 4.};
     const double Qp2_edges_new[nQ2bins + 1] = {2., 2.3, 2.9, 3.7, 5.};
@@ -151,6 +152,7 @@ int main(int argc, char** argv) {
     TH2D h_Q2_xB1("h_Q2_xB1", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB2("h_Q2_xB2", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB3("h_Q2_xB3", "", 200, 0., 1., 200, 0., 10.);
+    TH2D h_Q2_xB4("h_Q2_xB4", "", 200, 0., 1., 200, 0., 10.);
 
     TH2D h_xiprime_vs_xi1("h_xiprime_vs_xi1", "", 200, 0., 0.5, 200, -0.5, 0.5);
     TH2D h_Qp2_tM1("h_Qp2_tM1", "", 200, 0., 2., 200, 0., 8.);
@@ -354,6 +356,10 @@ int main(int argc, char** argv) {
             h_th_P_mum2.Fill(p_mum, th_mum);
             h_Q2_xB2.Fill(xB, Q2);
             h_xB_tM2.Fill(tM, xB);
+
+            if (Qp2 > Qp2_ResFreeCut) {
+                h_Q2_xB4.Fill(xB, Q2);
+            }
 
             if (Qp2 > Qp2Cut_EPIC) {
                 h_th_P_p3.Fill(p_prot, th_prot);

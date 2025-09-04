@@ -57,6 +57,7 @@ int main(int argc, char** argv) {
     const int nQ2bins = 8;
     const double Qp2_edges[nQp2bins + 1] = {1., 2., 3., 4., 5., 6., 7., 8., 9.};
     const double Q2_edges[nQ2bins + 1] = {1., 2., 3., 4., 5., 6., 7., 8., 9.};
+    const double Qp2_ResFreeCut = 4.;
 
     TH1D h_Qp2_Edges("h_Qp2_Edges", "", nQp2bins, Qp2_edges);
     TH1D h_Q2_Edges("h_Q2_Edges", "", nQ2bins, Q2_edges);
@@ -109,6 +110,7 @@ int main(int argc, char** argv) {
     TH2D h_Q2_xB1("h_Q2_xB1", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB2("h_Q2_xB2", "", 200, 0., 1., 200, 0., 10.);
     TH2D h_Q2_xB3("h_Q2_xB3", "", 200, 0., 1., 200, 0., 10.);
+    TH2D h_Q2_xB4("h_Q2_xB4", "", 200, 0., 1., 200, 0., 10.);
 
     TH2D h_thP_Qp2_1("h_thP_Qp2_1", "", 200, 0., 10., 200, 0., 90.);
     TH2D h_thP_Qp2_2("h_thP_Qp2_2", "", 200, 0., 10., 200, 0., 90.);
@@ -302,6 +304,12 @@ int main(int argc, char** argv) {
         int Qp2Bin = h_Qp2_Edges.FindBin(Qp2) - 1;
         int Q2Bin = h_Q2_Edges.FindBin(Q2) - 1;
 
+        if (p_em > 1.05 && p_em < 1.15) {
+            h_Q2_xB3.Fill(xB, Q2);
+        }
+        if (th_em > 7.6 && th_em < 7.7) {
+            //h_Q2_xB4.Fill(xB, Q2);
+        }
 
         if (em_Acc && mum_Acc && mup_Acc) {
             h_Qp2_vs_Q2_2.Fill(Q2, Qp2);
@@ -316,8 +324,8 @@ int main(int argc, char** argv) {
             h_xB_tM2.Fill(tM, xB);
             h_Q2_xB2.Fill(xB, Q2);
 
-            if (Qp2 > 0.3 && Qp2 < 0.6) {
-                h_Q2_xB3.Fill(xB, Q2);
+            if (Qp2 > Qp2_ResFreeCut) {
+                h_Q2_xB4.Fill(xB, Q2);
             }
 
 
@@ -359,12 +367,12 @@ int main(int argc, char** argv) {
                 if (xx_GPD > bin0_x_min && xx_GPD < bin0_x_max && xi > bin0_xi_min && xi < bin0_xi_max) {
                     bin_xi_x = 0;
 
-                    bin_Q2 = Qp2 > 11.5 -Q2 / 1.85 ? 1 : 0;
+                    bin_Q2 = Qp2 > 11.5 - Q2 / 1.85 ? 1 : 0;
 
                 } else if (xx_GPD > bin1_x_min && xx_GPD < bin1_x_max && xi > bin1_xi_min && xi < bin1_xi_max) {
                     bin_xi_x = 1;
 
-                    bin_Q2 = Qp2 > 15.5 -Q2 / 0.55 ? 1 : 0;
+                    bin_Q2 = Qp2 > 15.5 - Q2 / 0.55 ? 1 : 0;
                 }
 
                 if (bin_xi_x >= 0 && bin_Q2 >= 0) {

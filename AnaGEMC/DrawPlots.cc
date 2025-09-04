@@ -304,7 +304,7 @@ int main(int argc, char** argv) {
     leg1->AddEntry(h_Mmis_corr1, "Mom. corrected");
     //    leg1->AddEntry(h_Mmis_corr2, "Mom & #theta corrected");
     //    leg1->AddEntry(h_Mmis_corr3, "Mom & #theta & #phi corrected");
-    leg1->AddEntry(h_Mmis_AngleFixcorr1, "Mom & angle corrected");
+    leg1->AddEntry(h_Mmis_AngleFixcorr1, "Mom Corr, True angles");
     h_Mmis_AngleFixcorr1->Draw("hist");
     //    h_Mmis_corr3->Draw("hist Same");
     //    h_Mmis_corr2->Draw("hist Same");
@@ -315,7 +315,18 @@ int main(int argc, char** argv) {
     c1.Print(Form("Figs/MmisCorretions_%d.png", run));
     c1.Print(Form("Figs/MmisCorretions_%d.root", run));
 
-
+    TH1D *h_Mmis_AngleSmearcorr1 = (TH1D*)file_in.Get("h_Mmis_AngleSmearcorr1");
+    h_Mmis_AngleSmearcorr1->SetLineColor(6);
+    h_Mmis_AngleSmearcorr1->SetLineWidth(2);
+    FormatHist(h_Mmis_AngleSmearcorr1);
+    leg1->AddEntry(h_Mmis_AngleSmearcorr1, "Mom. Corr, Recon angles, no BG");
+    h_Mmis_AngleSmearcorr1->Draw("hist same");
+    c1.Print(Form("Figs/MmisCorrections_Set2_%d.pdf", run));
+    c1.Print(Form("Figs/MmisCorrections_Set2_%d.png", run));
+    c1.Print(Form("Figs/MmisCorrections_Set2_%d.root", run));
+    
+    
+    
     TLegend *leg_MM2 = new TLegend(0.65, 0.75, 0.92, 0.92);
     leg_MM2->SetBorderSize(0);
     TH1D *h_Mumu_Corr_AngleFix1 = (TH1D*) file_in.Get("h_Mumu_Corr_AngleFix1");

@@ -15,12 +15,12 @@ if __name__ == "__main__":
     newRun = int(sys.argv[1])
     PointToRun = int(sys.argv[2])
     
-    cmd_mupEloss = "ln -sf mup_ElossFunc_Pars_Run_%d.dat mup_ElossFunc_Pars_Run_%d.dat" %(PointToRun, newRun)
-    cmd_mumEloss = "ln -sf mum_ElossFunc_Pars_Run_%d.dat mum_ElossFunc_Pars_Run_%d.dat" %(PointToRun, newRun)
-    cmd_mupThCorr = "ln -sf mup_DeltaTheta_Corr_Run_%d.dat mup_DeltaTheta_Corr_Run_%d.dat" %(PointToRun, newRun)
-    cmd_mumThCorr = "ln -sf mum_DeltaTheta_Corr_Run_%d.dat mum_DeltaTheta_Corr_Run_%d.dat" %(PointToRun, newRun)
-    cmd_mupPhiCorr = "ln -sf mup_DeltaPhi_Corr_Run_%d.dat mup_DeltaPhi_Corr_Run_%d.dat" %(PointToRun, newRun)
-    cmd_mumPhiCorr = "ln -sf mum_DeltaPhi_Corr_Run_%d.dat mum_DeltaPhi_Corr_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mupEloss = "ln -s mup_ElossFunc_Pars_Run_%d.dat mup_ElossFunc_Pars_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mumEloss = "ln -s mum_ElossFunc_Pars_Run_%d.dat mum_ElossFunc_Pars_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mupThCorr = "ln -s mup_DeltaTheta_Corr_Run_%d.dat mup_DeltaTheta_Corr_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mumThCorr = "ln -s mum_DeltaTheta_Corr_Run_%d.dat mum_DeltaTheta_Corr_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mupPhiCorr = "ln -s mup_DeltaPhi_Corr_Run_%d.dat mup_DeltaPhi_Corr_Run_%d.dat" %(PointToRun, newRun)
+    cmd_mumPhiCorr = "ln -s mum_DeltaPhi_Corr_Run_%d.dat mum_DeltaPhi_Corr_Run_%d.dat" %(PointToRun, newRun)
     
     
     subprocess.Popen([cmd_mupEloss], shell = True)

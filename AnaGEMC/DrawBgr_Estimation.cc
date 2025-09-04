@@ -48,21 +48,24 @@ void DrawBgr_Estimation() {
     c1->SetRightMargin(0.02);
     c1->SetLeftMargin(0.18);
 
-    const int nStages = 4;
+    const int nStages = 5;
     /* 
      * 0: All events
      * 1: Has at least muon pair detected
      * 2: Has at least 1mu-, 1mu+ and an electron
      * 3: Pass the the missing mass cut
      * 4: Pass the -t cut
+     * 5: Both muons have P > 2 GeV
      */
 
-    int cols_[nStages] = {1, 2, 4, 6};
+    int cols_[nStages] = {1, 8, 2, 4, 6};
+    int ind_[nStages]= {1, 6, 2, 3, 4};
     
     TH1D * h_Mmumu_MC[nStages];
 
     for (int i = 0; i < nStages; i++) {
-        h_Mmumu_MC[i] = (TH1D*) file_pionBgr->Get(Form("h_Mmumu_MC%d", i+1));
+        //h_Mmumu_MC[i] = (TH1D*) file_pionBgr->Get(Form("h_Mmumu_MC%d", i+1));
+        h_Mmumu_MC[i] = (TH1D*) file_pionBgr->Get(Form("h_Mmumu_MC%d", ind_[i]));
         h_Mmumu_MC[i]->Scale(1. / double(nRuns));
         h_Mmumu_MC[i]->Scale(1. / double(TotTimeinSec));
         double binWidth = h_Mmumu_MC[i]->GetBinWidth(10);

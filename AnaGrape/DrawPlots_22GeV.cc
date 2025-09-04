@@ -17,7 +17,8 @@ int DrawPlots_22GeV( int run ) {
     gStyle->SetOptStat(0);
 
     //const int run = 16;
-    int run_11GeV = 2;
+    //int run_11GeV = 2;
+    int run_11GeV = 17;
 
     TF1 *f_Q2_FixW = new TF1("f_Q2_FixW", "([0]*[0] - 0.9383*0.9383)*x/(1.-x)", 0., 1.);
     f_Q2_FixW->SetParameter(0, 2.);
@@ -240,7 +241,42 @@ int DrawPlots_22GeV( int run ) {
     c1->Print("Figs/Q2_Dep_Compare_22Vs11GeV_2.png");
     c1->Print("Figs/Q2_Dep_Compare_22Vs11GeV_2.root");
 
+    
+    
+    TH2D *h_Q2_xB2_11GeV_4 = (TH2D*) file_in12GeV->Get("h_Q2_xB4");
 
+    h_Q2_xB2_11GeV_4->SetTitle("; x_{B}; Q^{2} [GeV^{2}]");
+
+    binxB_max1 = h_Q2_xB2_11GeV_4->GetXaxis()->FindBin(xB_max1);
+    binxB_min1 = h_Q2_xB2_11GeV_4->GetXaxis()->FindBin(xB_min1);
+    TH1D *h_Q2Proj_11GeV_4 = (TH1D*) h_Q2_xB2_11GeV_4->ProjectionY("h_Q2Proj_11GeV_4", binxB_min1, binxB_max1);
+    h_Q2Proj_11GeV_4->Scale(1. / h_Q2Proj_11GeV_4->GetBinWidth(10));
+    h_Q2Proj_11GeV_4->SetTitle("; Q^{2} [GeV^{2}]; dN/dQ^{2} [1/GeV^{2}]");
+    h_Q2Proj_11GeV_4->Draw();
+    
+
+    TH2D *h_Q2_xB2_22GeV_4 = (TH2D*) file_in->Get("h_Q2_xB4");
+    h_Q2_xB2_22GeV_4->SetTitle("; x_{B}; Q^{2} [GeV^{2}]");
+
+    binxB_max1 = h_Q2_xB2_22GeV_4->GetXaxis()->FindBin(xB_max1);
+    binxB_min1 = h_Q2_xB2_22GeV_4->GetXaxis()->FindBin(xB_min1);
+    TH1D *h_Q2Proj_22GeV_4 = (TH1D*) h_Q2_xB2_22GeV_4->ProjectionY("h_Q2Proj_22GeV_4", binxB_min1, binxB_max1);
+    h_Q2Proj_22GeV_4->Scale(1. / h_Q2Proj_22GeV_4->GetBinWidth(10));
+    h_Q2Proj_22GeV_4->SetTitle("; Q^{2} [GeV^{2}]; dN/dQ^{2} [1/GeV^{2}]");
+    h_Q2Proj_22GeV_4->SetLineColor(2);
+    h_Q2Proj_22GeV->Draw();
+    h_Q2Proj_11GeV_4->Draw("Same");
+    lat1->SetTextSize(0.04);
+    lat1->SetTextColor(4);
+    lat1->DrawLatex(0.5, 0.8, "11 GeV beam");
+    lat1->SetTextColor(2);
+    lat1->DrawLatex(0.5, 0.7, "22 GeV beam");
+    c1->Print("Figs/Q2_Dep_Compare_22Vs11GeV_3.pdf");
+    c1->Print("Figs/Q2_Dep_Compare_22Vs11GeV_3.png");
+    c1->Print("Figs/Q2_Dep_Compare_22Vs11GeV_3.root");
+    
+    
+    
     // ******* New kinematic bins, that we chose with Stepan in July 2024 for the 22 GeV Discusson meeting.
     c1->SetLogz(0);
     const double pol = 0.8;
