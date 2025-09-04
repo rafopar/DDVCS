@@ -5,3 +5,7 @@
 *.root
 *~
 build
+Data
+tmp
+nbproject
+FinalStateEvents_Run_*.txt
