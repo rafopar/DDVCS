@@ -1,0 +1,7 @@
+*.o
+*.exe
+*.so
+*.so.1*
+*.root
+*~
+build
