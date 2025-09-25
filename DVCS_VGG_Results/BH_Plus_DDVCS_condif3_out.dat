@@ -1,0 +1,235 @@
+
+ Lepton type
+ For DDVCS: muon (2) or no mass (3) IN THE FINAL STATE
+
+ Choose one of the following menu items :
+ 1 : 5-fold DIFFERENTIAL CROSS SECTION for ep -> ep gamma as function of t
+ 2 : e+e- asymmetry for DVCS
+ 3 : electron single spin asymmetry (SSA)
+ 4 : 2-body DOUBLY POLARIZED cross sections for (D)DVCS
+     polarized electron, polarized target
+ 5 : DIFFERENTIAL CROSS SECTION for DVCS as function of Q2
+ 6 : DIFFERENTIAL CROSS SECTION for DVCS as function of t
+ 11 : parton distributions
+ 12 : GPDs
+ 13 : sum rules and positivity tests
+ 14 : form factors from GPDs and WACS
+ 15 : accuracy test of integrals for twist-2 amplitude
+ 16 : accuracy test of integrals for twist-3 amplitude
+ 17 : integration of BH over bin size
+ 18 : fit of kinematics
+ 19 : phase space for (TCS and DVCS) and DDVCS
+ 20 : 3-body DOUBLY POLARIZED cross sections for DDVCS
+     polarized electron, polarized target
+ 21 : 2-body DIFFERENTIAL CROSS SECTION for Rho as function of Q2 or theta_lab
+ 22 : Timelike Compton scattering
+ 30 : WACS
+ 40 : Fit of DVCS data
+ 50 : Transverse densities
+ 60 : Resolutions
+
+ Make a choice for the MECHANISM :
+ 1 : Bethe-Heitler contribution
+ 2 : DVCS contribution
+ 3 : Bethe-Heitler + DVCS contribution
+ 4 : rho contribution
+ 5 : DVCS + rho contribution
+ 6 : Bethe-Heitler + DVCS + rho contribution
+ 7 : Bethe-Heitler + rho contribution
+
+ Bethe-Heitler contribution for DDVCS :
+ 1 : 1+2+3+4
+ 2 : 1+2
+ 3 : 3+4
+
+ Choice to calculate on proton or on neutron (default = 1)
+ 1 = proton
+ 2 = neutron
+
+ Choose model for GPD
+ 1 : xi INdependent parametrization with MRS S_o distribution
+ 2 : xi INdependent parametrization with MRS D_o distribution
+ 3 : xi INdependent parametrization with MRS S_o distribution
+ 4 : xi INdependent parametrization with MRS95G distribution
+ 5 : xi INdependent parametrization with MRST98 distribution
+ 6 : xi INdependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 7 : xi INdependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 8 : xi INdependent parametrization with CTEQ4L distribution
+ 9 : xi INdependent parametrization with CTEQ4M distribution
+ 10 : xi INdependent parametrization with CTEQ5M distribution
+ 11 : xi INdependent parametrization with GRV98 NLO(MSbar) distribution
+ 12 : xi INdependent parametrization with GRV98 NLO(DIS) distribution
+ 13 : xi INdependent parametrization with GRV98 LO distribution
+ 14 : xi INdependent parametrization with MRST01 NLO distribution
+ 15 : xi INdependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 16 : xi INdependent parametrization with MRST02 NNLO distribution
+ 17 : xi INdependent parametrization with CTEQ6M distribution
+ 21 : xi dependent parametrization with MRS S_o distribution 
+ 22 : xi dependent parametrization with MRS D_o distribution 
+ 24 : xi dependent parametrization with MRS95G distribution 
+ 25 : xi dependent parametrization with MRST98 distribution 
+ 26 : xi dependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 27 : xi dependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 28 : xi dependent parametrization with CTEQ4L distribution 
+ 29 : xi dependent parametrization with CTEQ4M distribution 
+ 30 : xi dependent parametrization with CTEQ5M distribution 
+ 31 : xi dependent parametrization with GRV98 NLO(MSbar) distribution
+ 32 : xi dependent parametrization with GRV98 NLO(DIS) distribution
+ 33 : xi dependent parametrization with GRV98 LO distribution
+ 34 : xi dependent parametrization with MRST01 NLO distribution
+ 35 : xi dependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 36 : xi dependent parametrization with MRST02 NNLO distribution
+ 37 : xi dependent parametrization with CTEQ6M distribution
+ 41 : k_perp dependence with MRS S_o distribution
+ 42 : k_perp dependence with MRS D_o distribution
+ 44 : k_perp dependence with MRS95G distribution
+ 45 : k_perp dependence with MRST98 distribution
+ 46 : k_perp dependence with MRST98 distribution at mu^2 = 1 GeV^2
+ 47 : k_perp dependence with MRST98 distribution (upper gluon, k_erp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 48 : k_perp dependence with CTEQ4L distribution
+ 49 : k_perp dependence with CTEQ4M distribution
+ 50 : k_perp dependence with CTEQ5M distribution
+ 54 : k_perp dependence with MRST01 NLO distribution
+ 55 : k_perp dependence with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 56 : k_perp dependence with MRST02 NNLO distribution
+ 57 : k_perp dependence with CTEQ6M distribution
+
+Give the value for the power b in the profile function for the valence contribution to H (e.g. 1.)
+
+Give the value for the power b in the profile function for the sea contribution to H (e.g. 1.)
+
+ Choose the model for the t-dependence of the GPD H
+1 = Factorized model for the t-dependence
+2 = Regge inspired ansatz for the t-dependence
+3 = Experimental exponential input by user
+4 = Experimental exponential fit (fit of all data)
+5 = Experimental exponential fit (fit of subrange -by Mick-)
+6 = Hybrid model (FF vor val and Regge for sea)
+7 = Diehl et al. model (t-dep in DDs)
+8 = R2 Regge ansatz model (t-dep in DDs)
+9 = Diehl et al. model (t-dep out of DDs)
+10 = R2 Regge ansatz model (t-dep out of DDs)
+
+Enter slope alphap (GeV-2)
+
+Do you want to evaluate the D-term contribution to the GPD H?
+1 = Yes
+2 = No
+
+Do you want to evaluate the GPD E?
+1 = only D-term contribution
+2 = double distribution contribution + D-term contribution
+3 = No, E = 0
+
+Do you want to evaluate the pi0 pole contribution (i.e. SPD Etilde)?
+1 = Yes
+2 = No
+
+ Do you want to include twist-3 corrections ?
+1: Do not include twist-3 corrections for L photon,
+   but include the minimal corrections to restore gauge invariance for T photon
+2: Include twist-3 corrections for L photon in Wandzura-Wilczek approximation
+
+ Give the polarization of the target proton
+ 1 : proton polarized along x-axis
+ 2 : proton polarized along y-axis (perpendicular to lepton plane)
+ 3 : proton polarized along z-axis (along the virtual photon direction)
+
+ Calculation for what LEPTON charge ?
+ 1 : negatively charged lepton (JLab)
+
+
+ Give the value of beam energy in GeV (e.g. 27.)
+
+
+ As a function of :
+ 1 : Q^2
+ 2 : x_B
+ 3 : scattering angle (or -t)
+ 4 : Phi_LH
+ 5 : Qprime^2
+ 6 : decay angles
+
+
+ Give the value of Q^2 in GeV^2 (e.g. 5.0)
+
+
+ Give the value of x_B (e.g. 0.3)
+
+
+ Give the value of Qprime^2 in GeV^2 (e.g. 2.0)
+
+
+ Decay angles
+ 0 : Fixed values of c.m. decay angles
+ 1 : Integration over the 2 angles
+
+
+ Theta_cm integration between 0 and PI (0) or between PI/4 and 3PI/4 (1) or user cut (3) ?
+
+
+  ANTI-symmetrisation or not ?
+ 1 : yes
+ 2 : no
+
+
+  Cross section in lab or invariant ?
+ 1 : in lab
+ 2 : invariant
+
+
+ Calculate only im.part (1), only real part (2) or both (3) ?
+
+
+ Phi-scan
+ 1 : Scan in Phi at fixed theta_lab
+ 2 : Scan in Phi at fixed t
+
+
+ Give the value of -t (in GeV^2)
+
+ cos(theta) = 1.004663 GeV^2, ga_en = 3.392761 GeV, ga_mom = 3.034934 GeV, theta_lab = 0.000000 deg
+
+ Give the first value for the angle phi (in deg) to calculate
+
+
+ Give the step in the angle phi (in deg) (e.g. 10.)
+
+
+ Give the last value for the angle phi (in deg) (e.g. 10.)
+5.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+15.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+25.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+35.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+45.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+55.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+65.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+75.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+85.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+95.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+105.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+115.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+125.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+135.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+145.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+155.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+165.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+175.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+185.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+195.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+205.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+215.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+225.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+235.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+245.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+255.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+265.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+275.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+285.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+295.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+305.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+315.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+325.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+335.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+345.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan
+355.000000 	 nan 	 nan 	 nan 	 nan 	 nan 	 nan

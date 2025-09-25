@@ -1,0 +1,237 @@
+
+ Lepton type
+ For DDVCS: muon (2) or no mass (3) IN THE FINAL STATE
+
+ Choose one of the following menu items :
+ 1 : 5-fold DIFFERENTIAL CROSS SECTION for ep -> ep gamma as function of t
+ 2 : e+e- asymmetry for DVCS
+ 3 : electron single spin asymmetry (SSA)
+ 4 : 2-body DOUBLY POLARIZED cross sections for (D)DVCS
+     polarized electron, polarized target
+ 5 : DIFFERENTIAL CROSS SECTION for DVCS as function of Q2
+ 6 : DIFFERENTIAL CROSS SECTION for DVCS as function of t
+ 11 : parton distributions
+ 12 : GPDs
+ 13 : sum rules and positivity tests
+ 14 : form factors from GPDs and WACS
+ 15 : accuracy test of integrals for twist-2 amplitude
+ 16 : accuracy test of integrals for twist-3 amplitude
+ 17 : integration of BH over bin size
+ 18 : fit of kinematics
+ 19 : phase space for (TCS and DVCS) and DDVCS
+ 20 : 3-body DOUBLY POLARIZED cross sections for DDVCS
+     polarized electron, polarized target
+ 21 : 2-body DIFFERENTIAL CROSS SECTION for Rho as function of Q2 or theta_lab
+ 22 : Timelike Compton scattering
+ 30 : WACS
+ 40 : Fit of DVCS data
+ 50 : Transverse densities
+ 60 : Resolutions
+
+ Make a choice for the MECHANISM :
+ 1 : Bethe-Heitler contribution
+ 2 : DVCS contribution
+ 3 : Bethe-Heitler + DVCS contribution
+ 4 : rho contribution
+ 5 : DVCS + rho contribution
+ 6 : Bethe-Heitler + DVCS + rho contribution
+ 7 : Bethe-Heitler + rho contribution
+
+ Bethe-Heitler contribution for DDVCS :
+ 1 : 1+2+3+4
+ 2 : 1+2
+ 3 : 3+4
+
+ Choice to calculate on proton or on neutron (default = 1)
+ 1 = proton
+ 2 = neutron
+
+ Choose model for GPD
+ 1 : xi INdependent parametrization with MRS S_o distribution
+ 2 : xi INdependent parametrization with MRS D_o distribution
+ 3 : xi INdependent parametrization with MRS S_o distribution
+ 4 : xi INdependent parametrization with MRS95G distribution
+ 5 : xi INdependent parametrization with MRST98 distribution
+ 6 : xi INdependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 7 : xi INdependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 8 : xi INdependent parametrization with CTEQ4L distribution
+ 9 : xi INdependent parametrization with CTEQ4M distribution
+ 10 : xi INdependent parametrization with CTEQ5M distribution
+ 11 : xi INdependent parametrization with GRV98 NLO(MSbar) distribution
+ 12 : xi INdependent parametrization with GRV98 NLO(DIS) distribution
+ 13 : xi INdependent parametrization with GRV98 LO distribution
+ 14 : xi INdependent parametrization with MRST01 NLO distribution
+ 15 : xi INdependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 16 : xi INdependent parametrization with MRST02 NNLO distribution
+ 17 : xi INdependent parametrization with CTEQ6M distribution
+ 21 : xi dependent parametrization with MRS S_o distribution 
+ 22 : xi dependent parametrization with MRS D_o distribution 
+ 24 : xi dependent parametrization with MRS95G distribution 
+ 25 : xi dependent parametrization with MRST98 distribution 
+ 26 : xi dependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 27 : xi dependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 28 : xi dependent parametrization with CTEQ4L distribution 
+ 29 : xi dependent parametrization with CTEQ4M distribution 
+ 30 : xi dependent parametrization with CTEQ5M distribution 
+ 31 : xi dependent parametrization with GRV98 NLO(MSbar) distribution
+ 32 : xi dependent parametrization with GRV98 NLO(DIS) distribution
+ 33 : xi dependent parametrization with GRV98 LO distribution
+ 34 : xi dependent parametrization with MRST01 NLO distribution
+ 35 : xi dependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 36 : xi dependent parametrization with MRST02 NNLO distribution
+ 37 : xi dependent parametrization with CTEQ6M distribution
+ 41 : k_perp dependence with MRS S_o distribution
+ 42 : k_perp dependence with MRS D_o distribution
+ 44 : k_perp dependence with MRS95G distribution
+ 45 : k_perp dependence with MRST98 distribution
+ 46 : k_perp dependence with MRST98 distribution at mu^2 = 1 GeV^2
+ 47 : k_perp dependence with MRST98 distribution (upper gluon, k_erp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 48 : k_perp dependence with CTEQ4L distribution
+ 49 : k_perp dependence with CTEQ4M distribution
+ 50 : k_perp dependence with CTEQ5M distribution
+ 54 : k_perp dependence with MRST01 NLO distribution
+ 55 : k_perp dependence with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 56 : k_perp dependence with MRST02 NNLO distribution
+ 57 : k_perp dependence with CTEQ6M distribution
+
+Give the value for the power b in the profile function for the valence contribution to H (e.g. 1.)
+
+Give the value for the power b in the profile function for the sea contribution to H (e.g. 1.)
+
+ Choose the model for the t-dependence of the GPD H
+1 = Factorized model for the t-dependence
+2 = Regge inspired ansatz for the t-dependence
+3 = Experimental exponential input by user
+4 = Experimental exponential fit (fit of all data)
+5 = Experimental exponential fit (fit of subrange -by Mick-)
+6 = Hybrid model (FF vor val and Regge for sea)
+7 = Diehl et al. model (t-dep in DDs)
+8 = R2 Regge ansatz model (t-dep in DDs)
+9 = Diehl et al. model (t-dep out of DDs)
+10 = R2 Regge ansatz model (t-dep out of DDs)
+
+Enter slope alphap (GeV-2)
+
+Do you want to evaluate the D-term contribution to the GPD H?
+1 = Yes
+2 = No
+
+Do you want to evaluate the GPD E?
+1 = only D-term contribution
+2 = double distribution contribution + D-term contribution
+3 = No, E = 0
+
+Do you want to evaluate the pi0 pole contribution (i.e. SPD Etilde)?
+1 = Yes
+2 = No
+
+ Do you want to include twist-3 corrections ?
+1: Do not include twist-3 corrections for L photon,
+   but include the minimal corrections to restore gauge invariance for T photon
+2: Include twist-3 corrections for L photon in Wandzura-Wilczek approximation
+
+ Give the polarization of the target proton
+ 1 : proton polarized along x-axis
+ 2 : proton polarized along y-axis (perpendicular to lepton plane)
+ 3 : proton polarized along z-axis (along the virtual photon direction)
+
+ Calculation for what LEPTON charge ?
+ 1 : negatively charged lepton (JLab)
+
+
+ Give the value of beam energy in GeV (e.g. 27.)
+
+
+ As a function of :
+ 1 : Q^2
+ 2 : x_B
+ 3 : scattering angle (or -t)
+ 4 : Phi_LH
+ 5 : Qprime^2
+ 6 : decay angles
+
+
+ Give the value of Q^2 in GeV^2 (e.g. 5.0)
+
+
+ Give the value of x_B (e.g. 0.3)
+
+
+ Give the value of Qprime^2 in GeV^2 (e.g. 2.0)
+
+
+ Decay angles
+ 0 : Fixed values of c.m. decay angles
+ 1 : Integration over the 2 angles
+
+
+ Theta_cm integration between 0 and PI (0) or between PI/4 and 3PI/4 (1) or user cut (3) ?
+
+
+  ANTI-symmetrisation or not ?
+ 1 : yes
+ 2 : no
+
+
+  Cross section in lab or invariant ?
+ 1 : in lab
+ 2 : invariant
+
+
+ Calculate only im.part (1), only real part (2) or both (3) ?
+
+
+ Phi-scan
+ 1 : Scan in Phi at fixed theta_lab
+ 2 : Scan in Phi at fixed t
+
+
+ Give the value of -t (in GeV^2)
+
+ cos(theta) = 0.998810 GeV^2, ga_en = 9.609861 GeV, ga_mom = 9.594240 GeV, theta_lab = 2.794918 deg
+
+ Give the first value for the angle phi (in deg) to calculate
+
+
+ Give the step in the angle phi (in deg) (e.g. 10.)
+
+
+ Give the last value for the angle phi (in deg) (e.g. 10.)
+5.000000 	 2.331030e-03 	 3.206439e-03 	 3.052788e-03 	 2.231359e-03 	 2.705404e-03 	 2.340889e-02
+15.000000 	 2.113840e-03 	 3.320243e-03 	 2.993257e-03 	 1.900272e-03 	 2.581903e-03 	 5.234067e-02
+25.000000 	 1.596127e-03 	 2.706346e-03 	 2.364269e-03 	 1.369730e-03 	 2.009118e-03 	 7.073678e-02
+35.000000 	 1.131941e-03 	 1.997387e-03 	 1.693809e-03 	 9.272365e-04 	 1.437593e-03 	 8.839117e-02
+45.000000 	 8.079974e-04 	 1.463068e-03 	 1.204856e-03 	 6.298409e-04 	 1.026441e-03 	 1.062821e-01
+55.000000 	 5.925923e-04 	 1.095279e-03 	 8.775450e-04 	 4.384197e-04 	 7.509591e-04 	 1.238107e-01
+65.000000 	 4.478890e-04 	 8.433969e-04 	 6.597147e-04 	 3.141927e-04 	 5.662983e-04 	 1.401110e-01
+75.000000 	 3.481764e-04 	 6.676938e-04 	 5.124578e-04 	 2.319745e-04 	 4.400756e-04 	 1.541996e-01
+85.000000 	 2.775628e-04 	 5.422647e-04 	 4.110078e-04 	 1.765769e-04 	 3.518531e-04 	 1.650140e-01
+95.000000 	 2.262803e-04 	 4.507483e-04 	 3.399985e-04 	 1.388244e-04 	 2.889629e-04 	 1.714803e-01
+105.000000 	 1.882056e-04 	 3.827207e-04 	 2.897941e-04 	 1.130412e-04 	 2.434404e-04 	 1.726203e-01
+115.000000 	 1.593974e-04 	 3.314016e-04 	 2.542246e-04 	 9.561400e-05 	 2.101594e-04 	 1.676828e-01
+125.000000 	 1.372516e-04 	 2.922787e-04 	 2.292525e-04 	 8.417825e-05 	 1.857403e-04 	 1.562661e-01
+135.000000 	 1.200091e-04 	 2.622884e-04 	 2.121891e-04 	 7.715147e-05 	 1.679095e-04 	 1.384034e-01
+145.000000 	 1.064632e-04 	 2.393214e-04 	 2.012277e-04 	 7.346052e-05 	 1.551182e-04 	 1.145843e-01
+155.000000 	 9.578371e-05 	 2.219215e-04 	 1.951629e-04 	 7.237960e-05 	 1.463119e-04 	 8.571204e-02
+165.000000 	 8.741059e-05 	 2.091002e-04 	 1.932211e-04 	 7.343363e-05 	 1.407914e-04 	 5.301487e-02
+175.000000 	 8.098981e-05 	 2.002241e-04 	 1.949599e-04 	 7.634153e-05 	 1.381288e-04 	 1.794057e-02
+185.000000 	 7.633694e-05 	 1.949488e-04 	 2.002130e-04 	 8.098522e-05 	 1.381210e-04 	 -1.794159e-02
+195.000000 	 7.341980e-05 	 1.931879e-04 	 2.090671e-04 	 8.739677e-05 	 1.407679e-04 	 -5.302372e-02
+205.000000 	 7.235635e-05 	 1.951080e-04 	 2.218667e-04 	 9.576047e-05 	 1.462729e-04 	 -8.573492e-02
+215.000000 	 7.342759e-05 	 2.011518e-04 	 2.392455e-04 	 1.064303e-04 	 1.550638e-04 	 -1.146245e-01
+225.000000 	 7.710855e-05 	 2.120930e-04 	 2.621923e-04 	 1.199662e-04 	 1.678400e-04 	 -1.384607e-01
+235.000000 	 8.412504e-05 	 2.291373e-04 	 2.921636e-04 	 1.371984e-04 	 1.856561e-04 	 -1.563369e-01
+245.000000 	 9.555030e-05 	 2.540916e-04 	 3.312687e-04 	 1.593337e-04 	 2.100611e-04 	 -1.677612e-01
+255.000000 	 1.129669e-04 	 2.896449e-04 	 3.825716e-04 	 1.881314e-04 	 2.433287e-04 	 -1.726996e-01
+265.000000 	 1.387396e-04 	 3.398348e-04 	 4.505845e-04 	 2.261956e-04 	 2.888386e-04 	 -1.715540e-01
+275.000000 	 1.764820e-04 	 4.108310e-04 	 5.420879e-04 	 2.774679e-04 	 3.517172e-04 	 -1.650778e-01
+285.000000 	 2.318699e-04 	 5.122695e-04 	 6.675055e-04 	 3.480718e-04 	 4.399292e-04 	 -1.542509e-01
+295.000000 	 3.140789e-04 	 6.595162e-04 	 8.431983e-04 	 4.477752e-04 	 5.661422e-04 	 -1.401496e-01
+305.000000 	 4.382972e-04 	 8.773368e-04 	 1.095071e-03 	 5.924698e-04 	 7.507937e-04 	 -1.238380e-01
+315.000000 	 6.297100e-04 	 1.204638e-03 	 1.462851e-03 	 8.078666e-04 	 1.026266e-03 	 -1.063001e-01
+325.000000 	 9.270982e-04 	 1.693582e-03 	 1.997161e-03 	 1.131802e-03 	 1.437411e-03 	 -8.840238e-02
+335.000000 	 1.369589e-03 	 2.364040e-03 	 2.706117e-03 	 1.595986e-03 	 2.008933e-03 	 -7.074330e-02
+345.000000 	 1.900146e-03 	 2.993056e-03 	 3.320042e-03 	 2.113715e-03 	 2.581740e-03 	 -5.234398e-02
+355.000000 	 2.231303e-03 	 3.052698e-03 	 3.206349e-03 	 2.330974e-03 	 2.705331e-03 	 -2.340952e-02
+365.000000 	 2.331030e-03 	 3.206439e-03 	 3.052788e-03 	 2.231359e-03 	 2.705404e-03 	 2.340889e-02
+375.000000 	 2.113840e-03 	 3.320243e-03 	 2.993257e-03 	 1.900272e-03 	 2.581903e-03 	 5.234067e-02

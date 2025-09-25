@@ -1,0 +1,175 @@
+[rafopar@rafopar-rhel8 DVCS_VGG_Results]$ /group/clas12/users/rafopar/soft/DVCS_VGG/vgg5_DVCS_positron/exe/hard_elprod/dvcs
+
+ Lepton type
+ For DDVCS: muon (2) or no mass (3) IN THE FINAL STATE
+2
+
+ Choose one of the following menu items :
+ 1 : 5-fold DIFFERENTIAL CROSS SECTION for ep -> ep gamma as function of t
+ 2 : e+e- asymmetry for DVCS
+ 3 : electron single spin asymmetry (SSA)
+ 4 : 2-body DOUBLY POLARIZED cross sections for (D)DVCS
+     polarized electron, polarized target
+ 5 : DIFFERENTIAL CROSS SECTION for DVCS as function of Q2
+ 6 : DIFFERENTIAL CROSS SECTION for DVCS as function of t
+ 11 : parton distributions
+ 12 : GPDs
+ 13 : sum rules and positivity tests
+ 14 : form factors from GPDs and WACS
+ 15 : accuracy test of integrals for twist-2 amplitude
+ 16 : accuracy test of integrals for twist-3 amplitude
+ 17 : integration of BH over bin size
+ 18 : fit of kinematics
+ 19 : phase space for (TCS and DVCS) and DDVCS
+ 20 : 3-body DOUBLY POLARIZED cross sections for DDVCS
+     polarized electron, polarized target
+ 21 : 2-body DIFFERENTIAL CROSS SECTION for Rho as function of Q2 or theta_lab
+ 22 : Timelike Compton scattering
+ 30 : WACS
+ 40 : Fit of DVCS data
+ 50 : Transverse densities
+ 60 : Resolutions
+20
+
+ Make a choice for the MECHANISM :
+ 1 : Bethe-Heitler contribution
+ 2 : DVCS contribution
+ 3 : Bethe-Heitler + DVCS contribution
+ 4 : rho contribution
+ 5 : DVCS + rho contribution
+ 6 : Bethe-Heitler + DVCS + rho contribution
+ 7 : Bethe-Heitler + rho contribution
+1
+
+ Bethe-Heitler contribution for DDVCS :
+ 1 : 1+2+3+4
+ 2 : 1+2
+ 3 : 3+4
+2
+
+ Choice to calculate on proton or on neutron (default = 1)
+ 1 = proton
+ 2 = neutron
+1
+
+ Give the polarization of the target proton
+ 1 : proton polarized along x-axis
+ 2 : proton polarized along y-axis (perpendicular to lepton plane)
+ 3 : proton polarized along z-axis (along the virtual photon direction)
+3
+
+ Calculation for what LEPTON charge ?
+ 1 : negatively charged lepton (JLab)
+1
+
+
+ Give the value of beam energy in GeV (e.g. 27.)
+10.6
+
+
+ As a function of :
+ 1 : Q^2
+ 2 : x_B
+ 3 : scattering angle (or -t)
+ 4 : Phi_LH
+ 5 : Qprime^2
+ 6 : decay angles
+4
+
+
+ Give the value of Q^2 in GeV^2 (e.g. 5.0)
+2.75
+
+
+ Give the value of x_B (e.g. 0.3)
+0.15
+
+
+ Give the value of Qprime^2 in GeV^2 (e.g. 2.0)
+0.3
+
+
+ Decay angles
+ 0 : Fixed values of c.m. decay angles
+ 1 : Integration over the 2 angles
+1
+
+
+ Theta_cm integration between 0 and PI (0) or between PI/4 and 3PI/4 (1) or user cut (3) ?
+1
+
+
+  ANTI-symmetrisation or not ?
+ 1 : yes
+ 2 : no
+2
+
+
+  Cross section in lab or invariant ?
+ 1 : in lab
+ 2 : invariant
+2
+
+
+ Calculate only im.part (1), only real part (2) or both (3) ?
+1
+
+
+ Phi-scan
+ 1 : Scan in Phi at fixed theta_lab
+ 2 : Scan in Phi at fixed t
+2
+
+
+ Give the value of -t (in GeV^2)
+0.3
+
+ cos(theta) = 0.998810 GeV^2, ga_en = 9.609861 GeV, ga_mom = 9.594240 GeV, theta_lab = 2.794918 deg
+
+ Give the first value for the angle phi (in deg) to calculate
+5
+
+
+ Give the step in the angle phi (in deg) (e.g. 10.)
+10
+
+
+ Give the last value for the angle phi (in deg) (e.g. 10.)
+355
+5.000000         2.259400e-03    3.107802e-03    3.107802e-03    2.259400e-03    2.683601e-03    1.373635e-15
+15.000000        1.985374e-03    3.135030e-03    3.135030e-03    1.985374e-03    2.560202e-03    -3.896045e-15
+25.000000        1.461517e-03    2.513851e-03    2.513851e-03    1.461517e-03    1.987684e-03    2.318205e-15
+35.000000        1.008557e-03    1.824522e-03    1.824522e-03    1.008557e-03    1.416540e-03    1.492506e-15
+45.000000        6.983317e-04    1.313331e-03    1.313331e-03    6.983317e-04    1.005831e-03    4.581144e-16
+55.000000        4.953785e-04    9.662418e-04    9.662418e-04    4.953785e-04    7.308101e-04    7.417810e-17
+65.000000        3.613424e-04    7.318149e-04    7.318149e-04    3.613424e-04    5.465786e-04    -7.438560e-17
+75.000000        2.707337e-04    5.706921e-04    5.706921e-04    2.707337e-04    4.207129e-04    -3.221324e-17
+85.000000        2.079805e-04    4.575060e-04    4.575060e-04    2.079805e-04    3.327433e-04    -2.240132e-16
+95.000000        1.635924e-04    3.763740e-04    3.763740e-04    1.635924e-04    2.699832e-04    -5.019767e-16
+105.000000       1.316659e-04    3.172625e-04    3.172625e-04    1.316659e-04    2.244642e-04    -7.547153e-16
+115.000000       1.084350e-04    2.737078e-04    2.737078e-04    1.084350e-04    1.910714e-04    -3.901102e-16
+125.000000       9.144015e-05    2.414599e-04    2.414599e-04    9.144015e-05    1.664500e-04    1.628420e-16
+135.000000       7.904539e-05    2.176773e-04    2.176773e-04    7.904539e-05    1.483613e-04    -9.819922e-16
+145.000000       7.015134e-05    2.004425e-04    2.004425e-04    7.015134e-05    1.352969e-04    3.005063e-16
+155.000000       6.402112e-05    1.884658e-04    1.884658e-04    6.402112e-05    1.262435e-04    -2.576455e-15
+165.000000       6.017350e-05    1.809024e-04    1.809024e-04    6.017350e-05    1.205379e-04    2.304891e-15
+175.000000       5.831807e-05    1.772411e-04    1.772411e-04    5.831807e-05    1.177796e-04    -9.349182e-16
+185.000000       5.831807e-05    1.772411e-04    1.772411e-04    5.831807e-05    1.177796e-04    -1.049985e-15
+195.000000       6.017350e-05    1.809024e-04    1.809024e-04    6.017350e-05    1.205379e-04    1.124337e-15
+205.000000       6.402112e-05    1.884658e-04    1.884658e-04    6.402112e-05    1.262435e-04    2.147046e-16
+215.000000       7.015134e-05    2.004425e-04    2.004425e-04    7.015134e-05    1.352969e-04    1.452447e-15
+225.000000       7.904539e-05    2.176773e-04    2.176773e-04    7.904539e-05    1.483613e-04    1.598592e-15
+235.000000       9.144015e-05    2.414599e-04    2.414599e-04    9.144015e-05    1.664500e-04    2.442630e-16
+245.000000       1.084350e-04    2.737078e-04    2.737078e-04    1.084350e-04    1.910714e-04    5.319684e-17
+255.000000       1.316659e-04    3.172625e-04    3.172625e-04    1.316659e-04    2.244642e-04    2.716975e-16
+265.000000       1.635924e-04    3.763740e-04    3.763740e-04    1.635924e-04    2.699832e-04    -2.760872e-16
+275.000000       2.079805e-04    4.575060e-04    4.575060e-04    2.079805e-04    3.327433e-04    -3.665671e-16
+285.000000       2.707337e-04    5.706922e-04    5.706922e-04    2.707337e-04    4.207129e-04    -1.288530e-16
+295.000000       3.613424e-04    7.318149e-04    7.318149e-04    3.613424e-04    5.465786e-04    7.438560e-17
+305.000000       4.953785e-04    9.662418e-04    9.662418e-04    4.953785e-04    7.308101e-04    -3.708905e-17
+315.000000       6.983317e-04    1.313331e-03    1.313331e-03    6.983317e-04    1.005831e-03    3.233749e-16
+325.000000       1.008557e-03    1.824522e-03    1.824522e-03    1.008557e-03    1.416540e-03    -1.109812e-15
+335.000000       1.461517e-03    2.513851e-03    2.513851e-03    1.461517e-03    1.987684e-03    -8.181900e-17
+345.000000       1.985374e-03    3.135030e-03    3.135030e-03    1.985374e-03    2.560202e-03    1.206927e-14
+355.000000       2.259400e-03    3.107802e-03    3.107802e-03    2.259400e-03    2.683601e-03    2.407901e-14
+

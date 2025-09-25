@@ -1,0 +1,218 @@
+
+ Lepton type
+ For DDVCS: muon (2) or no mass (3) IN THE FINAL STATE
+
+ Choose one of the following menu items :
+ 1 : 5-fold DIFFERENTIAL CROSS SECTION for ep -> ep gamma as function of t
+ 2 : e+e- asymmetry for DVCS
+ 3 : electron single spin asymmetry (SSA)
+ 4 : 2-body DOUBLY POLARIZED cross sections for (D)DVCS
+     polarized electron, polarized target
+ 5 : DIFFERENTIAL CROSS SECTION for DVCS as function of Q2
+ 6 : DIFFERENTIAL CROSS SECTION for DVCS as function of t
+ 11 : parton distributions
+ 12 : GPDs
+ 13 : sum rules and positivity tests
+ 14 : form factors from GPDs and WACS
+ 15 : accuracy test of integrals for twist-2 amplitude
+ 16 : accuracy test of integrals for twist-3 amplitude
+ 17 : integration of BH over bin size
+ 18 : fit of kinematics
+ 19 : phase space for (TCS and DVCS) and DDVCS
+ 20 : 3-body DOUBLY POLARIZED cross sections for DDVCS
+     polarized electron, polarized target
+ 21 : 2-body DIFFERENTIAL CROSS SECTION for Rho as function of Q2 or theta_lab
+ 22 : Timelike Compton scattering
+ 30 : WACS
+ 40 : Fit of DVCS data
+ 50 : Transverse densities
+ 60 : Resolutions
+
+ Choice to calculate on proton or on neutron (default = 1)
+ 1 = proton
+ 2 = neutron
+
+ Make a choice for the MECHANISM :
+ 1 : Bethe-Heitler contribution
+ 2 : TCS contribution
+ 3 : Bethe-Heitler + TCS contribution
+
+ Choose model for GPD
+ 1 : xi INdependent parametrization with MRS S_o distribution
+ 2 : xi INdependent parametrization with MRS D_o distribution
+ 3 : xi INdependent parametrization with MRS S_o distribution
+ 4 : xi INdependent parametrization with MRS95G distribution
+ 5 : xi INdependent parametrization with MRST98 distribution
+ 6 : xi INdependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 7 : xi INdependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 8 : xi INdependent parametrization with CTEQ4L distribution
+ 9 : xi INdependent parametrization with CTEQ4M distribution
+ 10 : xi INdependent parametrization with CTEQ5M distribution
+ 11 : xi INdependent parametrization with GRV98 NLO(MSbar) distribution
+ 12 : xi INdependent parametrization with GRV98 NLO(DIS) distribution
+ 13 : xi INdependent parametrization with GRV98 LO distribution
+ 14 : xi INdependent parametrization with MRST01 NLO distribution
+ 15 : xi INdependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 16 : xi INdependent parametrization with MRST02 NNLO distribution
+ 17 : xi INdependent parametrization with CTEQ6M distribution
+ 21 : xi dependent parametrization with MRS S_o distribution 
+ 22 : xi dependent parametrization with MRS D_o distribution 
+ 24 : xi dependent parametrization with MRS95G distribution 
+ 25 : xi dependent parametrization with MRST98 distribution 
+ 26 : xi dependent parametrization with MRST98 distribution at mu^2 = 1 GeV^2
+ 27 : xi dependent parametrization with MRST98 distribution (upper gluon, k_perp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 28 : xi dependent parametrization with CTEQ4L distribution 
+ 29 : xi dependent parametrization with CTEQ4M distribution 
+ 30 : xi dependent parametrization with CTEQ5M distribution 
+ 31 : xi dependent parametrization with GRV98 NLO(MSbar) distribution
+ 32 : xi dependent parametrization with GRV98 NLO(DIS) distribution
+ 33 : xi dependent parametrization with GRV98 LO distribution
+ 34 : xi dependent parametrization with MRST01 NLO distribution
+ 35 : xi dependent parametrization with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 36 : xi dependent parametrization with MRST02 NNLO distribution
+ 37 : xi dependent parametrization with CTEQ6M distribution
+ 41 : k_perp dependence with MRS S_o distribution
+ 42 : k_perp dependence with MRS D_o distribution
+ 44 : k_perp dependence with MRS95G distribution
+ 45 : k_perp dependence with MRST98 distribution
+ 46 : k_perp dependence with MRST98 distribution at mu^2 = 1 GeV^2
+ 47 : k_perp dependence with MRST98 distribution (upper gluon, k_erp_av = 0 GeV) at mu^2 = 1 GeV^2
+ 48 : k_perp dependence with CTEQ4L distribution
+ 49 : k_perp dependence with CTEQ4M distribution
+ 50 : k_perp dependence with CTEQ5M distribution
+ 54 : k_perp dependence with MRST01 NLO distribution
+ 55 : k_perp dependence with MRST02 NNLO distribution at mu^2 = 1 GeV^2
+ 56 : k_perp dependence with MRST02 NNLO distribution
+ 57 : k_perp dependence with CTEQ6M distribution
+
+Give the value for the power b in the profile function for the valence contribution to H (e.g. 1.)
+
+Give the value for the power b in the profile function for the sea contribution to H (e.g. 1.)
+
+ Choose the model for the t-dependence of the GPD H
+1 = Factorized model for the t-dependence
+2 = Regge inspired ansatz for the t-dependence
+3 = Experimental exponential input by user
+4 = Experimental exponential fit (fit of all data)
+5 = Experimental exponential fit (fit of subrange -by Mick-)
+6 = Hybrid model (FF vor val and Regge for sea)
+7 = Diehl et al. model (t-dep in DDs)
+8 = R2 Regge ansatz model (t-dep in DDs)
+9 = Diehl et al. model (t-dep out of DDs)
+10 = R2 Regge ansatz model (t-dep out of DDs)
+
+Enter slope alphap (GeV-2)
+
+Do you want to evaluate the D-term contribution to the GPD H?
+1 = Yes
+2 = No
+
+Do you want to evaluate the GPD E?
+1 = only D-term contribution
+2 = double distribution contribution + D-term contribution
+3 = No, E = 0
+
+Do you want to evaluate the pi0 pole contribution (i.e. SPD Etilde)?
+1 = Yes
+2 = No
+
+
+ With (1) or without (2) Htilde ?
+
+ Numerical calculation or analytical ?
+ 1 = Numerical
+ 2 = Analytical
+
+
+ As a function of :
+ 1 : Eg
+ 3 : scattering angle (or -t)
+ 4 : Psi (angle between (beam- or target-) polarization and production plane)
+ 5 : Qprime^2
+ 6 : decay angles
+
+
+ Which photon polarization ?
+ 1 : circular
+ 2 : linear
+
+
+ Give the value of Qprime^2 in GeV^2 (e.g. 2.0)
+ (CLAS kin1=1.5, CLAS kin2=1.5, CLAS kin3=2, CLAS kin4=2, Berger et al.=5)
+
+
+ Give Egamma (1) or xi (2) ?
+
+
+ Give the value of beam energy in GeV (e.g. 12.)
+ (CLAS kin1=5.51, CLAS kin2=3.81, CLAS kin3=4.18,CLAS kin4=2.73, Berger et al.=12.84)
+
+
+ Decay angles
+ 0 : Fixed values of c.m. decay angles
+ 1 : Integration over the 2 angles
+ 2 : As a function of polar angle : Integration over the azimuthal cm angle
+ 3 : As a function of azimuthal angle : Integration over the polar cm angle
+ 4 : As a function of polar angle : At fixed azimuthal cm angle
+ 5 : As a function of azimuthal angle : At fixed polar cm angle
+ 6 : As a function of both azimuthal and polar angles
+
+
+ Theta_cm integration between 0 and PI (0), PI/4 and 3PI/4 (1), Jlab exp. (2) or user cut (3)?
+
+
+ no weighting (0), cos(phi) (1), L/L0 weighting (2) or L/L0.cos(phi) (3) for cross section ?
+
+
+ As a function of t or theta ?
+ 1 : t
+ 2 : theta
+
+
+ Give the first -t to calculate (e.g. .1)
+
+
+ Give the last -t to calculate (e.g. 10.)
+
+
+ Give the step in -t to calculate (e.g. 1.)
+
+ cos(theta_lab) = 0.999988, ga_en = 17.994671 GeV, ga_mom = 17.952944 GeV, theta_lab = 0.281746 deg0.010000 	 7.342733e-02 
+
+ cos(theta_lab) = 0.999840, ga_en = 17.941382 GeV, ga_mom = 17.899530 GeV, theta_lab = 1.026147 deg0.110000 	 2.811359e-02 
+
+ cos(theta_lab) = 0.999690, ga_en = 17.888092 GeV, ga_mom = 17.846116 GeV, theta_lab = 1.425545 deg0.210000 	 1.196773e-02 
+
+ cos(theta_lab) = 0.999541, ga_en = 17.834803 GeV, ga_mom = 17.792700 GeV, theta_lab = 1.736960 deg0.310000 	 5.604264e-03 
+
+ cos(theta_lab) = 0.999390, ga_en = 17.781513 GeV, ga_mom = 17.739285 GeV, theta_lab = 2.001895 deg0.410000 	 2.851829e-03 
+
+ cos(theta_lab) = 0.999238, ga_en = 17.728224 GeV, ga_mom = 17.685868 GeV, theta_lab = 2.236937 deg0.510000 	 1.558008e-03 
+
+ cos(theta_lab) = 0.999085, ga_en = 17.674934 GeV, ga_mom = 17.632450 GeV, theta_lab = 2.450712 deg0.610000 	 9.040194e-04 
+
+ cos(theta_lab) = 0.998932, ga_en = 17.621645 GeV, ga_mom = 17.579032 GeV, theta_lab = 2.648385 deg0.710000 	 5.521650e-04 
+
+ cos(theta_lab) = 0.998778, ga_en = 17.568356 GeV, ga_mom = 17.525613 GeV, theta_lab = 2.833338 deg0.810000 	 3.524976e-04 
+
+ cos(theta_lab) = 0.998622, ga_en = 17.515066 GeV, ga_mom = 17.472193 GeV, theta_lab = 3.007926 deg0.910000 	 2.338913e-04 
+
+ cos(theta_lab) = 0.998466, ga_en = 17.461777 GeV, ga_mom = 17.418773 GeV, theta_lab = 3.173868 deg1.010000 	 1.605879e-04 
+
+ cos(theta_lab) = 0.998309, ga_en = 17.408487 GeV, ga_mom = 17.365351 GeV, theta_lab = 3.332465 deg1.110000 	 1.136762e-04 
+
+ cos(theta_lab) = 0.998151, ga_en = 17.355198 GeV, ga_mom = 17.311929 GeV, theta_lab = 3.484727 deg1.210000 	 8.270513e-05 
+
+ cos(theta_lab) = 0.997992, ga_en = 17.301908 GeV, ga_mom = 17.258506 GeV, theta_lab = 3.631458 deg1.310000 	 6.167455e-05 
+
+ cos(theta_lab) = 0.997832, ga_en = 17.248619 GeV, ga_mom = 17.205082 GeV, theta_lab = 3.773311 deg1.410000 	 4.702245e-05 
+
+ cos(theta_lab) = 0.997671, ga_en = 17.195330 GeV, ga_mom = 17.151658 GeV, theta_lab = 3.910825 deg1.510000 	 3.657077e-05 
+
+ cos(theta_lab) = 0.997510, ga_en = 17.142040 GeV, ga_mom = 17.098232 GeV, theta_lab = 4.044448 deg1.610000 	 2.895186e-05 
+
+ cos(theta_lab) = 0.997347, ga_en = 17.088751 GeV, ga_mom = 17.044806 GeV, theta_lab = 4.174561 deg1.710000 	 2.328601e-05 
+
+ cos(theta_lab) = 0.997183, ga_en = 17.035461 GeV, ga_mom = 16.991378 GeV, theta_lab = 4.301490 deg1.810000 	 1.899463e-05 
+
+ cos(theta_lab) = 0.997018, ga_en = 16.982172 GeV, ga_mom = 16.937950 GeV, theta_lab = 4.425515 deg1.910000 	 1.568931e-05 
