@@ -28,6 +28,8 @@ int main(int argc, char** argv) {
     if (argc < 5) {
         cout << "The command should look like " << endl;
         cout << "./MergeRootFiles.exe incRun GrapeRun NoEv NoEvPerFile"<<endl;
+	cout<<" Exiting ..."<<endl;
+	exit(1);
     }
 
     int incRun = atoi(argv[1]);

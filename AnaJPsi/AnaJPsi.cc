@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     if (argc < 2) {
         cout << "Please provide the run number." << endl;
         cout << "Exiting" << endl;
+	exit(1);
     }
 
     const int run = atoi(argv[1]);
