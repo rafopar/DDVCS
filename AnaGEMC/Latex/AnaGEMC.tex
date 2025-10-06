@@ -1,0 +1,123 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{color}
+
+\oddsidemargin = -10mm
+\topmargin = -3.cm
+\textwidth = 18.5cm
+\textheight = 26.5cm
+
+%\def \RUN{2247}
+%\def \RUN{2099}
+%\def \RUN{1789}
+%\def \T_OVER_THR{1.0}
+%\def \CRS_DELTA_T{1000.0}
+%\def \LR_MATCH_DELTA_T{1000.0}
+\def \grinp{\includegraphics}
+\def \tw{\textwidth}
+
+\title{ DDVCS Analysis plots for the Run \RUN }
+
+\begin{document}
+
+\maketitle
+
+\begin{figure}[!htb]
+\centering
+\grinp[width=0.45\tw]{Figs/th_P_mum1_\RUN.pdf}
+\grinp[width=0.45\tw]{Figs/th_P_mup1_\RUN.pdf} \\
+\grinp[width=0.45\tw]{Figs/th_P_em1_\RUN.pdf}
+\caption{``$\theta$ vs $P$'' distributions for final state particles}
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\grinp[width=0.45\tw]{Figs/th_P_mum2_\RUN.pdf}
+\grinp[width=0.45\tw]{Figs/th_P_mup2_\RUN.pdf} \\
+\grinp[width=0.45\tw]{Figs/th_P_em2_\RUN.pdf}
+\caption{``$\theta$ vs $P$'' distributions for final state particles, when one electron, one $\mu^{-}(\pi^{-})$ and $\mu^{+}(\pi^{+})$ are reconstructed.}
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\grinp[width=0.32\tw]{Figs/MC_th_P_em_miss1_Run_\RUN.pdf}
+\grinp[width=0.32\tw]{Figs/MC_th_P_mum_miss1_Run_\RUN.pdf}
+\grinp[width=0.32\tw]{Figs/MC_th_P_mup_miss1_Run_\RUN.pdf} \\
+\grinp[width=0.32\tw]{Figs/MC_th_P_em_det1_Run_\RUN.pdf}
+\grinp[width=0.32\tw]{Figs/MC_th_P_mum_det1_Run_\RUN.pdf}
+\grinp[width=0.32\tw]{Figs/MC_th_P_mup_det1_Run_\RUN.pdf}
+\caption{MC ``$\theta$ vs P'' distriutions missed (top row) and detected (bottom row) particles. Left column represents electrons, middle column represents $\mu^{-}$
+and the right column represents $\mu^{+}$.}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htb]
+ \centering
+ \grinp[width=0.45\tw]{Figs/MmisCorretions_\RUN.pdf}
+ \caption{Missing mass corrections.}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+ \centering
+ \grinp[width=0.45\tw]{Figs/Qp2_vs_Q2_Rec1_Run_32.pdf}
+ \grinp[width=0.45\tw]{Figs/Minv_tM_AngleFix1_32.pdf}\\
+ \grinp[width=0.45\tw]{Figs/Q2_vs_W_Run_32.pdf}
+ \grinp[width=0.45\tw]{Figs/Q2_xB1_Run_32.pdf}
+ \caption{Kinematc distributions: Top-Left ``$\mathrm{Q^{'2}\;vs\;Q^{2}}$'', Top-right, ``$\mathrm{M(\mu^{-}\mu^{+})\;vs\;-t}$''
+ Bottom-Left, ``$\mathrm{Q^{2}\;vs\;W}$'' and bottom right, ``$\mathrm{Q^{2}\;vs\;x_{B}}$''}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htb]
+ \centering
+\grinp[width=0.45\tw]{Figs/tM_Resolution_AngleFix_32.pdf}
+\grinp[width=0.45\tw]{Figs/xi_Resolution_AngleFix_32.pdf}\\
+\grinp[width=0.45\tw]{Figs/xiPrime_Resolution_AngleFix_32.pdf}
+\caption{Resolutions: Top-left is the resolution on t, Top-righ represents the resolution on $\mathrm{\xi}$
+and the bottom plot is represents the resolution on $\mathrm{\xi^{\prime}}$}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htb]
+\centering
+\grinp[width=0.45\tw]{Figs/Xi_x_bins_on_xi_x_Run_32.pdf}
+\grinp[width=0.45\tw]{Figs/Qp2_Q2_With_xi_x_bins_Run_32.pdf} \\
+\grinp[width=0.45\tw]{Figs/xB_tM_xi_x_bins_Run_32.pdf}
+\grinp[width=0.45\tw]{Figs/th_P_em_xi_x_bins_32.pdf}
+\caption{kinematic distributions: Top left, $\mathrm{``\xi\;vs\;x''}$ distribution for all events in black, Red and Green square
+are two representative bins that were used to study BSA. The Top right plot shows the ``$\mathrm{ Q^{'2}\;vs\;Q^{2}}$'' distributions
+for kinematic bins shown in Top-Left plot. In addition for each ``$\mathrm{\xi\;vs\;x}$'' bin, the ``$\mathrm{ Q^{'2}\;vs\;Q^{2}}$''
+phase space is divided into two regions (highlihted by different colors).
+Bottom-Left plot showsn ``$\mathrm{ x_{B}\;vs\;t}$'' distriutions for both selected bins in the Top-left plot, lower $\mathrm{x_{B}}$ region
+corresponds to lower x bin. The bottom right plot shows ``$\mathrm{\theta\;vs\;p}$'' distributions for electrons. Black dots represent
+the phase space for all events in the $\mathrm{e^{-}\mu^{-}\mu^{+}}$ final state, while regions with different colors correspond to
+different ``$\mathrm{ Q^{'2}\;vs\;Q^{2}}$'' distributions. Color coding is the same as the one on Top-right plot.}
+\label{fig:KinDistributions}
+
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htb]
+\centering
+\grinp[width=0.45\tw]{Figs/Asym_xi_x_bins_0_0_Run_32.pdf}
+\grinp[width=0.45\tw]{Figs/Asym_xi_x_bins_0_1_Run_32.pdf}\\
+\grinp[width=0.45\tw]{Figs/Asym_xi_x_bins_1_0_Run_32.pdf}
+\grinp[width=0.45\tw]{Figs/Asym_xi_x_bins_1_1_Run_32.pdf}
+\caption{BSA for different bins. points were obtained by VGG code, and uncertainties on the polarization are calculated
+using stat uncertainties from GRAPE simulations. Top row is for Bin(0, 0) (left), and for Bin(0,1) right.
+Bottom row represents Bin (1,0) (left) and Bin(1,1) (right). }
+\label{fig:BSA_Estimates}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
