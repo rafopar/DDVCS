@@ -3,6 +3,7 @@
 
 namespace DDVCSTools {
 
+
 } // DDVCSTools
 
 #endif //DDVCSTOOLS_H
