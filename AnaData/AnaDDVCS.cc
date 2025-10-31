@@ -20,8 +20,8 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 
+#include <ElectronDDVCSKine.h>
 #include <RecParticle.h>
-#include <cxxopts.hpp>
 
 // ===== Hipo headers =====
 #include <reader.h>
@@ -31,68 +31,100 @@
 
 using namespace std;
 
-bool emAcc(TLorentzVector&);
-bool mumAcc(TLorentzVector&);
-bool mupAcc(TLorentzVector&);
-bool protAcc(TLorentzVector&);
+bool emAcc(TLorentzVector &);
+
+bool mumAcc(TLorentzVector &);
+
+bool mupAcc(TLorentzVector &);
+
+bool protAcc(TLorentzVector &);
 
 TF1 *f_mumAccThP;
 
 /*
- * 
+ *
  */
-int main(int argc, char** argv) {
-
-    cxxopts::Options options("AnaDDVCS", "Analysis code for DDVCS");
-
-    options.add_options()
-            ("d,DataSet", "The Data set", cxxopts::value< std::string >())
-            ("s,ScaleTo", "Scale to a given Data Set", cxxopts::value< std::string >()->default_value(""))
-            ("n,nMax", "Number of events to process", cxxopts::value< int >()->default_value("10000000000"))
-            ;
-
-    auto parsed_options = options.parse(argc, argv);
-
-    char inputFile[256];
-    //std::string data_Set = "S19";
-    //std::string data_Set = "GRAPE_Run6";
-    //std::string data_Set = "GRAPE_Run8";
-
-
-    if (!parsed_options.count("DataSet")) {
-        cout << "The Data set is not provided. Exiting..." << endl;
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        cout << "Please provide the run number." << endl;
+        cout << "Exiting" << endl;
         exit(1);
     }
-    const std::string data_Set = parsed_options["DataSet"].as<std::string>();
-    const std::string ScaleToSet = parsed_options["ScaleTo"].as<std::string>();
 
-    const int nMaxEvents = parsed_options["nMax"].as<int>();
+    int run = atoi(argv[1]);
+    char inputFile[256];
 
-    sprintf(inputFile, "inpHipoFiles/Skim_ememep_%s.hipo", data_Set.c_str());
-    //sprintf(inputFile, "Data_GEMC/Run_5/Run_5.hipo", data_Set.c_str());
-    //sprintf(inputFile, "Data_GEMC/Run_6/Run_6.hipo", data_Set.c_str());
-    //sprintf(inputFile, "Data_GEMC/Run_8/Run_8.hipo", data_Set.c_str());
-    //sprintf(inputFile, "/volatile/clas12/rafopar/OSG_Validation/CurrentPortal/LUND_DDVCS/GRAPEDDVCS_CurrentPortal.hipo");
-    //sprintf(inputFile, "/volatile/clas12/rafopar/OSG_Validation/NewPortal/LUND_DDVCS/GRAPEDDVCS_NewPortal.hipo");
-    //sprintf(inputFile, "/volatile/clas12/rafopar/OSG_Validation/NewPortal_OldSW/LUND_DDVCS/GRAPEDDVCS_NewPortal_OldSW.hipo");
+    std::map<int, double> m_TotXsec;
+    std::map<int, double> m_Eb;
+    std::map<int, double> m_totCharge;
+    std::map<int, bool> m_isMC;
 
-    //bool isMC = strcmp(data_Set.c_str(), "S19") == 0 ? 0 : 1;
-    bool isMC = data_Set.find("MC") == std::string::npos ? 0 : 1;
+    sprintf(inputFile, "inpHipoFiles/ememep_Run_%d.hipo", run);
+
+    /*
+    * Let's read the RunSettings.dat file and initialize variables
+    * that are specified in the RunSettings.dat
+    */
+
+    std::ifstream inp_config("RunSettings.dat");
+    if (!inp_config.is_open()) {
+        std::cerr << "Error opening the config file! \n Exiting..." << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    while (std::getline(inp_config, line)) {
+        size_t commentPos = line.find("#"); // Or line.find("#"); for hash comments
+
+        // If a comment is found, truncate the string at that position
+        if (commentPos != std::string::npos) {
+            line = line.substr(0, commentPos);
+        }
+
+        if (line.empty()) {
+            continue;
+        }
+
+        std::istringstream iss(line);
+        std::string entry;
+        std::vector<std::string> v_entries;
+
+        while (iss >> entry) {
+            v_entries.push_back(entry);
+        }
+
+        int arun = std::stoi(v_entries[0]);
+        double axSec = std::stof(v_entries[1]);
+        double aEb = std::stof(v_entries[2]);
+        double aCarge = std::stof(v_entries[3]);
+
+        int aisMC = std::stoi(v_entries[4]);
+
+        m_TotXsec[arun] = axSec;
+        m_Eb[arun] = aEb;
+        m_totCharge[arun] = aCarge;
+        m_isMC[arun] = aisMC;
+    }
+
+
+
+    /*
+     * Check if the run exist in the RunSerrings.dat
+     */
+
+    if ( m_isMC.find(run) == m_isMC.end() ) {
+        cerr<<"The run "<<run<<" is not in the RunSettings.dat. Exiting..."<<endl;
+        exit(1);
+    }
+
+
+    bool isMC = m_isMC[run];
+    double x_sec = m_TotXsec[run];
+    double Eb = m_Eb[run];
+    double totCarge = m_totCharge[run];
 
     f_mumAccThP = new TF1("f_mumAccThP", "[0] + [1]/(x-[2])", 0., 25);
     f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
-
-    std::map<std::string, double> m_Ebeam;
-    m_Ebeam["F18_In_Early"] = 10.6;
-    m_Ebeam["F18_In"] = 10.6;
-    m_Ebeam["F18_Out"] = 10.6;
-    m_Ebeam["S19"] = 10.2;
-    m_Ebeam["MC_Run5"] = 10.2;
-    m_Ebeam["MC_Run6"] = 10.2;
-    m_Ebeam["MC_Run7"] = 10.2;
-    m_Ebeam["MC_Run8"] = 10.2;
-    m_Ebeam["MC_Run8_OutBend"] = 10.2;
-    double Eb = m_Ebeam[data_Set.c_str()];
 
     const double Hist_Pmax = 11.;
     const int nMax_samePID = 20;
@@ -112,6 +144,11 @@ int main(int argc, char** argv) {
     const double Mmis_Max = 1.2;
     const double Mmis_Min = 0.8;
 
+    const double P_prot_Max = 1.5; // MC shows that the majority of protons have momentum less than 0.8 GeV
+    const double dP_P_cut = 0.3;
+
+    const double Mx2ReactionCut = 0.1; // GeV^2
+
     const double PmisCut = 1.4; // In GeV. Momenta of about 90% of protons is below this value
     const double thMinCut = 15.; // Majority of protons fly above this value
 
@@ -123,61 +160,17 @@ int main(int argc, char** argv) {
     const double rho = 0.07085; // gm*cm^{-3}
     const double l = 5.; // cm
     const double N_A = 6.022e23;
-    const double charge_S19 = 50.5319e-3; // C
-    const double em_charge = 1.6e-19; // 
-    const double N_em_S19 = charge_S19 / em_charge;
-    const double N_targ = rho * l*N_A;
-    // =============================================
-    double scale = 0.; // MC will be scaled with a given variable to match the data.
+    const double em_charge = 1.6e-19; //
+    const double N_targ = rho * l * N_A;
+    constexpr double mili = 0.001;
+    constexpr double inv_pb = 1e-36;
+    double N_e_onTarg = (totCarge*mili)/em_charge;
+    double Lumi = N_targ*N_e_onTarg*inv_pb;
 
-    /*
-     * GRAPE x-sections for different GRAPE runs
-     */
-    std::map<std::string, double > m_GRAPE_xSec;
+    ElectronDDVCSKine ddvcs_kine;
 
-    m_GRAPE_xSec[ "MC_Run5" ] = 0.115823e-36;
-    m_GRAPE_xSec[ "MC_Run5" ] = 0.115823e-36;
-    m_GRAPE_xSec[ "MC_Run8" ] = 4.50346e-36;
-    m_GRAPE_xSec[ "MC_Run8_OutBend" ] = 4.50346e-36;
-
-    /*
-     * Accumulated charge for different data sets: F18_In, F18_In_Early, F18_Out, S19
-     */
-
-    std::map< std::string, double > m_Data_Charge;
-
-    m_Data_Charge["S19"] = 50.5319e-3;
-    m_Data_Charge["F18_In"] = 37.0593097e-3;
-    m_Data_Charge["F18_In_Early"] = 6.389618e-3;
-    m_Data_Charge["F18_Out"] = 34.0826e-3;
-
-    if (isMC) {
-        if (m_GRAPE_xSec.count(data_Set.c_str()) == 0) {
-            cout << "The data set \"" << data_Set.c_str() << "\" is unrecognized. Exiting. " << endl;
-            exit(1);
-        }
-
-        if (m_Data_Charge.count(ScaleToSet.c_str()) == 0) {
-            cout << "No or wrong \"Scale to\" data set is provided. Exiting" << endl;
-            exit(1);
-        }
-
-
-        scale = m_GRAPE_xSec[data_Set.c_str()] * N_targ * m_Data_Charge[ScaleToSet.c_str()] / em_charge;
-    }
-
-    //    if (strcmp(data_Set.c_str(), "S19") == 0) {
-    //        scale = 1.;
-    //    } else if (strcmp(data_Set.c_str(), "MC_Run5") == 0) {
-    //        const double xSec = 0.115823e-36; //bn
-    //        scale = xSec * N_em_S19*N_targ;
-    //    } else if (strcmp(data_Set.c_str(), "MC_Run6") == 0) {
-    //        const double xSec = 2.12652e-36; //bn
-    //        scale = xSec * N_em_S19*N_targ;
-    //    } else if (strcmp(data_Set.c_str(), "MC_Run8") == 0) {
-    //        const double xSec = 4.50346e-36; //bn
-    //        scale = xSec * N_em_S19*N_targ;
-    //    }
+    ddvcs_kine.SetEb(Eb);
+    ddvcs_kine.SetMtarg(Mp);
 
     TLorentzVector L_beam;
     L_beam.SetPxPyPzE(0., 0., Eb, Eb);
@@ -186,7 +179,7 @@ int main(int argc, char** argv) {
 
     TObjArray Hlist(0);
 
-    TFile *file_out = new TFile(Form("Hists_DDVCS_%s.root", data_Set.c_str()), "Recreate");
+    TFile *file_out = new TFile(Form("HistData/Hists_DDVCS_Run_%d.root", run), "Recreate");
     TH1D h_nphe_em1("h_nphe_em1", "", 200, 0., 35.);
     TH1D h_nphe_ep1("h_nphe_ep1", "", 200, 0., 35.);
 
@@ -223,7 +216,8 @@ int main(int argc, char** argv) {
     TH2D h_th_P_em5("h_th_P_em5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
     TH2D h_th_P_ep5("h_th_P_ep5", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 55.);
 
-    TH2D h_beta_P_prot1("h_beta_P_prot1", "", 200, 0., 1.2 * Hist_Pmax, 200, 0., 1.5);
+    TH2D h_beta_P_prot1("h_beta_P_prot1", "", 200, 0., 0.5 * Hist_Pmax, 200, 0., 1.5);
+    TH2D h_beta_P_prot4("h_beta_P_prot4", "", 200, 0., 0.5 * Hist_Pmax, 200, 0., 1.5);
     TH1D h_E_PCal_em1("h_E_PCal_em1", "", 200, 0., 1.);
     TH1D h_E_PCal_ep1("h_E_PCal_ep1", "", 200, 0., 1.);
 
@@ -239,59 +233,45 @@ int main(int argc, char** argv) {
     TH1D h_n_prot1("h_n_prot1", "", 11, -0.5, 10.5);
     TH1D h_n_charged1("h_n_charged1", "", 11, -0.5, 10.5);
 
-
     TH1D h_Mmis1("h_Mmis1", "", 200, 0., 4.);
-    Hlist.Add(&h_Mmis1);
     TH2D h_th_VS_Mmis1("h_th_VS_Mmis1", "", 200, 0., 65., 200, 0., 4.);
-    Hlist.Add(&h_th_VS_Mmis1);
     TH2D h_th_VS_Mmis2("h_th_VS_Mmis2", "", 200, 0., 65., 200, 0., 4.);
-    Hlist.Add(&h_th_VS_Mmis2);
     TH2D h_th_VS_Mmis3("h_th_VS_Mmis3", "", 200, 0., 65., 200, 0., 4.);
-    Hlist.Add(&h_th_VS_Mmis3);
     TH2D h_th_VS_Mmis4("h_th_VS_Mmis4", "", 200, 0., 65., 200, 0., 4.);
-    Hlist.Add(&h_th_VS_Mmis4);
 
     TH2D h_Mmis_PMis1("h_Mmis_PMis1", "", 200, 0., 8., 200, 0., 4.);
-    Hlist.Add(&h_Mmis_PMis1);
     TH2D h_Mmis_PMis2("h_Mmis_PMis2", "", 200, 0., 8., 200, 0., 4.);
-    Hlist.Add(&h_Mmis_PMis2);
     TH2D h_Mmis_PMis3("h_Mmis_PMis3", "", 200, 0., 8., 200, 0., 4.);
-    Hlist.Add(&h_Mmis_PMis3);
-
     TH2D h_th_P_Mis1("h_th_P_Mis1", "", 200, 0., 8., 200, 0., 65);
-    Hlist.Add(&h_th_P_Mis1);
     TH2D h_th_P_Mis2("h_th_P_Mis2", "", 200, 0., 8., 200, 0., 65);
-    Hlist.Add(&h_th_P_Mis2);
     TH2D h_th_P_Mis3("h_th_P_Mis3", "", 200, 0., 8., 200, 0., 65);
-    Hlist.Add(&h_th_P_Mis3);
-
     TH1D h_Mmis2("h_Mmis2", "", 200, 0., 4.);
-    Hlist.Add(&h_Mmis2);
     TH1D h_Mmis3("h_Mmis3", "", 200, 0., 4.);
-    Hlist.Add(&h_Mmis3);
     TH1D h_Mmis4("h_Mmis4", "", 200, 0., 4.);
-    Hlist.Add(&h_Mmis4);
+    TH1D h_Mmis5("h_Mmis5", "", 200, 0., 4.);
+    TH1D h_Mmis6("h_Mmis6", "", 200, 0., 4.);
     TH2D h_Minv12_1("h_Minv12_1", "", 200, 0., 2.5, 200, 0., 2.5);
-    Hlist.Add(&h_Minv12_1);
     TH2D h_Minv12_2("h_Minv12_2", "", 200, 0., 2.5, 200, 0., 2.5);
-    Hlist.Add(&h_Minv12_2);
     TH2D h_Minv12_3("h_Minv12_3", "", 200, 0., 2.5, 200, 0., 2.5);
-    Hlist.Add(&h_Minv12_3);
+    TH2D h_Minv12_4("h_Minv12_4", "", 200, 0., 2.5, 200, 0., 2.5);
+    TH2D h_Minv12_5("h_Minv12_5", "", 200, 0., 2.5, 200, 0., 2.5);
     TH1D h_vt_Diff_em1("h_vt_Diff_em1", "", 200, -0.5, 0.5);
-    Hlist.Add(&h_vt_Diff_em1);
     TH2D h_vt_Diff_emep1("h_vt_Diff_emep1", "", 200, -2., 2., 200, -2., 2.);
-    Hlist.Add(&h_vt_Diff_emep1);
     TH2D h_vz_Diff_emep1("h_vz_Diff_emep1", "", 200, -10., 10., 200, -10., 10.);
-    Hlist.Add(&h_vz_Diff_emep1);
     TH1D h_vt_Diff_em2("h_vt_Diff_em2", "", 200, -18.5, 18.5);
-    Hlist.Add(&h_vt_Diff_em2);
     TH1D h_vt_Diff_em1_ep("h_vt_Diff_em1_ep", "", 200, -18.5, 18.5);
-    Hlist.Add(&h_vt_Diff_em1_ep);
     TH1D h_vt_Diff_em2_ep("h_vt_Diff_em2_ep", "", 200, -18.5, 18.5);
-    Hlist.Add(&h_vt_Diff_em2_ep);
-
     TH2D h_MC_Memep_12_1("h_MC_Memep_12_1", "", 200, 0., 3., 200, 0., 3.);
-    Hlist.Add(&h_MC_Memep_12_1);
+
+    TH2D h_Pmiss_Pprot4("h_Pmiss_Pprot4", "", 200, 0., 0.5*Eb, 200, 0., 0.5*Eb);
+    TH2D h_dP_P_prot4("h_dP_P_prot4", "", 200, 0., 0.5*Eb, 200, -1, 1);
+
+    TH1D h_Mmis4Part4("h_Mmis4Part4", "", 200, -1.5, 1.5);
+
+    TH2D h_xi_xxGPD_1_4("h_xi_xxGPD_1_4", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_2_4("h_xi_xxGPD_2_4", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_1_5("h_xi_xxGPD_1_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_2_5("h_xi_xxGPD_2_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
 
     hipo::reader reader;
     reader.open(inputFile);
@@ -321,15 +301,15 @@ int main(int argc, char** argv) {
     int sec_ep[nMax_samePID];
 
     try {
-
         while (reader.next() == true) {
             reader.read(event);
 
             evCounter = evCounter + 1;
 
-            if (evCounter > nMaxEvents) {
+            if (evCounter > 400000) {
                 break;
             }
+
             if (evCounter % 10000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
@@ -349,7 +329,6 @@ int main(int argc, char** argv) {
 
             int nPart = bRecPart.getRows();
             for (int i_part = 0; i_part < nPart; i_part++) {
-
                 // ==== Before assigning, index, all indexes are initialized to -1, this way we can check, whether
                 // ==== that particular detector is related to the particle "i_part"
                 ind_HTCC[i_part] = -1;
@@ -361,10 +340,8 @@ int main(int argc, char** argv) {
                 int nCherenkov = bRecCC.getRows();
                 // =============================== HTCC ===============================
                 for (int i_cc = 0; i_cc < nCherenkov; i_cc++) {
-
                     // Want only HTCC for now
                     if (bRecCC.getInt("detector", i_cc) == HTCC_TYPE) {
-
                         if (bRecCC.getInt("pindex", i_cc) == i_part) {
                             ind_HTCC[i_part] = i_cc;
                         }
@@ -375,24 +352,18 @@ int main(int argc, char** argv) {
 
                 // ===================== FTOF ========================
                 for (int itof = 0; itof < nTOF; itof++) {
-
                     if (bRecSC.getInt("detector", itof) == DET_FTOF && bRecSC.getInt("layer", itof) == layer1b) {
-
                         if (bRecSC.getInt("pindex", itof) == i_part) {
                             ind_FTOF[i_part] = itof;
                         }
                     }
-
-
                 }
 
                 int nCal = bRecCalo.getRows();
 
                 // =============================== PCal, ECin, ECout ===============================
                 for (int i_cal = 0; i_cal < nCal; i_cal++) {
-
                     if (bRecCalo.getInt("pindex", i_cal) == i_part) {
-
                         int layer = bRecCalo.getInt("layer", i_cal);
 
                         if (layer == 1) {
@@ -403,9 +374,7 @@ int main(int argc, char** argv) {
                             ind_ECout[i_part] = i_cal;
                         }
                     }
-
                 }
-
             }
 
             int n_em = 0;
@@ -415,10 +384,10 @@ int main(int argc, char** argv) {
 
 
             for (int ipart = 0; ipart < nPart; ipart++) {
-                RecParticle recp(bRecPart, bRecCalo, bRecCC, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart], ind_HTCC[ipart]);
+                RecParticle recp(bRecPart, bRecCalo, bRecCC, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart],
+                                 ind_HTCC[ipart]);
 
                 if (recp.pid() == 11 && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000) {
-
                     h_vz_em1.Fill(recp.vz());
                     h_chi2PID_em1.Fill(recp.chi2pid());
                     h_nphe_em1.Fill(recp.npheHTCC());
@@ -440,7 +409,6 @@ int main(int argc, char** argv) {
                         sec_em[n_em] = recp.phi() / 60;
                         n_em = n_em + 1;
                     }
-
                 } else if (recp.pid() == -11 && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000) {
                     h_vz_ep1.Fill(recp.vz());
                     h_chi2PID_ep1.Fill(recp.chi2pid());
@@ -463,14 +431,14 @@ int main(int argc, char** argv) {
                     bool isPCalVmin = recp.lvPCal() > PCalVmin;
                     bool isPCalWmin = recp.lvPCal() > PCalWmin;
 
-                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.15) || (recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.195)) && isPCalEmin && isPCalVmin && isPCalWmin) {
+                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.15) || (
+                             recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.195)) && isPCalEmin &&
+                        isPCalVmin && isPCalWmin) {
                         ind_ep[n_ep] = ipart;
                         sec_ep[n_ep] = recp.phi() / 60;
                         n_ep = n_ep + 1;
                     }
-
                 } else if (recp.pid() == 2212) {
-
                     h_vz_prot1.Fill(recp.vz());
                     h_chi2PID_prot1.Fill(recp.chi2pid());
                     h_th_P_prot1.Fill(recp.p(), recp.th());
@@ -481,19 +449,23 @@ int main(int argc, char** argv) {
                         n_prot = n_prot + 1;
                     }
                 }
-
             }
 
             if (n_em == 2 && n_ep == 1) {
                 TLorentzVector L_em1, L_em2, L_ep;
 
-                RecParticle part_em1(bRecPart, bRecCalo, bRecCC, ind_em[0], ind_PCal[ind_em[0]], ind_ECin[ind_em[0]], ind_ECout[ind_em[0]], ind_HTCC[ind_em[0]]);
+                RecParticle part_em1(bRecPart, bRecCalo, bRecCC, ind_em[0], ind_PCal[ind_em[0]], ind_ECin[ind_em[0]],
+                                     ind_ECout[ind_em[0]], ind_HTCC[ind_em[0]]);
 
-                RecParticle part_em2(bRecPart, bRecCalo, bRecCC, ind_em[1], ind_PCal[ind_em[1]], ind_ECin[ind_em[1]], ind_ECout[ind_em[1]], ind_HTCC[ind_em[1]]);
-                RecParticle part_ep(bRecPart, bRecCalo, bRecCC, ind_ep[0], ind_PCal[ind_ep[0]], ind_ECin[ind_ep[0]], ind_ECout[ind_ep[0]], ind_HTCC[ind_ep[0]]);
+                RecParticle part_em2(bRecPart, bRecCalo, bRecCC, ind_em[1], ind_PCal[ind_em[1]], ind_ECin[ind_em[1]],
+                                     ind_ECout[ind_em[1]], ind_HTCC[ind_em[1]]);
+                RecParticle part_ep(bRecPart, bRecCalo, bRecCC, ind_ep[0], ind_PCal[ind_ep[0]], ind_ECin[ind_ep[0]],
+                                    ind_ECout[ind_ep[0]], ind_HTCC[ind_ep[0]]);
 
-                double v_t_em2 = bRecSC.getFloat("time", ind_FTOF[ ind_em[1] ]) - bRecSC.getFloat("path", ind_FTOF[ ind_em[1] ]) / light_Speed;
-                double v_t_ep = bRecSC.getFloat("time", ind_FTOF[ ind_ep[0] ]) - bRecSC.getFloat("path", ind_FTOF[ ind_ep[0] ]) / light_Speed;
+                double v_t_em2 = bRecSC.getFloat("time", ind_FTOF[ind_em[1]]) - bRecSC.getFloat(
+                                     "path", ind_FTOF[ind_em[1]]) / light_Speed;
+                double v_t_ep = bRecSC.getFloat("time", ind_FTOF[ind_ep[0]]) - bRecSC.getFloat(
+                                    "path", ind_FTOF[ind_ep[0]]) / light_Speed;
 
 
                 L_em1.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
@@ -501,8 +473,8 @@ int main(int argc, char** argv) {
                 L_ep.SetPxPyPzE(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
 
                 TLorentzVector L_mis = L_beam + L_targ - (L_em1 + L_em2 + L_ep);
-                TLorentzVector L_emep1 = L_em1 + L_ep;
-                TLorentzVector L_emep2 = L_em2 + L_ep;
+                TLorentzVector L_emep1 = L_em2 + L_ep;
+                TLorentzVector L_emep2 = L_em1 + L_ep;
 
                 double m_emep1 = L_emep1.M();
                 double m_emep2 = L_emep2.M();
@@ -536,11 +508,11 @@ int main(int argc, char** argv) {
                 h_vz_Diff_emep1.Fill(part_em1.vz() - part_em2.vz(), part_em1.vz() - part_ep.vz());
 
                 if (TMath::Abs(part_em1.vt() - v_t_em2) < v_dtCut) {
-
                     h_vt_Diff_em1_ep.Fill(part_em1.vt() - v_t_ep);
                     h_vt_Diff_em2_ep.Fill(v_t_em2 - v_t_ep);
 
-                    if (m_emep1 > 0.25 && m_emep2 > 0.25) { // This is to skip low mass events which seems are not produced at the target
+                    if (m_emep1 > 0.25 && m_emep2 > 0.25) {
+                        // This is to skip low mass events which seems are not produced at the target
                         //if (m_emep1 > 1. && m_emep2 > 1.) { // This is to skip low mass events which seems are not produced at the target
                         h_Mmis3.Fill(Mmis);
                         h_th_VS_Mmis3.Fill(th_mis, Mmis);
@@ -573,6 +545,46 @@ int main(int argc, char** argv) {
 
                         if (n_prot == 1) {
                             h_Mmis4.Fill(Mmis);
+                            RecParticle part_p(bRecPart, bRecCalo, bRecCC, ind_prot[0], ind_PCal[ind_prot[0]], ind_ECin[ind_prot[0]], ind_ECout[ind_prot[0]], ind_HTCC[ind_prot[0]]);
+                            h_beta_P_prot4.Fill(part_p.p(), part_p.beta());
+
+                            TLorentzVector L_prot;
+                            L_prot.SetPxPyPzE(part_p.px(), part_p.py(), part_p.pz(), sqrt( part_p.p()*part_p.p() + Mp*Mp) );
+                            TLorentzVector L_mis4part = L_beam + L_targ - (L_em1 + L_em2 + L_ep + L_prot);
+
+                            ddvcs_kine.SetKin4FSParticles(&L_em1, &L_em2, &L_ep, &L_prot);
+
+                            double Mx2_4part = L_mis4part.M2();
+                            h_Mmis4Part4.Fill(Mx2_4part);
+
+                            double xi1 = ddvcs_kine.GetXi_1();
+                            double xi2 = ddvcs_kine.GetXi_2();
+                            double xx_GPD1 = ddvcs_kine.GetXX_GPD_1();
+                            double xx_GPD2 = ddvcs_kine.GetXX_GPD_2();
+
+                            h_xi_xxGPD_1_4.Fill( xx_GPD1, xi1);
+                            h_xi_xxGPD_2_4.Fill( xx_GPD2, xi2);
+
+                            h_Minv12_4.Fill( ddvcs_kine.GetMinv_1(), ddvcs_kine.GetMinv_2());
+
+                            double dP_P = (Pmis - part_p.p())/part_p.p();
+                            h_Pmiss_Pprot4.Fill(part_p.p(), Pmis);
+                            h_dP_P_prot4.Fill(part_p.p(), dP_P);
+
+                            if ( TMath::Abs(dP_P) < dP_P_cut ) {
+                                h_Mmis6.Fill(Mmis);
+                            }
+
+                            if ( TMath::Abs(ddvcs_kine.GetMx2_Reaction() ) < Mx2ReactionCut ) {
+                                h_xi_xxGPD_1_5.Fill( xx_GPD1, xi1);
+                                h_xi_xxGPD_2_5.Fill( xx_GPD2, xi2);
+                                h_Minv12_5.Fill( ddvcs_kine.GetMinv_1(), ddvcs_kine.GetMinv_2());
+                            }
+
+                            if ( part_p.p() < P_prot_Max ) {
+                                h_Mmis5.Fill(Mmis);
+                            }
+
                         }
                     }
 
@@ -581,14 +593,13 @@ int main(int argc, char** argv) {
                         h_Mmis_PMis2.Fill(Pmis, Mmis);
                         h_th_VS_Mmis2.Fill(th_mis, Mmis);
                         h_th_P_Mis2.Fill(Pmis, th_mis);
+
                     }
                 }
-
             }
 
 
             if (isMC) {
-
                 event.getStructure(bMCPart);
 
                 double px_ep, py_ep, pz_ep, pt_ep, p_ep;
@@ -632,75 +643,80 @@ int main(int argc, char** argv) {
                 bool em2_mum = mumAcc(L_MC_em2);
 
                 if (epAcc && ((em1_emAcc && em2_mum) || (em2_emAcc && em1_mum))) {
-
                     TLorentzVector L_emep1 = L_MC_em1 + L_MC_ep;
                     TLorentzVector L_emep2 = L_MC_em2 + L_MC_ep;
 
                     h_MC_Memep_12_1.Fill(L_emep1.M(), L_emep2.M());
                 }
-
             }
-
         }
     } catch (const char *msg) {
         cerr << msg << endl;
     }
 
+    /*
+        Depending on whether data or MC the scale will be calculated differently,
+        In any case it should bring the distribution to "Accepted" cross-section
+    */
 
-    //if (strcmp(data_Set.c_str(), "GRAPE_Run5") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run6") == 0 || strcmp(data_Set.c_str(), "GRAPE_Run8") == 0) {
+    double scale = 0.;
+
     if (isMC) {
-
         cout << "evCounter = " << evCounter << endl;
-
-        for (TObject *cur_Obj : Hlist) {
-
-            TH1 *curHist = (TH1*) cur_Obj;
-            curHist->Scale(scale / double(evCounter));
-        }
-
+        scale = x_sec/evCounter;
+    }else {
+        scale = 1/Lumi;
     }
+
+    TList *l_objs = gDirectory->GetList();
+
+    for (TIter curObj = l_objs->begin(); curObj != l_objs->end(); curObj.Next()) {
+        ((TH1*) * curObj)->Scale(scale);
+    }
+
+
 
     gDirectory->Write();
     return 0;
 }
 
-bool emAcc(TLorentzVector& L) {
-
+bool emAcc(TLorentzVector &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
+           P_max;
 }
 
-bool mumAcc(TLorentzVector& L) {
-
+bool mumAcc(TLorentzVector &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.5; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max &&
-            L.Theta() * TMath::RadToDeg() > f_mumAccThP->Eval(L.P());
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
+           P_max &&
+           L.Theta() * TMath::RadToDeg() > f_mumAccThP->Eval(L.P());
 }
 
-bool mupAcc(TLorentzVector& L) {
-
+bool mupAcc(TLorentzVector &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.5; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
+           P_max;
 }
 
-bool protAcc(TLorentzVector& L) {
-
+bool protAcc(TLorentzVector &L) {
     const double th_max = 120; // deg
     const double th_min = 40.; // deg
     const double P_max = 11.; // GeV
     const double P_min = 0.3; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
+           P_max;
 }
