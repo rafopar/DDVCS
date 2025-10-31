@@ -1,0 +1,7 @@
+# Run,	x-sec [pb],	Eb [GeV],	tot_charge [mC],	MC (1 for MC, 0 for data)
+1006	2.12652		10.2		1			1	# GRAPE Run_6
+2006	2.12652		10.2		1			1	# GRAPE Run_6, Just Outbending run configuration
+2	1		10.6		6.39			0	# F18_in Early runs
+3	1		10.6		37.06			0	# F18_in
+4	1		10.6		34.083			0	# F18_out
+5	1		10.2		50.53			0	# S19
