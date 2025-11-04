@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
     std::map<int, double> m_TotXsec;
     std::map<int, double> m_Eb;
     std::map<int, double> m_totCharge;
+    std::map<int, double> m_BeamPol;
     std::map<int, bool> m_isMC;
 
     sprintf(inputFile, "inpHipoFiles/ememep_Run_%d.hipo", run);
@@ -97,12 +98,13 @@ int main(int argc, char **argv) {
         double axSec = std::stof(v_entries[1]);
         double aEb = std::stof(v_entries[2]);
         double aCarge = std::stof(v_entries[3]);
-
-        int aisMC = std::stoi(v_entries[4]);
+        double aBeamPol = std::stof(v_entries[4]);
+        int aisMC = std::stoi(v_entries[5]);
 
         m_TotXsec[arun] = axSec;
         m_Eb[arun] = aEb;
         m_totCharge[arun] = aCarge;
+        m_BeamPol[arun] = aBeamPol;
         m_isMC[arun] = aisMC;
     }
 
@@ -122,6 +124,7 @@ int main(int argc, char **argv) {
     double x_sec = m_TotXsec[run];
     double Eb = m_Eb[run];
     double totCarge = m_totCharge[run];
+    double beamPol = m_BeamPol[run];
 
     f_mumAccThP = new TF1("f_mumAccThP", "[0] + [1]/(x-[2])", 0., 25);
     f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
@@ -136,8 +139,8 @@ int main(int argc, char **argv) {
     const int layer1b = 2; // panel 1a = 1, panely2 = 3
     const double HTCC_MomThr = 4.8;
     const double PCalEmin = 0.07;
-    const double PCalVmin = 0.07;
-    const double PCalWmin = 0.07;
+    const double PCalVmin = 10.;
+    const double PCalWmin = 10.;
     const double vzMax = 1.;
     const double vzMin = -8.;
     const double v_dtCut = 2.5;
@@ -148,6 +151,7 @@ int main(int argc, char **argv) {
     const double dP_P_cut = 0.3;
 
     const double Mx2ReactionCut = 0.1; // GeV^2
+    const double MinvMinCut = 0.9; // To consider for DDVCS analysis, the Minv should be above this cut.
 
     const double PmisCut = 1.4; // In GeV. Momenta of about 90% of protons is below this value
     const double thMinCut = 15.; // Majority of protons fly above this value
@@ -272,6 +276,17 @@ int main(int argc, char **argv) {
     TH2D h_xi_xxGPD_2_4("h_xi_xxGPD_2_4", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_1_5("h_xi_xxGPD_1_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_2_5("h_xi_xxGPD_2_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_1_6("h_xi_xxGPD_1_6", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_2_6("h_xi_xxGPD_2_6", "", 200, -0.5, 0.5, 200, 0., 0.5);
+
+    TH1D h_Phi_LH1_4("h_Phi_LH1_4", "", 12, 0., 360);
+    TH1D h_Phi_LH2_4("h_Phi_LH2_4", "", 12, 0., 360);
+    TH1D h_Phi_LH1_5("h_Phi_LH1_5", "", 12, 0., 360);
+    TH1D h_Phi_LH2_5("h_Phi_LH2_5", "", 12, 0., 360);
+    TH1D h_Phi_LH1_6("h_Phi_LH1_6", "", 12, 0., 360);
+    TH1D h_Phi_LH2_6("h_Phi_LH2_6", "", 12, 0., 360);
+    TH1D h_Phi_LH1_helWeighted_6("h_Phi_LH1_helWeighted_6", "", 12, 0., 360);
+    TH1D h_Phi_LH2_helWeighted_6("h_Phi_LH2_helWeighted_6", "", 12, 0., 360);
 
     hipo::reader reader;
     reader.open(inputFile);
@@ -326,6 +341,8 @@ int main(int argc, char **argv) {
             map<int, int> ind_ECin;
             map<int, int> ind_ECout;
             map<int, int> ind_FTOF;
+
+            int helicity = bRecEV.getInt("helicity", 0);
 
             int nPart = bRecPart.getRows();
             for (int i_part = 0; i_part < nPart; i_part++) {
@@ -562,8 +579,14 @@ int main(int argc, char **argv) {
                             double xx_GPD1 = ddvcs_kine.GetXX_GPD_1();
                             double xx_GPD2 = ddvcs_kine.GetXX_GPD_2();
 
+                            double phi_LH1 = ddvcs_kine.GetPhi_LH_1();
+                            double phi_LH2 = ddvcs_kine.GetPhi_LH_2();
+
                             h_xi_xxGPD_1_4.Fill( xx_GPD1, xi1);
                             h_xi_xxGPD_2_4.Fill( xx_GPD2, xi2);
+
+                            h_Phi_LH1_4.Fill( phi_LH1);
+                            h_Phi_LH2_4.Fill( phi_LH2);
 
                             h_Minv12_4.Fill( ddvcs_kine.GetMinv_1(), ddvcs_kine.GetMinv_2());
 
@@ -576,13 +599,25 @@ int main(int argc, char **argv) {
                             }
 
                             if ( TMath::Abs(ddvcs_kine.GetMx2_Reaction() ) < Mx2ReactionCut ) {
+
+                                h_Mmis5.Fill(Mmis);
+
                                 h_xi_xxGPD_1_5.Fill( xx_GPD1, xi1);
                                 h_xi_xxGPD_2_5.Fill( xx_GPD2, xi2);
                                 h_Minv12_5.Fill( ddvcs_kine.GetMinv_1(), ddvcs_kine.GetMinv_2());
-                            }
+                                h_Phi_LH1_5.Fill( phi_LH1);
+                                h_Phi_LH2_5.Fill( phi_LH2);
 
-                            if ( part_p.p() < P_prot_Max ) {
-                                h_Mmis5.Fill(Mmis);
+                                if ( ddvcs_kine.GetMinv_1() > MinvMinCut ) {
+                                    h_Phi_LH1_6.Fill( phi_LH1);
+                                    h_Phi_LH1_helWeighted_6.Fill( phi_LH1, helicity/beamPol);
+                                    h_xi_xxGPD_1_6.Fill( xx_GPD1, xi1);
+                                }
+                                if ( ddvcs_kine.GetMinv_2() > MinvMinCut ) {
+                                    h_Phi_LH2_6.Fill( phi_LH2);
+                                    h_Phi_LH2_helWeighted_6.Fill( phi_LH2, helicity/beamPol);
+                                    h_xi_xxGPD_2_6.Fill( xx_GPD2, xi2);
+                                }
                             }
 
                         }
@@ -674,7 +709,11 @@ int main(int argc, char **argv) {
         ((TH1*) * curObj)->Scale(scale);
     }
 
-
+    /*
+     * In order to get into the asymmetry we should divide "hel/pol" weighted histo to non weighted onec
+     */
+    h_Phi_LH1_helWeighted_6.Divide( &h_Phi_LH1_6 );
+    h_Phi_LH2_helWeighted_6.Divide( &h_Phi_LH2_6 );
 
     gDirectory->Write();
     return 0;
