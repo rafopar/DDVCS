@@ -1,7 +1,15 @@
 # Run,	x-sec [pb],	Eb [GeV],	tot_charge [mC],    Beam_Pol,	MC (1 for MC, 0 for data)
-1006	2.12652		10.2		1			        1           1	# GRAPE Run_6
-2006	2.12652		10.2		1			        1           1	# GRAPE Run_6, Just Outbending run configuration
-2	    1		    10.6		6.39			    0.8644      0	# F18_in Early runs
-3	    1		    10.6		37.06			    0.8592      0	# F18_in
-4	    1		    10.6		34.083			    0.8922      0	# F18_out
-5	    1		    10.2		50.53			    0.8566      0	# S19
+1006	2.12652		10.2		1		            1               1	# GRAPE Run_6
+2006	2.12652		10.2		1		            1               1	# GRAPE Run_6, Just Outbending run configuration
+2	    1		    10.6		6.39		        0.8644          0	# F18_in Early runs
+3	    1		    10.6		37.06		        0.8592          0	# F18_in
+4	    1		    10.6		34.083		        0.8922          0	# F18_out
+5	    1		    10.2		50.53		        0.8566          0	# S19
+19410	1   		6.395		0.571		        0.665	        0	# RG-K Spring 2024, 3rd pass
+19476   1           6.395       0.493               0.665           0	# RG-K Spring 2024, 3rd pass
+19571   1           6.395       0.475               0.665           0	# RG-K Spring 2024, 3rd pass
+19638   1           6.395       0.593               0.665           0	# RG-K Spring 2024, 3rd pass
+19706   1           8.477       0.711               0.665           0	# RG-K Spring 2024, 4th pass
+19765   1           8.477       0.65                0.665           0	# RG-K Spring 2024, 4th pass
+19833   1           8.477       0.69                0.665           0	# RG-K Spring 2024, 4th pass
+19886   1           8.477       0.668               0.665           0	# RG-K Spring 2024, 4th pass

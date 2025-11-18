@@ -13,6 +13,7 @@ DDVCSKine::DDVCSKine(): ftargetSet(false), fEbSet(false), fParticlesSet(false), 
     fEb = 0;
     fMtarg = 0;
     fMX2_Reaction = 0;
+    fMx_Recoil = 0;
     fKinematicsComputed = false;
 }
 
@@ -39,6 +40,11 @@ void DDVCSKine::SetMtarg(double aMtarg) {
     ftargetSet = true;
 }
 
+double DDVCSKine::GetMxRecoil() const {
+    CheckKinematicsCalculated(__func__);
+    return fMx_Recoil;
+}
+
 void DDVCSKine::CheckKinematicsCalculated(const char *funcName) const{
     if (!fKinematicsComputed) {
         throw std::runtime_error(
@@ -47,7 +53,7 @@ void DDVCSKine::CheckKinematicsCalculated(const char *funcName) const{
 }
 
 DDVCSKine::~DDVCSKine() {
-    // delete fL_beam;
-    // delete fL_Targ;
-    // delete fL_Recoil;
+     delete fL_beam;
+     delete fL_Targ;
+     delete fL_Recoil;
 }
