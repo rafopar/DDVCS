@@ -41,9 +41,10 @@ int main(int argc, char** argv) {
 
     if (argc > 1) {
         run = atoi(argv[1]);
-        sprintf(inputFile, "Data_F18InEarly/jpsitcs_00%d.hipo", run);
+        sprintf(inputFile, "inpHipoFiles/skim4_0%d.hipo", run);
+        //sprintf(inputFile, "Data_F18InEarly/jpsitcs_00%d.hipo", run);
         //sprintf(inputFile, "%s", argv[1]);
-        sprintf(outputFile, "Skim_ememep_%d.hipo", run);
+        sprintf(outputFile, "Skims_RGK_Spring2024/Skim_ememep_%d.hipo", run);
     } else {
         std::cout << " *** please provide the run number..." << std::endl;
         cout << "Exiting ..." << endl;
@@ -60,10 +61,10 @@ int main(int argc, char** argv) {
     const double PCalEmin = 0.07;
     const double PCalVmin = 0.07;
     const double PCalWmin = 0.07;
-    const double vzMax = 1.;
-    const double vzMin = -8.;
+    const double vzMax = 6.;
+    const double vzMin = -14.;
 
-    TFile *file_out = new TFile(Form("Hists_DDVCS_%d.root", run), "Recreate");
+    TFile *file_out = new TFile(Form("Skims_RGK_Spring2024/Hists_DDVCS_%d.root", run), "Recreate");
     TH1D h_nphe_em1("h_nphe_em1", "", 200, 0., 35.);
     TH1D h_nphe_ep1("h_nphe_ep1", "", 200, 0., 35.);
 
@@ -252,7 +253,7 @@ int main(int argc, char** argv) {
                     bool isPCalVmin = recp.lvPCal() > PCalVmin;
                     bool isPCalWmin = recp.lvPCal() > PCalWmin;
 
-                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.15) || (recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.195)) && isPCalEmin && isPCalVmin && isPCalWmin) {
+                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.11) || (recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.17)) && isPCalEmin && isPCalVmin && isPCalWmin) {
                         ind_ep[n_ep] = ipart;
                         sec_ep[n_ep] = recp.phi() / 60;
                         n_ep = n_ep + 1;
@@ -281,7 +282,7 @@ int main(int argc, char** argv) {
                 h_n_prot1.Fill(n_prot);
 
                 writer.addEvent(event);
-                cout << "Event is is dded" << endl;
+                //cout << "Event is is added" << endl;
             }
 
         }
@@ -293,6 +294,8 @@ int main(int argc, char** argv) {
     gDirectory->Write();
     writer.close();
     writer.showSummary();
+
+    file_out->Close();
 
     return 0;
 }

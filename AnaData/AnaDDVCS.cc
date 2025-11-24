@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
     const double PCalWmin = 10.;
     const double vzMax = 1.;
     const double vzMin = -8.;
-    const double v_dtCut = 2.5;
+    const double v_dtCut = 1.5;
     const double Mmis_Max = 1.2;
     const double Mmis_Min = 0.8;
 
@@ -171,10 +171,21 @@ int main(int argc, char **argv) {
     double N_e_onTarg = (totCarge*mili)/em_charge;
     double Lumi = N_targ*N_e_onTarg*inv_pb;
 
+    const double MxRecoil_Max = 1.1; // GeV
+    const double MxRecoil_Min = 0.88; // GeV
+
+
+    TF1 *f_Separation = new TF1("f_Separation", "pol6", 0., 9);
+    f_Separation->SetParameters(24.7129, -19.3813, 11.4942, -3.88646, 0.738393, -0.0723433, 0.00279077);
+
     ElectronDDVCSKine ddvcs_kine;
 
     ddvcs_kine.SetEb(Eb);
     ddvcs_kine.SetMtarg(Mp);
+
+    ElectronDDVCSKine ddvcs_kine_Noprot;
+    ddvcs_kine_Noprot.SetEb(Eb);
+    ddvcs_kine_Noprot.SetMtarg(Mp);
 
     TLorentzVector L_beam;
     L_beam.SetPxPyPzE(0., 0., Eb, Eb);
@@ -259,6 +270,7 @@ int main(int argc, char **argv) {
     TH2D h_Minv12_3("h_Minv12_3", "", 200, 0., 2.5, 200, 0., 2.5);
     TH2D h_Minv12_4("h_Minv12_4", "", 200, 0., 2.5, 200, 0., 2.5);
     TH2D h_Minv12_5("h_Minv12_5", "", 200, 0., 2.5, 200, 0., 2.5);
+    TH2D h_Minv12_NoProt3("h_Minv12_NoProt3", "", 200, 0., 2.5, 200, 0., 2.5);
     TH1D h_vt_Diff_em1("h_vt_Diff_em1", "", 200, -0.5, 0.5);
     TH2D h_vt_Diff_emep1("h_vt_Diff_emep1", "", 200, -2., 2., 200, -2., 2.);
     TH2D h_vz_Diff_emep1("h_vz_Diff_emep1", "", 200, -10., 10., 200, -10., 10.);
@@ -272,12 +284,22 @@ int main(int argc, char **argv) {
 
     TH1D h_Mmis4Part4("h_Mmis4Part4", "", 200, -1.5, 1.5);
 
+    TH2D h_xi_xxGPD_1_NoProt3("h_xi_xxGPD_1_NoProt3", "", 200, -0.5, 0.5, 200, 0., 0.5);
+    TH2D h_xi_xxGPD_2_NoProt3("h_xi_xxGPD_2_NoProt3", "", 200, -0.5, 0.5, 200, 0., 0.5);
+
     TH2D h_xi_xxGPD_1_4("h_xi_xxGPD_1_4", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_2_4("h_xi_xxGPD_2_4", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_1_5("h_xi_xxGPD_1_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_2_5("h_xi_xxGPD_2_5", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_1_6("h_xi_xxGPD_1_6", "", 200, -0.5, 0.5, 200, 0., 0.5);
     TH2D h_xi_xxGPD_2_6("h_xi_xxGPD_2_6", "", 200, -0.5, 0.5, 200, 0., 0.5);
+
+
+
+    TH1D h_Phi_LH1_NoProt3("h_Phi_LH1_NoProt3", "", 12, 0., 360);
+    TH1D h_Phi_LH2_NoProt3("h_Phi_LH2_NoProt3", "", 12, 0., 360);
+    TH1D h_Phi_LH1_helWeighted_NoProt3("h_Phi_LH1_helWeighted_NoProt3", "", 12, 0., 360);
+    TH1D h_Phi_LH2_helWeighted_NoProt3("h_Phi_LH2_helWeighted_NoProt3", "", 12, 0., 360);
 
     TH1D h_Phi_LH1_4("h_Phi_LH1_4", "", 12, 0., 360);
     TH1D h_Phi_LH2_4("h_Phi_LH2_4", "", 12, 0., 360);
@@ -287,6 +309,8 @@ int main(int argc, char **argv) {
     TH1D h_Phi_LH2_6("h_Phi_LH2_6", "", 12, 0., 360);
     TH1D h_Phi_LH1_helWeighted_6("h_Phi_LH1_helWeighted_6", "", 12, 0., 360);
     TH1D h_Phi_LH2_helWeighted_6("h_Phi_LH2_helWeighted_6", "", 12, 0., 360);
+
+
 
     hipo::reader reader;
     reader.open(inputFile);
@@ -448,8 +472,8 @@ int main(int argc, char **argv) {
                     bool isPCalVmin = recp.lvPCal() > PCalVmin;
                     bool isPCalWmin = recp.lvPCal() > PCalWmin;
 
-                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.15) || (
-                             recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.195)) && isPCalEmin &&
+                    if (((recp.energyECin() < 0.001 && recp.SFPCal() > 0.11) || (
+                             recp.energyECin() >= 0.001 && (recp.SFPCal() + recp.SFECin()) > 0.17)) && isPCalEmin &&
                         isPCalVmin && isPCalWmin) {
                         ind_ep[n_ep] = ipart;
                         sec_ep[n_ep] = recp.phi() / 60;
@@ -485,9 +509,17 @@ int main(int argc, char **argv) {
                                     "path", ind_FTOF[ind_ep[0]]) / light_Speed;
 
 
-                L_em1.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
-                L_em2.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                if ( (part_em2.th() - f_Separation->Eval(part_em2.p()) ) > (part_em1.th() - f_Separation->Eval(part_em1.p()) ) ) {
+                    L_em1.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
+                    L_em2.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                }else {
+                    L_em1.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                    L_em2.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
+                }
+
                 L_ep.SetPxPyPzE(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
+
+                ddvcs_kine_Noprot.SetKineem1em2ep(&L_em1, &L_em2, &L_ep);
 
                 TLorentzVector L_mis = L_beam + L_targ - (L_em1 + L_em2 + L_ep);
                 TLorentzVector L_emep1 = L_em2 + L_ep;
@@ -500,6 +532,7 @@ int main(int argc, char **argv) {
                 double Mmis = L_mis.M();
                 double Pmis = L_mis.P();
 
+                double MxRecoil = ddvcs_kine_Noprot.GetMxRecoil();
 
                 h_Mmis1.Fill(Mmis);
                 h_Minv12_1.Fill(m_emep1, m_emep2);
@@ -528,6 +561,10 @@ int main(int argc, char **argv) {
                     h_vt_Diff_em1_ep.Fill(part_em1.vt() - v_t_ep);
                     h_vt_Diff_em2_ep.Fill(v_t_em2 - v_t_ep);
 
+                    if ( TMath::Abs(part_em1.vt() - v_t_ep) > v_dtCut || TMath::Abs(v_t_em2 - v_t_ep) > v_dtCut ) {
+                        continue;
+                    }
+
                     if (m_emep1 > 0.25 && m_emep2 > 0.25) {
                         // This is to skip low mass events which seems are not produced at the target
                         //if (m_emep1 > 1. && m_emep2 > 1.) { // This is to skip low mass events which seems are not produced at the target
@@ -541,6 +578,33 @@ int main(int argc, char **argv) {
                         h_th_P_em3.Fill(part_em1.p(), part_em1.th());
                         h_th_P_em3.Fill(part_em2.p(), part_em2.th());
                         h_th_P_ep3.Fill(part_ep.p(), part_ep.th());
+
+                        if ( MxRecoil > MxRecoil_Min && MxRecoil < MxRecoil_Max ) {
+
+                            double xx_GPD1_NoProt = ddvcs_kine_Noprot.GetXX_GPD_1();
+                            double xx_GPD2_NoProt = ddvcs_kine_Noprot.GetXX_GPD_2();
+                            double xi1_NoProt = ddvcs_kine_Noprot.GetXi_1();
+                            double xi2_NoProt = ddvcs_kine_Noprot.GetXi_2();
+                            double phi_LH1_NoProt = ddvcs_kine_Noprot.GetPhi_LH_1();
+                            double phi_LH2_NoProt = ddvcs_kine_Noprot.GetPhi_LH_2();
+
+                            double Minv1_NoProt = ddvcs_kine_Noprot.GetMinv_1();
+                            double Minv2_NoProt = ddvcs_kine_Noprot.GetMinv_2();
+
+                            h_Minv12_NoProt3.Fill(Minv1_NoProt, Minv2_NoProt);
+
+                            if ( Minv1_NoProt > MinvMinCut ) {
+                                h_xi_xxGPD_1_NoProt3.Fill(xx_GPD1_NoProt, xi1_NoProt);
+                                h_xi_xxGPD_2_NoProt3.Fill(xx_GPD2_NoProt, xi2_NoProt);
+                                h_Phi_LH1_NoProt3.Fill(phi_LH1_NoProt);
+                                h_Phi_LH1_helWeighted_NoProt3.Fill(phi_LH1_NoProt, helicity/beamPol);
+                            }
+
+                            if ( Minv2_NoProt > MinvMinCut ) {
+                                h_Phi_LH2_NoProt3.Fill(phi_LH2_NoProt);
+                                h_Phi_LH2_helWeighted_NoProt3.Fill(phi_LH2_NoProt, helicity/beamPol);
+                            }
+                        }
 
                         if (Pmis < PmisCut) {
                             h_th_VS_Mmis4.Fill(th_mis, Mmis);
@@ -714,6 +778,9 @@ int main(int argc, char **argv) {
      */
     h_Phi_LH1_helWeighted_6.Divide( &h_Phi_LH1_6 );
     h_Phi_LH2_helWeighted_6.Divide( &h_Phi_LH2_6 );
+    h_Phi_LH1_helWeighted_NoProt3.Divide( &h_Phi_LH1_NoProt3 );
+    h_Phi_LH2_helWeighted_NoProt3.Divide( &h_Phi_LH2_NoProt3 );
+
 
     gDirectory->Write();
     return 0;
