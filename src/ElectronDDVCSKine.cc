@@ -18,7 +18,6 @@ bool ElectronDDVCSKine::SetKin4FSParticles(TLorentzVector* aL_em1, TLorentzVecto
         std::cerr<<"At this point the beam energy and the target mass should already be set. Exiting..."<<std::endl;
         exit(1);
     }
-
     fL_em1 = aL_em1;
     fL_em2 = aL_em2;
     fL_ep = aL_ep;
@@ -26,6 +25,29 @@ bool ElectronDDVCSKine::SetKin4FSParticles(TLorentzVector* aL_em1, TLorentzVecto
 
     fParticlesSet = true;
 
+    // All particles are set, so the reaction kinematics can ba calculated.
+    ComputeKinematics();
+
+    return true;
+}
+
+bool ElectronDDVCSKine::SetKineem1em2ep(TLorentzVector* aL_em1, TLorentzVector* aL_em2, TLorentzVector* aL_ep) {
+
+    /*
+     * At this point target mass and the beam energy should already be set
+     */
+    if ( !fEbSet || !ftargetSet ) {
+        std::cerr<<"At this point the beam energy and the target mass should already be set. Exiting..."<<std::endl;
+        exit(1);
+    }
+
+    fL_em1 = aL_em1;
+    fL_em2 = aL_em2;
+    fL_ep = aL_ep;
+    fL_Recoil = new TLorentzVector();
+    *fL_Recoil = *fL_beam + *fL_Targ - *fL_em1 - *fL_em2 - *fL_ep;
+
+    fParticlesSet = true;
     // All particles are set, so the reaction kinematics can ba calculated.
     ComputeKinematics();
 
@@ -48,6 +70,7 @@ void ElectronDDVCSKine::ComputeKinematics() {
     const TVector3 v3_beam_Eprime1 = fL_beam->Vect().Cross(fL_em1->Vect());
     const TVector3 v3_q_qprime1 = fL_nu1.Vect().Cross(fL_q1.Vect());
 
+    fMx_Recoil = fL_Recoil->M();
     fPhi_LH_1 = fL_em1->Vect().Dot(v3_q_qprime1) > 0 ? v3_beam_Eprime1.Angle(v3_q_qprime1) * fr2d : 360. - v3_beam_Eprime1.Angle(v3_q_qprime1) * fr2d;
 
     fQ2_1 = -fL_nu1.M2();
