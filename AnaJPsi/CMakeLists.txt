@@ -11,6 +11,10 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 add_executable(AnaJPsi.exe AnaJPsi.cc)
 target_link_libraries(AnaJPsi.exe Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} )
 
+add_executable(DebugSkim DebugSkim.cc)
+set_target_properties(DebugSkim PROPERTIES OUTPUT_NAME "DebugSkim.exe")
+target_link_libraries(DebugSkim Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES})
+
 add_executable(UpdateConstants_JPsi UpdateConstants.cc)
 set_target_properties(UpdateConstants_JPsi PROPERTIES OUTPUT_NAME "UpdateConstants.exe")
 target_link_libraries(UpdateConstants_JPsi ${ROOT_LIBRARIES} ROOT::Spectrum)
@@ -22,7 +26,7 @@ target_link_libraries(DrawPlots_JPsi ${ROOT_LIBRARIES} )
 #################################################################################################
 
 ################################ Installing Executable targets #############################
-install( TARGETS AnaJPsi.exe UpdateConstants_JPsi DrawPlots_JPsi
+install( TARGETS AnaJPsi.exe UpdateConstants_JPsi DrawPlots_JPsi DebugSkim
   DESTINATION ${CMAKE_INSTALL_PREFIX}/AnaJPsi/bin )
 
 ################################ Installing needed directores ##############################
