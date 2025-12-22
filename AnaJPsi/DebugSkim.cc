@@ -40,8 +40,10 @@ int main( int argc, char* argv[] ) {
     TH2D h_P_pim_prot("h_P_pim_prot", "", 200, 0., 5., 200, 0., 5.);
     TH2D h_P_mum_mup("h_P_mum_mup", "", 200, 0., 5., 200, 0., 5.);
     TH2D h_P_mum_prot("h_P_mum_prot", "", 200, 0., 5., 200, 0., 5.);
-    TH1D h_Delta_t_pip_P1("h_Delta_t_pip_P1", "", 200, -1., 5.);
-    TH2D h_Delta_t_vs_delta_phi_P1("h_Delta_t_vs_delta_phi_P1", "", 200, -1., 5., 200, -180., 180.);
+    TH1D h_Delta_p_pip_P1("h_Delta_p_pip_P1", "", 200, -1., 5.);
+    TH2D h_Delta_p_vs_delta_phi_P1("h_Delta_p_vs_delta_phi_P1", "", 200, -1., 5., 200, -180., 180.);
+    TH2D h_Delta_p_pip_P_phi_pip1("h_Delta_p_pip_P_phi_pip", "", 200, -1., 5., 200, -180., 180.);
+    TH2D h_Delta_p_pip_P_phi_P1("h_Delta_p_pip_P_phi_P", "", 200, -1., 5., 200, -180., 180.);
 
     sprintf(inputFile, "Data/TCSJPsiSkim/jpsitcs_00%d.hipo", run);
 
@@ -191,10 +193,12 @@ int main( int argc, char* argv[] ) {
                     h_P_pim_pip.Fill(v_L_pips.at(0).P(), v_L_pims.at(0).P() );
                     h_P_pim_prot.Fill(v_L_protons.at(0).P(), v_L_pims.at(0).P());
 
-                    h_Delta_t_pip_P1.Fill( v_L_pips.at(0).P() - v_L_protons.at(0).P() );
+                    h_Delta_p_pip_P1.Fill( v_L_pips.at(0).P() - v_L_protons.at(0).P() );
 
-                    h_Delta_t_vs_delta_phi_P1.Fill(  v_L_pips.at(0).P() - v_L_protons.at(0).P(), (v_L_pips.at(0).Phi() - v_L_protons.at(0).Phi())*TMath::RadToDeg() );
+                    h_Delta_p_vs_delta_phi_P1.Fill(  v_L_pips.at(0).P() - v_L_protons.at(0).P(), (v_L_pips.at(0).Phi() - v_L_protons.at(0).Phi())*TMath::RadToDeg() );
 
+                    h_Delta_p_pip_P_phi_pip1.Fill(v_L_pips.at(0).P() - v_L_protons.at(0).P(), v_L_pips.at(0).Phi()*TMath::RadToDeg());
+                    h_Delta_p_pip_P_phi_P1.Fill(v_L_pips.at(0).P() - v_L_protons.at(0).P(), v_L_protons.at(0).Phi()*TMath::RadToDeg());
                     // if ( v_L_pips.at(0).P() - v_L_protons.at(0).P() < 0 ) {
                     //     bRecPart.show();
                     // }
