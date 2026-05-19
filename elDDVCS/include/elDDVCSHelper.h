@@ -77,6 +77,16 @@ struct HistoList {
 
     TH2D *h_Minv12_1;
 
+    TH2D *h_Phi_LH_12_1;
+    TH2D *h_xip_xi_1_1;
+    TH2D *h_xip_xi_2_1;
+    TH2D *h_Q2_12_1;
+    TH2D *h_nu_12_1;
+    TH2D *h_W_12_1;
+    TH1D *h_tM_1;
+    TH2D *h_xB_12_1;
+    TH2D *h_xxGPD_12_1;
+
 };
 
 void InitHistos(HistoList *hists) {
@@ -111,6 +121,16 @@ void InitHistos(HistoList *hists) {
     hists->h_MXRecoil1 = new TH1D("h_MXRecoil1", "", 200, 0., 3.5);
     hists->h_MXRecoil2 = new TH1D("h_MXRecoil2", "", 200, 0., 3.5);
     hists->h_Minv12_1 = new TH2D("h_Minv12_1", "", 200, 0., 3., 200, 0., 3.);
+
+    hists->h_Phi_LH_12_1 = new TH2D("h_Phi_LH_12_1", "", 200, 0., 360., 200, 0., 360);
+    hists->h_xip_xi_1_1 = new TH2D("h_xip_xi_1_1", "", 200, 0., 1, 200, 0., 1.);
+    hists->h_xip_xi_2_1 = new TH2D("h_xip_xi_2_1", "", 200, 0., 1, 200, 0., 1.);
+    hists->h_Q2_12_1 = new TH2D("h_Q2_12_1", "", 200, 0., 3., 200, 0., 3.);
+    hists->h_nu_12_1 = new TH2D("h_nu_12_1", "", 200, 0., 10., 200, 0., 10.);
+    hists->h_W_12_1 = new TH2D("h_W_12_1", "", 200, 0., 5., 200, 0., 5.);
+    hists->h_tM_1 = new TH1D("h_tM_1", "", 200, 0., 2.);
+    hists->h_xB_12_1 = new TH2D("h_xB_12_1", "", 200, 0., 2., 200, 0., 2.);
+    hists->h_xxGPD_12_1 = new TH2D("h_xxGPD_12_1", "", 200, -1., 1., 200, -1., 1.);
 
 }
 
