@@ -69,7 +69,7 @@ void DrawBgr_Estimation() {
         h_Mmumu_MC[i]->Scale(1. / double(nRuns));
         h_Mmumu_MC[i]->Scale(1. / double(TotTimeinSec));
         double binWidth = h_Mmumu_MC[i]->GetBinWidth(10);
-        h_Mmumu_MC[i]->SetTitle(Form("; Invariant mass [GeV]; Rate [Hz/%1.2f GeV]", binWidth));
+        h_Mmumu_MC[i]->SetTitle(Form("; M(#mu^{+}#mu^{-}) [GeV]; Rate [Hz/%1.2f GeV]", binWidth));
         
         double tot_Rate = h_Mmumu_MC[i]->Integral();
         
@@ -82,8 +82,8 @@ void DrawBgr_Estimation() {
             h_Mmumu_MC[i]->Draw("hist Same");
         }
         
-        lat1->SetTextColor(cols_[i]);
-        lat1->DrawLatex(0.25, 0.6 - 0.05*i, Form("Tot. Rate = %1.4f Hz", tot_Rate));
+        // lat1->SetTextColor(cols_[i]);
+        // lat1->DrawLatex(0.25, 0.6 - 0.05*i, Form("Tot. Rate = %1.4f Hz", tot_Rate));
     }
     
     c1->Print("Figs/pion_pair_background.pdf");

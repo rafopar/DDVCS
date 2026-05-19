@@ -150,10 +150,10 @@ int main(int argc, char** argv) {
     c1.Print(Form("Figs/MC_th_P_em_miss1_Run_%d.root", run));
 
     TH1D *h_Mmumu_MC1 = (TH1D*) file_in.Get("h_Mmumu_MC1");
-    h_Mmumu_MC1->SetTitle("; M(#mu^{-}#mu^{+}) [GeV]");
+    h_Mmumu_MC1->SetTitle("; M(#mu^{+}#mu^{-}) [GeV]");
     h_Mmumu_MC1->SetLineColor(2);
     TH1D *h_Mmumu_MC2 = (TH1D*) file_in.Get("h_Mmumu_MC2");
-    h_Mmumu_MC2->SetTitle("; M(#mu^{-}#mu^{+}) [GeV]");
+    h_Mmumu_MC2->SetTitle("; M(#mu^{+}#mu^{-}) [GeV]");
     h_Mmumu_MC2->SetLineColor(4);
     h_Mmumu_MC1->SetMinimum(0.1 * h_Mmumu_MC2->GetMaximum());
     c1.SetLogy();
@@ -289,26 +289,26 @@ int main(int argc, char** argv) {
 
     TH1D *h_Mmis_corr3 = (TH1D*) file_in.Get("h_Mmis_corr3");
     h_Mmis_corr3->SetTitle("; M_{X}^{2} [GeV^{2}]");
-    h_Mmis_corr3->SetLineColor(4);
+    h_Mmis_corr3->SetLineColor(8);
     h_Mmis_corr3->SetLineWidth(2);
     FormatHist(h_Mmis_corr3);
 
     TH1D *h_Mmis_AngleFixcorr1 = (TH1D*) file_in.Get("h_Mmis_AngleFixcorr1");
     h_Mmis_AngleFixcorr1->SetTitle("; M_{X}^{2} [GeV^{2}]");
-    h_Mmis_AngleFixcorr1->SetLineColor(8);
+    h_Mmis_AngleFixcorr1->SetLineColor(6);
     h_Mmis_AngleFixcorr1->SetLineWidth(2);
     FormatHist(h_Mmis_AngleFixcorr1);
-    TLegend *leg1 = new TLegend(0.45, 0.65, 0.95, 0.95);
+    TLegend *leg1 = new TLegend(0.4, 0.65, 0.95, 0.95);
     leg1->SetBorderSize(0);
-    leg1->AddEntry(h_Mmis1, "Uncorrected");
-    leg1->AddEntry(h_Mmis_corr1, "Mom. corrected");
+    leg1->AddEntry(h_Mmis1, "Uncorrected, FVT not used");
+    leg1->AddEntry(h_Mmis_corr1, "Mom. corrected, FVT not used");
     //    leg1->AddEntry(h_Mmis_corr2, "Mom & #theta corrected");
     //    leg1->AddEntry(h_Mmis_corr3, "Mom & #theta & #phi corrected");
-    leg1->AddEntry(h_Mmis_AngleFixcorr1, "Mom Corr, True angles");
-    h_Mmis_AngleFixcorr1->Draw("hist");
+    //leg1->AddEntry(h_Mmis_AngleFixcorr1, "Mom Corrected, True angles");
+    //h_Mmis_AngleFixcorr1->Draw("hist");
     //    h_Mmis_corr3->Draw("hist Same");
     //    h_Mmis_corr2->Draw("hist Same");
-    h_Mmis_corr1->Draw("hist Same");
+    h_Mmis_corr1->Draw("hist");
     h_Mmis1->Draw("hist Same");
     leg1->Draw();
     c1.Print(Form("Figs/MmisCorretions_%d.pdf", run));
@@ -316,11 +316,22 @@ int main(int argc, char** argv) {
     c1.Print(Form("Figs/MmisCorretions_%d.root", run));
 
     TH1D *h_Mmis_AngleSmearcorr1 = (TH1D*)file_in.Get("h_Mmis_AngleSmearcorr1");
-    h_Mmis_AngleSmearcorr1->SetLineColor(6);
+    h_Mmis_AngleSmearcorr1->SetLineColor(4);
     h_Mmis_AngleSmearcorr1->SetLineWidth(2);
     FormatHist(h_Mmis_AngleSmearcorr1);
-    leg1->AddEntry(h_Mmis_AngleSmearcorr1, "Mom. Corr, Recon angles, no BG");
+    leg1->AddEntry(h_Mmis_AngleSmearcorr1, "Mom. corrected, FVT used");
+
+    // TList *list = leg1->GetListOfPrimitives();
+    // // Remove the last entry (New) and insert it before the last
+    // TObject *newEntry = list->Last();
+    // list->Remove(newEntry);
+    // // Insert before the last element
+    // TObject *lastEntry = list->Last();
+    // list->AddBefore(lastEntry, newEntry);
+    h_Mmis_corr1->SetMaximum(1.05*h_Mmis_AngleSmearcorr1->GetMaximum());
     h_Mmis_AngleSmearcorr1->Draw("hist same");
+    c1.Modified();
+    c1.Update();
     c1.Print(Form("Figs/MmisCorrections_Set2_%d.pdf", run));
     c1.Print(Form("Figs/MmisCorrections_Set2_%d.png", run));
     c1.Print(Form("Figs/MmisCorrections_Set2_%d.root", run));
@@ -330,13 +341,13 @@ int main(int argc, char** argv) {
     TLegend *leg_MM2 = new TLegend(0.65, 0.75, 0.92, 0.92);
     leg_MM2->SetBorderSize(0);
     TH1D *h_Mumu_Corr_AngleFix1 = (TH1D*) file_in.Get("h_Mumu_Corr_AngleFix1");
-    h_Mumu_Corr_AngleFix1->SetTitle("; M(#mu^{-}#mu^{+}) [GeV]");
+    h_Mumu_Corr_AngleFix1->SetTitle("; M(#mu^{+}#mu^{-}) [GeV]");
     FormatHist(h_Mumu_Corr_AngleFix1);
     h_Mumu_Corr_AngleFix1->SetLineColor(2);
     h_Mumu_Corr_AngleFix1->Draw("hist");
 
     TH1D *h_Mumu_Corr_AngleFix2 = (TH1D*) file_in.Get("h_Mumu_Corr_AngleFix2");
-    h_Mumu_Corr_AngleFix2->SetTitle("; M(#mu^{-}#mu^{+}) [GeV]");
+    h_Mumu_Corr_AngleFix2->SetTitle("; M(#mu^{+}#mu^{-}) [GeV]");
     FormatHist(h_Mumu_Corr_AngleFix2);
     h_Mumu_Corr_AngleFix2->SetLineColor(4);
     h_Mumu_Corr_AngleFix2->Draw("hist Same");
@@ -594,8 +605,10 @@ int main(int argc, char** argv) {
     c1.Print(Form("Figs/delta_Qp2_2_Run_%d.root", run));
 
     TH2D *h_Minv_tM_AngleFix1 = (TH2D*) file_in.Get("h_Minv_tM_AngleFix1");
-    h_Minv_tM_AngleFix1->SetTitle("; -t [GeV^{2}]; M(#mu^{-}#mu^{-}) [GeV]");
+    h_Minv_tM_AngleFix1->SetTitle("; -t [GeV^{2}]; M(#mu^{+}#mu^{-}) [GeV]");
+    FormatHist(h_Minv_tM_AngleFix1);
     h_Minv_tM_AngleFix1->SetAxisRange(0.8, 3.5, "Y");
+    h_Minv_tM_AngleFix1->SetTitleOffset(1.2, "Y");
     h_Minv_tM_AngleFix1->Draw();
     c1.Print(Form("Figs/Minv_tM_AngleFix1_%d.pdf", run));
     c1.Print(Form("Figs/Minv_tM_AngleFix1_%d.png", run));

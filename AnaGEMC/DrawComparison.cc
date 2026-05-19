@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     double max_MX2 = 0;
     TLegend *leg_MX2 = new TLegend(0.5, 0.6, 0.97, 0.94);
     leg_MX2->SetBorderSize(0);
-    TLegend *leg_Mmumu2 = new TLegend(0.57, 0.6, 0.97, 0.94);
+    TLegend *leg_Mmumu2 = new TLegend(0.5, 0.6, 0.97, 0.94);
     leg_Mmumu2->SetBorderSize(0);
     for (int i = 0; i < v_runs.size(); i++) {
 
@@ -92,9 +92,15 @@ int main(int argc, char** argv) {
 
         TFile *file_in = new TFile(Form("AnaDDVCS_Run_%d.root", run));
 
-        c1->cd();
+        c1->cd()->SetLeftMargin(0.14);
+        c1->cd()->SetBottomMargin(0.14);
         m_h_MX2[run] = (TH1D*) file_in->Get("h_Mmis_AngleFixcorr1");
         m_h_MX2[run]->SetTitle("; M_{X}^{2} [GeV^{2}]");
+	m_h_MX2[run]->SetTitleSize(0.05, "Y");
+	m_h_MX2[run]->SetTitleSize(0.05, "X");
+	m_h_MX2[run]->GetXaxis()->SetTitleOffset(1.1);
+	m_h_MX2[run]->SetLabelSize(0.05, "Y");
+	m_h_MX2[run]->SetLabelSize(0.05, "X");
         m_h_MX2[run]->SetLineWidth(2);
         m_h_MX2[run]->SetLineColor(m_colHist[run]);
 

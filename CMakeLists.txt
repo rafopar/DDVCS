@@ -6,11 +6,16 @@ project(DDVCS_Studies VERSION 1.0.1 DESCRIPTION "DDVCS related Analysis codes an
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "-std=c++17")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
-set(CMAKE_PREFIX_PATH $ENV{ROOTSYS}/cmake)
+#set(CMAKE_PREFIX_PATH $ENV{ROOTSYS}/cmake)
 
-find_package(ROOT REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS Spectrum)
 find_package(LZ4 REQUIRED)
 find_package(CLAS12AnaTools REQUIRED)
+#set(CMAKE_PREFIX_PATH "~/work/builds/LibTorch_2p9p2/libtorch/")
+find_package(Torch)
+
+find_package(AnaDB REQUIRED)
+
 add_definitions(-D__LZ4__) # I might need to remove this completely (Rafo)
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
@@ -43,6 +48,7 @@ install(TARGETS DDVCSToolslib
 configure_file(DDVCS_Studies.pc.in DDVCS_StudiesLib.pc @ONLY)
 
 message("ROOT_INCLUDE_DIRS is " ${ROOT_INCLUDE_DIRS})
+message("TORCH_INCLUDE_DIRS is " ${TORCH_INCLUDE_DIRS} )
 
 add_subdirectory(hipo/hipo4)
 add_subdirectory(AnaData)
@@ -57,3 +63,5 @@ add_subdirectory(RecoilDimensions)
 add_subdirectory(DVCS_VGG_Results)
 add_subdirectory(DDVCS_DVCS_xSecCpmpare)
 add_subdirectory(AnaEPIC)
+add_subdirectory(AIML_Train/el_DDVCS)
+add_subdirectory(elDDVCS)

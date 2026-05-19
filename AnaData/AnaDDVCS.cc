@@ -7,6 +7,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <vector>
+
+#include <nlohmann/json.hpp>
+
+#include <torch/script.h>
 
 #include <TF1.h>
 #include <TKey.h>
@@ -428,7 +433,7 @@ int main(int argc, char **argv) {
                 RecParticle recp(bRecPart, bRecCalo, bRecCC, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart],
                                  ind_HTCC[ipart]);
 
-                if (recp.pid() == 11 && TMath::Abs(recp.status()) >= 2000 && TMath::Abs(recp.status()) < 4000) {
+                if (recp.pid() == 11 ) {
                     h_vz_em1.Fill(recp.vz());
                     h_chi2PID_em1.Fill(recp.chi2pid());
                     h_nphe_em1.Fill(recp.npheHTCC());
@@ -533,6 +538,8 @@ int main(int argc, char **argv) {
                 double Pmis = L_mis.P();
 
                 double MxRecoil = ddvcs_kine_Noprot.GetMxRecoil();
+
+                cout<<MxRecoil<<"  "<<Mmis<<"  "<<(MxRecoil - Mmis)<<endl;
 
                 h_Mmis1.Fill(Mmis);
                 h_Minv12_1.Fill(m_emep1, m_emep2);

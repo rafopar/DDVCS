@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     hipo::bank bRecPart(factory.getSchema("REC::Particle"));
     hipo::bank bRecCalo(factory.getSchema("REC::Calorimeter"));
     hipo::bank bRecCC(factory.getSchema("REC::Cherenkov"));
-    hipo::bank bRecTrk(factory.getSchema("REC::Track"));
+    hipo::bank bRecTrk(factory.getSchema("RECHB::Track"));
 
 
     int ind_em[nMax_samePID];
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
 
-            if (evCounter > 250000) {
+            if (evCounter > 20000) {
                 break;
             }
 

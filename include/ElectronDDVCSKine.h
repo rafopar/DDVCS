@@ -26,28 +26,28 @@ class ElectronDDVCSKine : public DDVCSKine{
     /*
      * Getter methods
      */
-    double GetMx2_Reaction() const;
-    double GetQ2_1() const;
-    double GetQ2_2() const;
-    double GetQp2_1() const;
-    double GetQp2_2() const;
-    double GetNue_1() const;
-    double GetNue_2() const;
-    double GetxB_1() const;
-    double GetxB_2() const;
-    double GettM() const;
-    double GetMinv_1() const;
-    double GetMinv_2() const;
-    double GetW_1() const;
-    double GetW_2() const;
-    double GetXi_1() const;
-    double GetXi_2() const;
-    double GetXiPrime_1() const;
-    double GetXiPrime_2() const;
-    double GetXX_GPD_1() const;
-    double GetXX_GPD_2() const;
-    double GetPhi_LH_1() const;
-    double GetPhi_LH_2() const;
+    [[nodiscard]] double GetMx2_Reaction() const;
+    [[nodiscard]] double GetQ2_1() const;
+    [[nodiscard]] double GetQ2_2() const;
+    [[nodiscard]] double GetQp2_1() const;
+    [[nodiscard]] double GetQp2_2() const;
+    [[nodiscard]] double GetNue_1() const;
+    [[nodiscard]] double GetNue_2() const;
+    [[nodiscard]] double GetxB_1() const;
+    [[nodiscard]] double GetxB_2() const;
+    [[nodiscard]] double GettM() const;
+    [[nodiscard]] double GetMinv_1() const;
+    [[nodiscard]] double GetMinv_2() const;
+    [[nodiscard]] double GetW_1() const;
+    [[nodiscard]] double GetW_2() const;
+    [[nodiscard]] double GetXi_1() const;
+    [[nodiscard]] double GetXi_2() const;
+    [[nodiscard]] double GetXiPrime_1() const;
+    [[nodiscard]] double GetXiPrime_2() const;
+    [[nodiscard]] double GetXX_GPD_1() const;
+    [[nodiscard]] double GetXX_GPD_2() const;
+    [[nodiscard]] double GetPhi_LH_1() const;
+    [[nodiscard]] double GetPhi_LH_2() const;
 
 
 
@@ -77,7 +77,6 @@ class ElectronDDVCSKine : public DDVCSKine{
 
     TLorentzVector *fL_em1, *fL_em2, *fL_ep;
     void ComputeKinematics();
-
 };
 
 

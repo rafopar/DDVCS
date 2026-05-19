@@ -95,8 +95,6 @@ int main(int argc, char** argv) {
     TH1D h_n_prot1("h_n_prot1", "", 11, -0.5, 10.5);
     TH1D h_n_charged1("h_n_charged1", "", 11, -0.5, 10.5);
 
-
-
     hipo::reader reader;
     reader.open(inputFile);
 

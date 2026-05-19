@@ -4,6 +4,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TString.h>
+#include <map>
 
 using namespace std;
 
@@ -94,7 +95,7 @@ void DrawPlots1(int run) {
     TH1D *h_Mmis3 = (TH1D*) file_in->Get("h_Mmis3");
     h_Mmis3->SetTitle("; M_{X} [GeV] ");
     h_Mmis3->Draw();
-    f_GPol3->SetParameter(4, 100.);
+    f_GPol3->SetParameter(4, 0.5*h_Mmis3->GetMaximum());
     f_GPol3->SetParameter(5, 1.);
     f_GPol3->SetParameter(6, 0.05);
     h_Mmis3->Fit(f_GPol3, "MeV", "", 0.5, 1.8);
@@ -105,7 +106,7 @@ void DrawPlots1(int run) {
     f_Pol3->Draw("Same");
     f_Gaus->Draw("Same");
     double N_Gaus = f_Gaus->Integral(0.5, 1.5) / h_Mmis3->GetBinWidth(15);
-    lat1->DrawLatex(0.2, 0.8, Form("N prot = %1.1f", N_Gaus));
+    //lat1->DrawLatex(0.2, 0.8, Form("N prot = %1.1f", N_Gaus));
     c1->Print(Form("Figs/MMis3_Run_%d.pdf", run));
     c1->Print(Form("Figs/MMis3_Run_%d.png", run));
     c1->Print(Form("Figs/MMis3_Run_%d.root", run));
@@ -334,7 +335,6 @@ void DrawPlots1(int run) {
     c1->Print(Form("Figs/th_P_ep3_Run_%d.png", run));
     c1->Print(Form("Figs/th_P_ep3_Run_%d.root", run));
 
-    
     TH2D *h_th_P_em4 = (TH2D*)file_in->Get("h_th_P_em4");
     h_th_P_em4->SetTitle("; P_{e^{-}} [GeV]; #theta_{ e^{-} } [deg]");
     h_th_P_em4->Draw("colz");
@@ -450,6 +450,27 @@ void DrawPlots1(int run) {
     c1->Print(Form("Figs/lWPCal_ep1_Run_%d.png", run));
     c1->Print(Form("Figs/lWPCal_ep1_Run_%d.root", run));
 
+    auto h_xi_xxGPD_1_NoProt3 = dynamic_cast<TH2D*>(file_in->Get("h_xi_xxGPD_1_NoProt3"));
+    h_xi_xxGPD_1_NoProt3->SetTitle("; x; #xi");
+    h_xi_xxGPD_1_NoProt3->Draw("");
+    c1->Print(Form("Figs/xi_xxGPD_1_NoProt_Run_%d.pdf", run));
+    c1->Print(Form("Figs/xi_xxGPD_1_NoProt_Run_%d.png", run));
+    c1->Print(Form("Figs/xi_xxGPD_1_NoProt_Run_%d.root", run));
+
+    auto h_Minv12_NoProt3 = dynamic_cast<TH2D*>(file_in->Get("h_Minv12_NoProt3"));
+    h_Minv12_NoProt3->SetTitle("; Minv(e^{-}_{2}e^{+}) [GeV]; Minv(e^{-}_{1}e^{+}) [GeV];");
+    h_Minv12_NoProt3->Draw("");
+    c1->Print(Form("Figs/Minv12_NoProt_Run_%d.pdf", run));
+    c1->Print(Form("Figs/Minv12_NoProt_Run_%d.png", run));
+    c1->Print(Form("Figs/Minv12_NoProt_Run_%d.root", run));
+
+
+    auto h_Qp2_Q2_1_3 = dynamic_cast<TH2D*>(file_in->Get("h_Qp2_Q2_1_3"));
+    h_Qp2_Q2_1_3->SetTitle("; Q^{2} [GeV^{2}]; Q^{'2} [GeV^{2}]");
+    h_Qp2_Q2_1_3->Draw("");
+    c1->Print(Form("Figs/Qp2_Q2_1_3_Run_%d.pdf", run));
+    c1->Print(Form("Figs/Qp2_Q2_1_3_Run_%d.png", run));
+    c1->Print(Form("Figs/Qp2_Q2_1_3_Run_%d.root", run));
 
     c1->SetLogz();
     if (isMC) {

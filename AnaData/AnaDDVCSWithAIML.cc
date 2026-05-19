@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
     f_mumAccThP = new TF1("f_mumAccThP", "[0] + [1]/(x-[2])", 0., 25);
     f_mumAccThP->SetParameters(5.07868, 18.1913, -0.120759);
 
+    const double r2d = TMath::RadToDeg();
     const double Hist_Pmax = 11.;
     const int nMax_samePID = 20;
     const double Mp = 0.9383;
@@ -286,11 +287,13 @@ int main(int argc, char **argv) {
     TH1D h_vt_Diff_em1_ep("h_vt_Diff_em1_ep", "", 200, -18.5, 18.5);
     TH1D h_vt_Diff_em2_ep("h_vt_Diff_em2_ep", "", 200, -18.5, 18.5);
     TH2D h_MC_Memep_12_1("h_MC_Memep_12_1", "", 200, 0., 3., 200, 0., 3.);
+    TH2D h_MC_Memep_12_2("h_MC_Memep_12_2", "", 200, 0., 3., 200, 0., 3.);
 
     TH2D h_Pmiss_Pprot4("h_Pmiss_Pprot4", "", 200, 0., 0.5*Eb, 200, 0., 0.5*Eb);
     TH2D h_dP_P_prot4("h_dP_P_prot4", "", 200, 0., 0.5*Eb, 200, -1, 1);
 
     auto h_Qp2_Q2_1_3 = TH2D("h_Qp2_Q2_1_3", "", 200, 0., 5., 200, 0., 5.);
+    auto h_Qp2_Q2_1_4 = TH2D("h_Qp2_Q2_1_4", "", 200, 0., 5., 200, 0., 5.);
 
     TH1D h_Mmis4Part4("h_Mmis4Part4", "", 200, -1.5, 1.5);
 
@@ -320,7 +323,15 @@ int main(int argc, char **argv) {
     TH1D h_Phi_LH1_helWeighted_6("h_Phi_LH1_helWeighted_6", "", 12, 0., 360);
     TH1D h_Phi_LH2_helWeighted_6("h_Phi_LH2_helWeighted_6", "", 12, 0., 360);
 
+    TH2D h_tM_xB3("h_tM_xB3", "", 200, 0., 1.2, 200, 0., 1.);
 
+    TH1D h_Score1("h_Score1", "", 200, -0.01, 1.01);
+    TH1D h_Score2("h_Score2", "", 200, -0.01, 1.01);
+    TH1D h_Score3("h_Score3", "", 200, -0.01, 1.01);
+    TH1D h_Score4("h_Score4", "", 200, -0.01, 1.01);
+
+    TH1D h_Score_True1("h_Score_True1", "", 200, -0.01, 1.01);
+    TH1D h_Score_False1("h_Score_False1", "", 200, -0.01, 1.01);
     /*
      * Loading AI model files
      */
@@ -330,7 +341,8 @@ int main(int argc, char **argv) {
     // ---------------------------
     torch::jit::script::Module model;
     try {
-        model = torch::jit::load("./AIModels/assign_model_ts.pt");
+        //model = torch::jit::load("./AIModels/assign_model_ts.pt");
+        model = torch::jit::load("./AIModels/assign_model_ts_Run_37.pt");
     } catch (const c10::Error& e) {
         std::cerr << "Error loading model\n";
         return 1;
@@ -340,7 +352,7 @@ int main(int argc, char **argv) {
     // ---------------------------
     // Load normalization constants
     // ---------------------------
-    std::ifstream jf("./AIModels/norm.json");
+    std::ifstream jf("./AIModels/norm_Run_37.json");
     json j;
     jf >> j;
 
@@ -354,7 +366,6 @@ int main(int argc, char **argv) {
     for( int ii = 0; ii < mean.size(); ii++ ){
         std::cout<<mean.at(ii)<<"     "<<stdv.at(ii)<<std::endl;
     }
-
 
     hipo::reader reader;
     reader.open(inputFile);
@@ -376,6 +387,8 @@ int main(int argc, char **argv) {
     hipo::bank bRecSC(factory.getSchema("REC::Scintillator"));
     hipo::bank bRecEV(factory.getSchema("REC::Event"));
     hipo::bank bMCPart(factory.getSchema("MC::Particle"));
+    hipo::bank bMCRecMatch(factory.getSchema("MC::RecMatch"));
+
 
     int ind_em[nMax_samePID];
     int ind_ep[nMax_samePID];
@@ -389,9 +402,11 @@ int main(int argc, char **argv) {
 
             evCounter = evCounter + 1;
 
+
             if (evCounter > 400000) {
                 break;
             }
+
 
             if (evCounter % 10000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
@@ -552,13 +567,14 @@ int main(int argc, char **argv) {
                 double v_t_ep = bRecSC.getFloat("time", ind_FTOF[ind_ep[0]]) - bRecSC.getFloat(
                                     "path", ind_FTOF[ind_ep[0]]) / light_Speed;
 
-
-
-
                 //std::vector<double> xx = { L_em1.Px(), L_em1.Py(), L_em1.Pz(), L_em2.Px(), L_em2.Py(), L_em2.Pz(), px[2], py[2], pz[2], Minv_emep1, Minv_emep2 };
                 double Minv_pair1 = Minv2Part(part_em1, part_ep);
                 double Minv_pair2 = Minv2Part(part_em2, part_ep);
-                std::vector<double> xx = { part_em1.px(), part_em1.py(), part_em1.pz(), part_em2.px(), part_em2.py(), part_em2.pz(), part_ep.px(), part_ep.py(), part_ep.pz(), Minv_pair1, Minv_pair2 };
+                double Q2_pair1 = 2*Eb*part_em1.p()*(1 - cos( part_em1.th()/r2d ) );
+                double Q2_pair2 = 2*Eb*part_em2.p()*(1 - cos( part_em2.th()/r2d ) );
+                //std::vector<double> xx = { part_em1.px(), part_em1.py(), part_em1.pz(), part_em2.px(), part_em2.py(), part_em2.pz(), part_ep.px(), part_ep.py(), part_ep.pz(), Minv_pair1, Minv_pair2 };
+                std::vector<double> xx = { part_em1.p(), part_em1.th()/r2d, part_em1.phi()/r2d, part_em2.p(), part_em2.th()/r2d, part_em2.phi()/r2d, part_ep.p(), part_ep.th()/r2d, part_ep.phi()/r2d, Q2_pair1, Q2_pair2 };
+
                 // Normalize
                 for (size_t k=0; k<xx.size(); k++){
                   xx[k] = (xx[k] - mean[k]) / stdv[k];
@@ -569,6 +585,8 @@ int main(int argc, char **argv) {
                 // Run inference
                 torch::Tensor out = model.forward({input}).toTensor();
                 float score = out.item<float>();
+                h_Score1.Fill(score);
+
                 int label = (score < 0.5);
 
                 //if ( (part_em2.th() - f_Separation->Eval(part_em2.p()) ) > (part_em1.th() - f_Separation->Eval(part_em1.p()) ) ) {
@@ -581,6 +599,23 @@ int main(int argc, char **argv) {
                 }
 
                 L_ep.SetPxPyPzE(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
+
+                if ( isMC ) {
+
+                    event.getStructure(bMCRecMatch);
+
+                    int mc_ind_0 = bMCRecMatch.getInt("mcindex", ind_em[0]);
+                    int mc_ind_1 = bMCRecMatch.getInt("mcindex", ind_em[1]);
+                    bool initSet = mc_ind_0 == 1?true:false; // the index of Beam electron is "1"
+
+                    if (initSet) {
+                        h_Score_True1.Fill(score);
+                    }else {
+                        h_Score_False1.Fill(score);
+                    }
+
+                }
+
 
                 ddvcs_kine_Noprot.SetKineem1em2ep(&L_em1, &L_em2, &L_ep);
 
@@ -610,9 +645,9 @@ int main(int argc, char **argv) {
                 h_th_P_em2.Fill(part_em2.p(), part_em2.th());
                 h_th_P_ep2.Fill(part_ep.p(), part_ep.th());
 
-
                 if (Mmis > Mmis_Min && Mmis < Mmis_Max) {
                     h_Minv12_2.Fill(m_emep1, m_emep2);
+                    h_Score2.Fill(score);
                 }
 
                 h_vt_Diff_em1.Fill(part_em1.vt() - part_em2.vt());
@@ -636,13 +671,13 @@ int main(int argc, char **argv) {
                         h_Mmis_PMis3.Fill(Pmis, Mmis);
                         h_th_P_Mis3.Fill(Pmis, th_mis);
 
-                        h_th_P_em1_3.Fill(part_em1.p(), part_em1.th());
-                        h_th_P_em2_3.Fill(part_em2.p(), part_em2.th());
-                        h_th_P_em3.Fill(part_em1.p(), part_em1.th());
-                        h_th_P_em3.Fill(part_em2.p(), part_em2.th());
-                        h_th_P_ep3.Fill(part_ep.p(), part_ep.th());
-
                         if ( MxRecoil > MxRecoil_Min && MxRecoil < MxRecoil_Max ) {
+
+                            h_th_P_em1_3.Fill(part_em1.p(), part_em1.th());
+                            h_th_P_em2_3.Fill(part_em2.p(), part_em2.th());
+                            h_th_P_em3.Fill(part_em1.p(), part_em1.th());
+                            h_th_P_em3.Fill(part_em2.p(), part_em2.th());
+                            h_th_P_ep3.Fill(part_ep.p(), part_ep.th());
 
                             double xx_GPD1_NoProt = ddvcs_kine_Noprot.GetXX_GPD_1();
                             double xx_GPD2_NoProt = ddvcs_kine_Noprot.GetXX_GPD_2();
@@ -656,6 +691,8 @@ int main(int argc, char **argv) {
 
                             double Q2_1_NoProt = ddvcs_kine_Noprot.GetQ2_1();
                             double Qp2_1_NoProt = ddvcs_kine_Noprot.GetQp2_1();
+                            double tM = ddvcs_kine_Noprot.GettM();
+                            double xB1 = ddvcs_kine_Noprot.GetxB_1();
 
                             h_Minv12_NoProt3.Fill(Minv1_NoProt, Minv2_NoProt);
 
@@ -666,6 +703,9 @@ int main(int argc, char **argv) {
                                 h_xi_xxGPD_2_NoProt3.Fill(xx_GPD2_NoProt, xi2_NoProt);
                                 h_Phi_LH1_NoProt3.Fill(phi_LH1_NoProt);
                                 h_Phi_LH1_helWeighted_NoProt3.Fill(phi_LH1_NoProt, helicity/beamPol);
+                                h_Qp2_Q2_1_4.Fill(Q2_1_NoProt, Qp2_1_NoProt);
+
+                                h_tM_xB3.Fill(-tM, xB1);
                             }
 
                             if ( Minv2_NoProt > MinvMinCut ) {
@@ -809,11 +849,13 @@ int main(int argc, char **argv) {
                 bool em2_emAcc = emAcc(L_MC_em2);
                 bool em2_mum = mumAcc(L_MC_em2);
 
-                if (epAcc && ((em1_emAcc && em2_mum) || (em2_emAcc && em1_mum))) {
-                    TLorentzVector L_emep1 = L_MC_em1 + L_MC_ep;
-                    TLorentzVector L_emep2 = L_MC_em2 + L_MC_ep;
+                TLorentzVector L_emep1 = L_MC_em1 + L_MC_ep;
+                TLorentzVector L_emep2 = L_MC_em2 + L_MC_ep;
 
-                    h_MC_Memep_12_1.Fill(L_emep1.M(), L_emep2.M());
+                h_MC_Memep_12_1.Fill(L_emep1.M(), L_emep2.M());
+
+                if (epAcc && ((em1_emAcc && em2_mum) || (em2_emAcc && em1_mum))) {
+                    h_MC_Memep_12_2.Fill(L_emep1.M(), L_emep2.M());
                 }
             }
         }

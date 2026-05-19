@@ -226,6 +226,7 @@ int main(int argc, char** argv) {
     m_Qp2_Q2Cut_Offset_bin0[32005] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[32006] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[32007] = 4.6;
+    m_Qp2_Q2Cut_Offset_bin0[32010] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[33005] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[30005] = 4.6;
     m_Qp2_Q2Cut_Offset_bin0[9113] = 4.6;
@@ -262,6 +263,7 @@ int main(int argc, char** argv) {
     m_Qp2_Q2Cut_Slope_bin0[32005] = -1. / 1.65;
     m_Qp2_Q2Cut_Slope_bin0[32006] = -1. / 1.65;
     m_Qp2_Q2Cut_Slope_bin0[32007] = -1. / 1.65;
+    m_Qp2_Q2Cut_Slope_bin0[32010] = -1. / 1.65;
     m_Qp2_Q2Cut_Slope_bin0[33005] = -1. / 1.65;
     m_Qp2_Q2Cut_Slope_bin0[30005] = -1. / 1.65;
     m_Qp2_Q2Cut_Slope_bin0[1022] = -1. / 1.65;
@@ -301,6 +303,7 @@ int main(int argc, char** argv) {
     m_Qp2_Q2Cut_Offset_bin1[32005] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[32006] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[32007] = 6.9;
+    m_Qp2_Q2Cut_Offset_bin1[32010] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[33005] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[30005] = 6.9;
     m_Qp2_Q2Cut_Offset_bin1[9113] = 6.9;
@@ -337,6 +340,7 @@ int main(int argc, char** argv) {
     m_Qp2_Q2Cut_Slope_bin1[32005] = -1. / 0.55;
     m_Qp2_Q2Cut_Slope_bin1[32006] = -1. / 0.55;
     m_Qp2_Q2Cut_Slope_bin1[32007] = -1. / 0.55;
+    m_Qp2_Q2Cut_Slope_bin1[32010] = -1. / 0.55;
     m_Qp2_Q2Cut_Slope_bin1[33005] = -1. / 0.55;
     m_Qp2_Q2Cut_Slope_bin1[30005] = -1. / 0.55;
     m_Qp2_Q2Cut_Slope_bin1[9113] = -1. / 0.55;
@@ -396,6 +400,7 @@ int main(int argc, char** argv) {
     m_tMCut[32005] = 0.5;
     m_tMCut[32006] = 0.5;
     m_tMCut[32007] = 0.5;
+    m_tMCut[32010] = 0.5;
     m_tMCut[33005] = 0.5;
     m_tMCut[30005] = 0.5;
     m_tMCut[9113] = 0.5;

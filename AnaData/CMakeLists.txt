@@ -2,7 +2,9 @@ set(INCLUDES
   ${ROOT_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/hipo/hipo4
-  ${CLAS12AnaTools_INCLUDE_DIRS})
+  ${CLAS12AnaTools_INCLUDE_DIRS}
+  ${TORCH_INCLUDE_DIRS}
+  ~/work/include)
 include_directories(${INCLUDES})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -12,7 +14,7 @@ add_executable(AnaData.exe AnaData.cc)
 target_link_libraries(AnaData.exe Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} )
 
 add_executable(AnaDDVCS.exe AnaDDVCS.cc)
-target_link_libraries(AnaDDVCS.exe Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib )
+target_link_libraries(AnaDDVCS.exe Hipo4 ${TORCH_LIBRARIES} ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib )
 
 add_executable(AnaDDVCSOSG.exe AnaDDVCSOSG.cc)
 target_link_libraries(AnaDDVCSOSG.exe Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} )
@@ -24,10 +26,18 @@ target_link_libraries(TriggerStudy Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBR
 add_executable(AnaElectronDDVCS AnaElectronDDVCS.cc)
 set_target_properties(AnaElectronDDVCS PROPERTIES OUTPUT_NAME "AnaElectronDDVCS")
 target_link_libraries(AnaElectronDDVCS Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} )
+
+add_executable(AnaDDVCSWithAIML AnaDDVCSWithAIML.cc)
+set_target_properties(AnaDDVCSWithAIML PROPERTIES OUTPUT_NAME "AnaDDVCSWithAIML.exe")
+target_link_libraries(AnaDDVCSWithAIML Hipo4 ${TORCH_LIBRARIES} ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib)
+
+add_executable(DrawAIPerformance DrawAIPerformance.cc)
+set_target_properties(DrawAIPerformance PROPERTIES OUTPUT_NAME "DrawAIPerformance.exe")
+target_link_libraries(DrawAIPerformance ${ROOT_LIBRARIES})
 #################################################################################################
 
 ################################ Installing Executable targets #############################
-install( TARGETS AnaData.exe AnaDDVCS.exe AnaDDVCSOSG.exe TriggerStudy AnaElectronDDVCS
+install( TARGETS AnaData.exe AnaDDVCS.exe AnaDDVCSOSG.exe TriggerStudy AnaElectronDDVCS AnaDDVCSWithAIML DrawAIPerformance
   DESTINATION ${CMAKE_INSTALL_PREFIX}/AnaData/bin )
 
 ################################ Installing Non target files ###############################

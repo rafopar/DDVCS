@@ -45,9 +45,15 @@ void DrawInclusiveCoincidence() {
     TCanvas *c1 = new TCanvas("c1", "", 950, 950);
     c1->SetTopMargin(0.02);
     c1->SetRightMargin(0.02);
+    c1->SetLeftMargin(0.14);
+    c1->SetBottomMargin(0.14);
 
     mh_Mmis_[RunBH]->SetTitle("; M_{X}^{2} [GeV^{2}]");
     mh_Mmis_[RunBH]->SetLineColor(4);
+    mh_Mmis_[RunBH]->SetTitleSize(0.05, "Y");
+    mh_Mmis_[RunBH]->SetTitleSize(0.05, "X");
+    mh_Mmis_[RunBH]->SetLabelSize(0.05, "Y");
+    mh_Mmis_[RunBH]->SetLabelSize(0.05, "X");
     mh_Mmis_[RunElasticMerge]->SetLineColor(2);
     mh_Mmis_[RunQuasiElasticMerge]->SetLineColor(6);
 
@@ -74,7 +80,7 @@ void DrawInclusiveCoincidence() {
     //mh_Mmis_[RunQuasiElasticMerge]->Draw("Same");
     h_BgrSum->Draw("Same");
     leg1->Draw();
-    lat1->DrawLatex(0.45, 0.93, Form("Tot contribution is %1.1f %%", 100.*integ_BgrSum/integ_BH ));
+    //lat1->DrawLatex(0.45, 0.93, Form("Tot contribution is %1.1f %%", 100.*integ_BgrSum/integ_BH ));
     c1->Print(Form("Figs/Inclusive_Coincidence_LinScale.pdf"));
     c1->Print(Form("Figs/Inclusive_Coincidence_LinScale.png"));
     c1->Print(Form("Figs/Inclusive_Coincidence_LinScale.root"));
