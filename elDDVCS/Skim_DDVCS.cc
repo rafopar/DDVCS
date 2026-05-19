@@ -236,8 +236,6 @@ int main(const int argc, char* argv[]) {
 
             if ( n_em == 2 && n_ep == 1 ) {
 
-                TLorentzVector L_em1, L_em2, L_ep;
-
                 RecParticle part_em1(bRecPart, bRecCalo, bRecCC, ind_em[0], ind_PCal[ind_em[0]], ind_ECin[ind_em[0]],
                      ind_ECout[ind_em[0]], ind_HTCC[ind_em[0]]);
 
@@ -246,10 +244,10 @@ int main(const int argc, char* argv[]) {
                 RecParticle part_ep(bRecPart, bRecCalo, bRecCC, ind_ep[0], ind_PCal[ind_ep[0]], ind_ECin[ind_ep[0]],
                                     ind_ECout[ind_ep[0]], ind_HTCC[ind_ep[0]]);
 
-                L_em1.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
-                L_em2.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
-                L_ep.SetPxPyPzE(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
-                ddvcs_kine_NoProt.SetKineem1em2ep(&L_em1, &L_em2, &L_ep);
+                ROOT::Math::PxPyPzEVector L_em1(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
+                ROOT::Math::PxPyPzEVector L_em2(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                ROOT::Math::PxPyPzEVector L_ep(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
+                ddvcs_kine_NoProt.SetKineem1em2ep(L_em1, L_em2, L_ep);
 
 
     hists->h_Phi_LH_12_1->Fill(ddvcs_kine_NoProt.GetPhi_LH_1(), ddvcs_kine_NoProt.GetPhi_LH_2());

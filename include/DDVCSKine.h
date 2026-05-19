@@ -4,9 +4,10 @@
 
 #ifndef DDVCSKINE_H
 #define DDVCSKINE_H
-#include <TLorentzVector.h>
-
-#endif //DDVCSKINE_H
+#include <Math/LorentzVector.h>
+#include <Math/Vector4D.h>
+#include <Math/Vector3D.h>
+#include <Math/VectorUtil.h>
 
 class DDVCSKine {
 protected:
@@ -25,10 +26,8 @@ protected:
     double fMX2_Reaction;
     double fMx_Recoil;
 
-    // Those LorentzVectors below are the same for both muon and electron DDVCS
-    TLorentzVector *fL_beam, *fL_Targ, *fL_Recoil;
-
-    TLorentzVector fL_MisReaction;                  // missing particle of the reaction (should be 0 in ideal case)
+    ROOT::Math::PxPyPzEVector fL_beam, fL_Targ, fL_Recoil;
+    ROOT::Math::PxPyPzEVector fL_MisReaction;
 
     void CheckKinematicsCalculated(const char* funcName) const;
 
@@ -42,3 +41,5 @@ public:
 
     static constexpr double fr2d = 57.2957795131;
 };
+
+#endif //DDVCSKINE_H

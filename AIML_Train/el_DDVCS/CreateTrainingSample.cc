@@ -16,9 +16,9 @@
 
 #include <ElectronDDVCSKine.h>
 #include <RecParticle.h>
-#include <TLorentzVector.h>
 
 using namespace std;
+using LVec = ROOT::Math::PxPyPzEVector;
 
 int main( int argc, char *argv[] ) {
 
@@ -225,11 +225,11 @@ int main( int argc, char *argv[] ) {
             h_th_p_MC_emDecay1.Fill(p_em_decay_MC, th_em_decay_MC);
             h_th_p_MC_ep1.Fill(p_ep_MC, th_ep_MC);
 
-            TLorentzVector L_em_decay_MC(px_em_decay_MC, py_em_decay_MC, pz_em_decay_MC, p_em_decay_MC);
-            TLorentzVector L_em_beam_MC(px_em_beam_MC, py_em_beam_MC, pz_em_beam_MC, p_em_beam_MC);
-            TLorentzVector L_ep_MC(px_ep_MC, py_ep_MC, pz_ep_MC, p_ep_MC);
-            TLorentzVector L_emep_decay_MC = L_em_decay_MC + L_ep_MC;
-            TLorentzVector L_emep_beam_MC = L_em_beam_MC + L_ep_MC;
+            LVec L_em_decay_MC(px_em_decay_MC, py_em_decay_MC, pz_em_decay_MC, p_em_decay_MC);
+            LVec L_em_beam_MC(px_em_beam_MC, py_em_beam_MC, pz_em_beam_MC, p_em_beam_MC);
+            LVec L_ep_MC(px_ep_MC, py_ep_MC, pz_ep_MC, p_ep_MC);
+            LVec L_emep_decay_MC = L_em_decay_MC + L_ep_MC;
+            LVec L_emep_beam_MC  = L_em_beam_MC + L_ep_MC;
 
             double Minv_decay_MC = L_emep_decay_MC.M();
             double Minv_beam_MC = L_emep_beam_MC.M();
@@ -423,10 +423,10 @@ int main( int argc, char *argv[] ) {
 
                 if ( ind_em_beam>= 0 && ind_em_decay >= 0 ) {
 
-                    TLorentzVector L_em1(part_emBeam.px(), part_emBeam.py(), part_emBeam.pz(), part_emBeam.p() );
-                    TLorentzVector L_em2(part_emDecay.px(), part_emDecay.py(), part_emDecay.pz(), part_emDecay.p() );
-                    TLorentzVector L_ep(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p() );
-                    ddvcs_kine_Noprot.SetKineem1em2ep(&L_em1, &L_em2, &L_ep);
+                    LVec L_em1(part_emBeam.px(), part_emBeam.py(), part_emBeam.pz(), part_emBeam.p());
+                    LVec L_em2(part_emDecay.px(), part_emDecay.py(), part_emDecay.pz(), part_emDecay.p());
+                    LVec L_ep(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
+                    ddvcs_kine_Noprot.SetKineem1em2ep(L_em1, L_em2, L_ep);
 
                     h_P_beam_em_Rec_MC1.Fill(p_em_beam_MC, part_emBeam.p());
                     h_th_beam_em_Rec_MC1.Fill(th_em_beam_MC, part_emBeam.th());

@@ -8,8 +8,8 @@
 #include <iostream>
 #include <ostream>
 
-DDVCSKine::DDVCSKine(): ftargetSet(false), fEbSet(false), fParticlesSet(false), fL_beam(nullptr), fL_Targ(nullptr),
-                        fL_Recoil(nullptr), fL_MisReaction() {
+DDVCSKine::DDVCSKine(): ftargetSet(false), fEbSet(false), fParticlesSet(false),
+                        fL_beam(), fL_Targ(), fL_Recoil(), fL_MisReaction() {
     fEb = 0;
     fMtarg = 0;
     fMX2_Reaction = 0;
@@ -23,7 +23,7 @@ void DDVCSKine::SetEb(double aEb) {
         exit(1);
     }
     fEb = aEb;
-    fL_beam = new TLorentzVector(0., 0.,fEb, fEb);
+    fL_beam = ROOT::Math::PxPyPzEVector(0., 0., fEb, fEb);
     fEbSet = true;
 }
 
@@ -35,7 +35,7 @@ void DDVCSKine::SetMtarg(double aMtarg) {
 
     fMtarg = aMtarg;
 
-    fL_Targ = new TLorentzVector(0., 0.,0, fMtarg);
+    fL_Targ = ROOT::Math::PxPyPzEVector(0., 0., 0., fMtarg);
 
     ftargetSet = true;
 }
@@ -53,7 +53,4 @@ void DDVCSKine::CheckKinematicsCalculated(const char *funcName) const{
 }
 
 DDVCSKine::~DDVCSKine() {
-     delete fL_beam;
-     delete fL_Targ;
-     delete fL_Recoil;
 }

@@ -22,10 +22,9 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TRandom.h>
-#include <TVector3.h>
-#include <TLorentzVector.h>
-
 #include <ElectronDDVCSKine.h>
+
+using LVec = ROOT::Math::PxPyPzEVector;
 #include <RecParticle.h>
 
 // ===== Hipo headers =====
@@ -37,13 +36,10 @@
 using namespace std;
 using json = nlohmann::json;
 
-bool emAcc(TLorentzVector &);
-
-bool mumAcc(TLorentzVector &);
-
-bool mupAcc(TLorentzVector &);
-
-bool protAcc(TLorentzVector &);
+bool emAcc(const LVec &);
+bool mumAcc(const LVec &);
+bool mupAcc(const LVec &);
+bool protAcc(const LVec &);
 
 double Minv2Part( const RecParticle& p1, const RecParticle& p2 );
 
@@ -196,10 +192,8 @@ int main(int argc, char **argv) {
     ddvcs_kine_Noprot.SetEb(Eb);
     ddvcs_kine_Noprot.SetMtarg(Mp);
 
-    TLorentzVector L_beam;
-    L_beam.SetPxPyPzE(0., 0., Eb, Eb);
-    TLorentzVector L_targ;
-    L_targ.SetPxPyPzE(0., 0., 0., Mp);
+    LVec L_beam(0., 0., Eb, Eb);
+    LVec L_targ(0., 0., 0., Mp);
 
     TObjArray Hlist(0);
 
@@ -552,8 +546,6 @@ int main(int argc, char **argv) {
             }
 
             if (n_em == 2 && n_ep == 1) {
-                TLorentzVector L_em1, L_em2, L_ep;
-
                 RecParticle part_em1(bRecPart, bRecCalo, bRecCC, ind_em[0], ind_PCal[ind_em[0]], ind_ECin[ind_em[0]],
                                      ind_ECout[ind_em[0]], ind_HTCC[ind_em[0]]);
 
@@ -589,16 +581,17 @@ int main(int argc, char **argv) {
 
                 int label = (score < 0.5);
 
+                LVec L_em1, L_em2;
                 //if ( (part_em2.th() - f_Separation->Eval(part_em2.p()) ) > (part_em1.th() - f_Separation->Eval(part_em1.p()) ) ) {
                 if ( label ) {
-                    L_em1.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
-                    L_em2.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
-                }else {
-                    L_em1.SetPxPyPzE(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
-                    L_em2.SetPxPyPzE(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
+                    L_em1 = LVec(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
+                    L_em2 = LVec(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                } else {
+                    L_em1 = LVec(part_em2.px(), part_em2.py(), part_em2.pz(), part_em2.p());
+                    L_em2 = LVec(part_em1.px(), part_em1.py(), part_em1.pz(), part_em1.p());
                 }
 
-                L_ep.SetPxPyPzE(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
+                LVec L_ep(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
 
                 if ( isMC ) {
 
@@ -617,11 +610,11 @@ int main(int argc, char **argv) {
                 }
 
 
-                ddvcs_kine_Noprot.SetKineem1em2ep(&L_em1, &L_em2, &L_ep);
+                ddvcs_kine_Noprot.SetKineem1em2ep(L_em1, L_em2, L_ep);
 
-                TLorentzVector L_mis = L_beam + L_targ - (L_em1 + L_em2 + L_ep);
-                TLorentzVector L_emep1 = L_em2 + L_ep;
-                TLorentzVector L_emep2 = L_em1 + L_ep;
+                LVec L_mis   = L_beam + L_targ - (L_em1 + L_em2 + L_ep);
+                LVec L_emep1 = L_em2 + L_ep;
+                LVec L_emep2 = L_em1 + L_ep;
 
                 double m_emep1 = L_emep1.M();
                 double m_emep2 = L_emep2.M();
@@ -737,11 +730,10 @@ int main(int argc, char **argv) {
                             RecParticle part_p(bRecPart, bRecCalo, bRecCC, ind_prot[0], ind_PCal[ind_prot[0]], ind_ECin[ind_prot[0]], ind_ECout[ind_prot[0]], ind_HTCC[ind_prot[0]]);
                             h_beta_P_prot4.Fill(part_p.p(), part_p.beta());
 
-                            TLorentzVector L_prot;
-                            L_prot.SetPxPyPzE(part_p.px(), part_p.py(), part_p.pz(), sqrt( part_p.p()*part_p.p() + Mp*Mp) );
-                            TLorentzVector L_mis4part = L_beam + L_targ - (L_em1 + L_em2 + L_ep + L_prot);
+                            LVec L_prot(part_p.px(), part_p.py(), part_p.pz(), sqrt(part_p.p()*part_p.p() + Mp*Mp));
+                            LVec L_mis4part = L_beam + L_targ - (L_em1 + L_em2 + L_ep + L_prot);
 
-                            ddvcs_kine.SetKin4FSParticles(&L_em1, &L_em2, &L_ep, &L_prot);
+                            ddvcs_kine.SetKin4FSParticles(L_em1, L_em2, L_ep, L_prot);
 
                             double Mx2_4part = L_mis4part.M2();
                             h_Mmis4Part4.Fill(Mx2_4part);
@@ -838,10 +830,9 @@ int main(int argc, char **argv) {
                 pt_em[1] = sqrt(px_em[1] * px_em[1] + py_em[1] * py_em[1]);
                 p_em[1] = sqrt(px_em[1] * px_em[1] + py_em[1] * py_em[1] + pz_em[1] * pz_em[1]);
 
-                TLorentzVector L_MC_em1, L_MC_em2, L_MC_ep;
-                L_MC_ep.SetPxPyPzE(px_ep, py_ep, pz_ep, p_ep);
-                L_MC_em1.SetPxPyPzE(px_em[0], py_em[0], pz_em[0], p_em[0]);
-                L_MC_em2.SetPxPyPzE(px_em[1], py_em[1], pz_em[1], p_em[1]);
+                LVec L_MC_ep(px_ep, py_ep, pz_ep, p_ep);
+                LVec L_MC_em1(px_em[0], py_em[0], pz_em[0], p_em[0]);
+                LVec L_MC_em2(px_em[1], py_em[1], pz_em[1], p_em[1]);
 
                 bool epAcc = mupAcc(L_MC_ep);
                 bool em1_emAcc = emAcc(L_MC_em1);
@@ -849,8 +840,8 @@ int main(int argc, char **argv) {
                 bool em2_emAcc = emAcc(L_MC_em2);
                 bool em2_mum = mumAcc(L_MC_em2);
 
-                TLorentzVector L_emep1 = L_MC_em1 + L_MC_ep;
-                TLorentzVector L_emep2 = L_MC_em2 + L_MC_ep;
+                LVec L_emep1 = L_MC_em1 + L_MC_ep;
+                LVec L_emep2 = L_MC_em2 + L_MC_ep;
 
                 h_MC_Memep_12_1.Fill(L_emep1.M(), L_emep2.M());
 
@@ -896,45 +887,41 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-bool emAcc(TLorentzVector &L) {
+bool emAcc(const LVec &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
-           P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
 }
 
-bool mumAcc(TLorentzVector &L) {
+bool mumAcc(const LVec &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.5; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
-           P_max &&
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max &&
            L.Theta() * TMath::RadToDeg() > f_mumAccThP->Eval(L.P());
 }
 
-bool mupAcc(TLorentzVector &L) {
+bool mupAcc(const LVec &L) {
     const double th_max = 29.5; // deg
     const double th_min = 7.5; // deg
     const double P_max = 11.; // GeV
     const double P_min = 1.5; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
-           P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
 }
 
-bool protAcc(TLorentzVector &L) {
+bool protAcc(const LVec &L) {
     const double th_max = 120; // deg
     const double th_min = 40.; // deg
     const double P_max = 11.; // GeV
     const double P_min = 0.3; // GeV
 
-    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() <
-           P_max;
+    return L.Theta() * TMath::RadToDeg() > th_min && L.Theta() * TMath::RadToDeg() < th_max && L.P() > P_min && L.P() < P_max;
 }
 
 double Minv2Part( const RecParticle& p1, const RecParticle& p2 ) {

@@ -18,10 +18,14 @@ class ElectronDDVCSKine : public DDVCSKine{
      * There are multiple ways of defining the kinematics, Either providing all 4 FS particle LorentzVectors or
      * providing at least three of them, and the missing one will be calculated using the four momentum conservation.
      */
-    bool SetKin4FSParticles( TLorentzVector* L_em1, TLorentzVector* L_em2, TLorentzVector* L_ep, TLorentzVector* L_recoil );
-    bool SetKineem1em2ep(TLorentzVector* L_em1, TLorentzVector* L_em2, TLorentzVector* L_ep);
-    bool SetKineem1em2Recoil(TLorentzVector* L_em1, TLorentzVector* L_em2, TLorentzVector* L_Recoil);
-    bool SetKineemepRecoil(TLorentzVector* L_em, TLorentzVector* L_ep, TLorentzVector* L_Recoil);
+    bool SetKin4FSParticles(const ROOT::Math::PxPyPzEVector& L_em1, const ROOT::Math::PxPyPzEVector& L_em2,
+                            const ROOT::Math::PxPyPzEVector& L_ep, const ROOT::Math::PxPyPzEVector& L_recoil);
+    bool SetKineem1em2ep(const ROOT::Math::PxPyPzEVector& L_em1, const ROOT::Math::PxPyPzEVector& L_em2,
+                         const ROOT::Math::PxPyPzEVector& L_ep);
+    bool SetKineem1em2Recoil(const ROOT::Math::PxPyPzEVector& L_em1, const ROOT::Math::PxPyPzEVector& L_em2,
+                             const ROOT::Math::PxPyPzEVector& L_Recoil);
+    bool SetKineemepRecoil(const ROOT::Math::PxPyPzEVector& L_em, const ROOT::Math::PxPyPzEVector& L_ep,
+                           const ROOT::Math::PxPyPzEVector& L_Recoil);
 
     /*
      * Getter methods
@@ -75,7 +79,7 @@ class ElectronDDVCSKine : public DDVCSKine{
     double fPhi_LH_1 = 0, fPhi_LH_2 = 0;
     double fMX_recoil = 0; // This is the missing mass of the (e-e-e+) system, should peak at proton mass.
 
-    TLorentzVector *fL_em1, *fL_em2, *fL_ep;
+    ROOT::Math::PxPyPzEVector fL_em1, fL_em2, fL_ep;
     void ComputeKinematics();
 };
 

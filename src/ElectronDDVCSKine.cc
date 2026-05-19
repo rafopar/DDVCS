@@ -3,16 +3,13 @@
 //
 #include <ElectronDDVCSKine.h>
 
-ElectronDDVCSKine::ElectronDDVCSKine() : fL_em1(nullptr), fL_em2(nullptr), fL_ep(nullptr) {
+ElectronDDVCSKine::ElectronDDVCSKine() : fL_em1(), fL_em2(), fL_ep() {
 
 
 }
 
-bool ElectronDDVCSKine::SetKin4FSParticles(TLorentzVector* aL_em1, TLorentzVector* aL_em2, TLorentzVector* aL_ep, TLorentzVector* aL_recoil) {
-
-    /*
-     * At this point target mass and the beam energy should already be set
-     */
+bool ElectronDDVCSKine::SetKin4FSParticles(const ROOT::Math::PxPyPzEVector& aL_em1, const ROOT::Math::PxPyPzEVector& aL_em2,
+                                            const ROOT::Math::PxPyPzEVector& aL_ep, const ROOT::Math::PxPyPzEVector& aL_recoil) {
 
     if ( !fEbSet || !ftargetSet ) {
         std::cerr<<"At this point the beam energy and the target mass should already be set. Exiting..."<<std::endl;
@@ -31,11 +28,9 @@ bool ElectronDDVCSKine::SetKin4FSParticles(TLorentzVector* aL_em1, TLorentzVecto
     return true;
 }
 
-bool ElectronDDVCSKine::SetKineem1em2ep(TLorentzVector* aL_em1, TLorentzVector* aL_em2, TLorentzVector* aL_ep) {
+bool ElectronDDVCSKine::SetKineem1em2ep(const ROOT::Math::PxPyPzEVector& aL_em1, const ROOT::Math::PxPyPzEVector& aL_em2,
+                                         const ROOT::Math::PxPyPzEVector& aL_ep) {
 
-    /*
-     * At this point target mass and the beam energy should already be set
-     */
     if ( !fEbSet || !ftargetSet ) {
         std::cerr<<"At this point the beam energy and the target mass should already be set. Exiting..."<<std::endl;
         exit(1);
@@ -44,8 +39,7 @@ bool ElectronDDVCSKine::SetKineem1em2ep(TLorentzVector* aL_em1, TLorentzVector* 
     fL_em1 = aL_em1;
     fL_em2 = aL_em2;
     fL_ep = aL_ep;
-    fL_Recoil = new TLorentzVector();
-    *fL_Recoil = *fL_beam + *fL_Targ - *fL_em1 - *fL_em2 - *fL_ep;
+    fL_Recoil = fL_beam + fL_Targ - fL_em1 - fL_em2 - fL_ep;
 
     fParticlesSet = true;
     // All particles are set, so the reaction kinematics can ba calculated.
@@ -60,52 +54,56 @@ bool ElectronDDVCSKine::SetKineem1em2ep(TLorentzVector* aL_em1, TLorentzVector* 
  */
 void ElectronDDVCSKine::ComputeKinematics() {
 
-    fL_MisReaction = *fL_beam + *fL_Targ - *fL_em1 - *fL_em2 - *fL_ep - *fL_Recoil;
+    using XYZVec = ROOT::Math::XYZVector;
 
-    /*
-     * Calculate kinematic variables that assume the scattered electron the em1
-     */
-    const TLorentzVector fL_nu1 = *fL_em1 - *fL_beam;  // spacelike photon when em1 is the scattered electron
-    const TLorentzVector fL_q1 = *fL_em2 + *fL_ep;    // timelike photon calculated when em1 is the scattered electron
-    const TVector3 v3_beam_Eprime1 = fL_beam->Vect().Cross(fL_em1->Vect());
-    const TVector3 v3_q_qprime1 = fL_nu1.Vect().Cross(fL_q1.Vect());
+    auto vect = [](const ROOT::Math::PxPyPzEVector& v) {
+        return XYZVec(v.Px(), v.Py(), v.Pz());
+    };
 
-    fMx_Recoil = fL_Recoil->M();
-    fPhi_LH_1 = fL_em1->Vect().Dot(v3_q_qprime1) > 0 ? v3_beam_Eprime1.Angle(v3_q_qprime1) * fr2d : 360. - v3_beam_Eprime1.Angle(v3_q_qprime1) * fr2d;
+    fL_MisReaction = fL_beam + fL_Targ - fL_em1 - fL_em2 - fL_ep - fL_Recoil;
 
-    fQ2_1 = -fL_nu1.M2();
-    fQp2_1 = fL_q1.M2();
-    fMinv_1 = fL_q1.M();
-    fnue_1 = -fL_nu1.E();
-    fxB_1 = fQ2_1/(2*fMtarg*fnue_1);
-    fxiPrime_1 = fxB_1/(2-fxB_1);
-    fxi_1 = fxiPrime_1*(fQ2_1 + fQp2_1 )/fQ2_1;
-    fXX_GPD_1 = 2*fxiPrime_1 - fxi_1;
+    // Calculate kinematic variables assuming em1 is the scattered beam electron
+    const ROOT::Math::PxPyPzEVector fL_nu1 = fL_em1 - fL_beam;  // spacelike photon
+    const ROOT::Math::PxPyPzEVector fL_q1  = fL_em2 + fL_ep;    // timelike photon
 
-    /*
-     * Calculate kinematic variables that assume the scattered electron the em2
-     */
-    const TLorentzVector fL_nu2 = *fL_em2 - *fL_beam;  // spacelike photon when em2 is the scattered electron
-    const TLorentzVector fL_q2 = *fL_em1 + *fL_ep;    // timelike photon calculated when em2 is the scattered electron
-    const TVector3 v3_beam_Eprime2 = fL_beam->Vect().Cross(fL_em2->Vect());
-    const TVector3 v3_q_qprime2 = fL_nu2.Vect().Cross(fL_q2.Vect());
+    const XYZVec v3_beam_Eprime1 = vect(fL_beam).Cross(vect(fL_em1));
+    const XYZVec v3_q_qprime1   = vect(fL_nu1).Cross(vect(fL_q1));
+    double angle1 = ROOT::Math::VectorUtil::Angle(v3_beam_Eprime1, v3_q_qprime1);
 
-    fPhi_LH_2 = fL_em2->Vect().Dot(v3_q_qprime2) > 0 ? v3_beam_Eprime2.Angle(v3_q_qprime2) * fr2d : 360. - v3_beam_Eprime2.Angle(v3_q_qprime2) * fr2d;
+    fMx_Recoil = fL_Recoil.M();
+    fPhi_LH_1  = vect(fL_em1).Dot(v3_q_qprime1) > 0 ? angle1 * fr2d : 360. - angle1 * fr2d;
 
-    fQ2_2 = -fL_nu2.M2();
-    fQp2_2 = fL_q2.M2();
-    fMinv_2 = fL_q2.M();
-    fnue_2 = -fL_nu2.E();
-    fxB_2 = fQ2_2/(2*fMtarg*fnue_2);
-    fxiPrime_2 = fxB_2/(2-fxB_2);
-    fxi_2 = fxiPrime_2*(fQ2_2 + fQp2_2 )/fQ2_2;
-    fXX_GPD_2 = 2*fxiPrime_2 - fxi_2;
+    fQ2_1      = -fL_nu1.M2();
+    fQp2_1     = fL_q1.M2();
+    fMinv_1    = fL_q1.M();
+    fnue_1     = -fL_nu1.E();
+    fxB_1      = fQ2_1 / (2 * fMtarg * fnue_1);
+    fxiPrime_1 = fxB_1 / (2 - fxB_1);
+    fxi_1      = fxiPrime_1 * (fQ2_1 + fQp2_1) / fQ2_1;
+    fXX_GPD_1  = 2 * fxiPrime_1 - fxi_1;
 
-    /*
-     * Variables that don't depend on the order of electrons
-     */
+    // Calculate kinematic variables assuming em2 is the scattered beam electron
+    const ROOT::Math::PxPyPzEVector fL_nu2 = fL_em2 - fL_beam;  // spacelike photon
+    const ROOT::Math::PxPyPzEVector fL_q2  = fL_em1 + fL_ep;    // timelike photon
+
+    const XYZVec v3_beam_Eprime2 = vect(fL_beam).Cross(vect(fL_em2));
+    const XYZVec v3_q_qprime2   = vect(fL_nu2).Cross(vect(fL_q2));
+    double angle2 = ROOT::Math::VectorUtil::Angle(v3_beam_Eprime2, v3_q_qprime2);
+
+    fPhi_LH_2  = vect(fL_em2).Dot(v3_q_qprime2) > 0 ? angle2 * fr2d : 360. - angle2 * fr2d;
+
+    fQ2_2      = -fL_nu2.M2();
+    fQp2_2     = fL_q2.M2();
+    fMinv_2    = fL_q2.M();
+    fnue_2     = -fL_nu2.E();
+    fxB_2      = fQ2_2 / (2 * fMtarg * fnue_2);
+    fxiPrime_2 = fxB_2 / (2 - fxB_2);
+    fxi_2      = fxiPrime_2 * (fQ2_2 + fQp2_2) / fQ2_2;
+    fXX_GPD_2  = 2 * fxiPrime_2 - fxi_2;
+
+    // Variables that don't depend on electron assignment
     fMX2_Reaction = fL_MisReaction.M2();
-    ftM = (*fL_Recoil - *fL_Targ).M2();
+    ftM = (fL_Recoil - fL_Targ).M2();
 
     fKinematicsComputed = true;
 }
