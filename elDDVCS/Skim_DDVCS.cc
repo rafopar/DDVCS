@@ -35,10 +35,12 @@ int main(const int argc, char* argv[]) {
 
     int run = atoi(argv[1]);
     char inputFile[256];
+    char outputFile[256];
 
     sprintf(inputFile, "Train/skim4_%06d.hipo", run);
+    sprintf(outputFile, "SkimDDVCS/hipo/elDDVCS_%06d.hipo", run);
 
-    TFile file_out(Form("SkimDDVCS/SkimDDVCS_%d.root", run), "Recreate");
+    TFile file_out(Form("OutHists/SkimElDDVCS/SkimDDVCS_%d.root", run), "Recreate");
 
     DDVCSTools::Eb = 8.477; ////// FIX ME, THIS SHOULD BE READOUT FROM THE DB //////
 
@@ -66,6 +68,10 @@ int main(const int argc, char* argv[]) {
     reader.readDictionary(factory);
     factory.show();
     hipo::event event;
+
+    hipo::writer writer;
+    writer.addDictionary(factory);
+    writer.open(outputFile);
 
     hipo::bank bRunConf(factory.getSchema("RUN::config"));
     hipo::bank bRecPart(factory.getSchema("REC::Particle"));
@@ -236,6 +242,8 @@ int main(const int argc, char* argv[]) {
 
             if ( n_em == 2 && n_ep == 1 ) {
 
+                writer.addEvent(event);
+
                 RecParticle part_em1(bRecPart, bRecCalo, bRecCC, ind_em[0], ind_PCal[ind_em[0]], ind_ECin[ind_em[0]],
                      ind_ECout[ind_em[0]], ind_HTCC[ind_em[0]]);
 
@@ -249,16 +257,15 @@ int main(const int argc, char* argv[]) {
                 ROOT::Math::PxPyPzEVector L_ep(part_ep.px(), part_ep.py(), part_ep.pz(), part_ep.p());
                 ddvcs_kine_NoProt.SetKineem1em2ep(L_em1, L_em2, L_ep);
 
-
-    hists->h_Phi_LH_12_1->Fill(ddvcs_kine_NoProt.GetPhi_LH_1(), ddvcs_kine_NoProt.GetPhi_LH_2());
-    hists->h_xip_xi_1_1->Fill(ddvcs_kine_NoProt.GetXi_1(), ddvcs_kine_NoProt.GetXiPrime_1());
-    hists->h_xip_xi_2_1->Fill(ddvcs_kine_NoProt.GetXi_2(), ddvcs_kine_NoProt.GetXiPrime_2());
-    hists->h_Q2_12_1->Fill(ddvcs_kine_NoProt.GetQ2_1(), ddvcs_kine_NoProt.GetQ2_2());
-    hists->h_nu_12_1->Fill(ddvcs_kine_NoProt.GetNue_1(), ddvcs_kine_NoProt.GetNue_2());
-    hists->h_W_12_1->Fill(ddvcs_kine_NoProt.GetW_1(), ddvcs_kine_NoProt.GetW_2());
-    hists->h_tM_1->Fill(ddvcs_kine_NoProt.GettM());
-    hists->h_xB_12_1->Fill(ddvcs_kine_NoProt.GetxB_1(), ddvcs_kine_NoProt.GetxB_2());
-    hists->h_xxGPD_12_1->Fill(ddvcs_kine_NoProt.GetXX_GPD_1(), ddvcs_kine_NoProt.GetXX_GPD_2());
+                hists->h_Phi_LH_12_1->Fill(ddvcs_kine_NoProt.GetPhi_LH_1(), ddvcs_kine_NoProt.GetPhi_LH_2());
+                hists->h_xip_xi_1_1->Fill(ddvcs_kine_NoProt.GetXi_1(), ddvcs_kine_NoProt.GetXiPrime_1());
+                hists->h_xip_xi_2_1->Fill(ddvcs_kine_NoProt.GetXi_2(), ddvcs_kine_NoProt.GetXiPrime_2());
+                hists->h_Q2_12_1->Fill(ddvcs_kine_NoProt.GetQ2_1(), ddvcs_kine_NoProt.GetQ2_2());
+                hists->h_nu_12_1->Fill(ddvcs_kine_NoProt.GetNue_1(), ddvcs_kine_NoProt.GetNue_2());
+                hists->h_W_12_1->Fill(ddvcs_kine_NoProt.GetW_1(), ddvcs_kine_NoProt.GetW_2());
+                hists->h_tM_1->Fill(ddvcs_kine_NoProt.GettM());
+                hists->h_xB_12_1->Fill(ddvcs_kine_NoProt.GetxB_1(), ddvcs_kine_NoProt.GetxB_2());
+                hists->h_xxGPD_12_1->Fill(ddvcs_kine_NoProt.GetXX_GPD_1(), ddvcs_kine_NoProt.GetXX_GPD_2());
 
 
                 double MxRecoil = ddvcs_kine_NoProt.GetMxRecoil();
@@ -284,5 +291,8 @@ int main(const int argc, char* argv[]) {
 
     gDirectory->Write();
     file_out.Close();
+    writer.close();
+    writer.showSummary();
+
     return 0;
 }

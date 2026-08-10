@@ -1,11 +1,13 @@
 //
-// Created by rafopar on 4/8/26.
+// Created by rafopar on 5/25/26.
 //
 
-#ifndef DDVCS_STUDIES_ELDDVCSHELPER_H
-#define DDVCS_STUDIES_ELDDVCSHELPER_H
+#ifndef DDVCS_STUDIES_ANAELDDVCSHELPER_H
+#define DDVCS_STUDIES_ANAELDDVCSHELPER_H
+
 #include <TH1.h>
 #include <AnaDB.h>
+//#include <VecCore/Backend/Implementation.h>
 
 struct AnaCuts{
     double Eb;
@@ -65,38 +67,28 @@ struct HistoList {
     TH2D *h_SF_ECin_PCal_em1;
     TH2D *h_SF_ECin_PCal_ep1;
 
-    /// ------------------------- PID histograms -------------------------------------
-    /// FS histograms
-    /// ------------------------------------------------------------------------------
 
-    TH2D *h_n_ep_em1;
-    TH1D *h_n_em1;
-    TH1D *h_n_ep1;
-    TH1D *h_n_p1;
-
+    /// ------------------------- FS histograms -------------------------------------
     TH1D *h_MXRecoil1;
     TH1D *h_MXRecoil2;
+    TH1D *h_MXRecoil3;
+
+    TH1D *h_vt_em1_1;
+    TH1D *h_vt_em2_1;
+    TH1D *h_vt_ep1;
+    TH1D *h_vt_prot1;
 
     TH2D *h_Minv12_1;
-
-    TH2D *h_Phi_LH_12_1;
-    TH2D *h_xip_xi_1_1;
-    TH2D *h_xip_xi_2_1;
-    TH2D *h_Q2_12_1;
-    TH2D *h_nu_12_1;
-    TH2D *h_W_12_1;
-    TH1D *h_tM_1;
-    TH2D *h_xB_12_1;
-    TH2D *h_xxGPD_12_1;
-
+    TH2D *h_MxRecoil_Minv1_1;
+    TH2D *h_MxRecoil_Minv2_1;
 };
 
 void InitHistos(HistoList *hists) {
     hists->h_vz_em1 = new TH1D("h_vz_em1", "", 200, -25., 35.);
     hists->h_vz_ep1 = new TH1D("h_vz_ep1", "", 200, -25., 35.);
     hists->h_vz_prot1 = new TH1D("h_vz_prot1", "", 200, -25., 35.);
-    hists->h_chi2PID_em1 = new TH1D("h_chi2PID_em1", "", 200, -20., 20.);
-    hists->h_chi2PID_ep1 = new TH1D("h_chi2PID_ep1", "", 200, -20., 20.);
+    hists->h_chi2PID_em1 = new TH1D("h_chi2PID_em1", "", 200, -8., 8.);
+    hists->h_chi2PID_ep1 = new TH1D("h_chi2PID_ep1", "", 200, -8., 8.);
     hists->h_chi2PID_prot1 = new TH1D("h_chi2PID_prot1", "", 200, -50., 50.);
 
     hists->h_EPCal_em1 = new TH1D("h_EPCal_em1", "", 200, 0., 2.);
@@ -114,26 +106,19 @@ void InitHistos(HistoList *hists) {
     hists->h_SF_ECin_PCal_em1 = new TH2D("h_SF_ECin_PCal_em1", "", 200, 0., 0.35, 200, 0., 0.35);
     hists->h_SF_ECin_PCal_ep1 = new TH2D("h_SF_ECin_PCal_ep1", "", 200, 0., 0.35, 200, 0., 0.35);
 
-
-    hists->h_n_ep_em1 = new TH2D("h_n_ep_em1", "", 11, -0.5, 10.5, 11, -0.5, 10.5);
-    hists->h_n_em1 = new TH1D("h_n_em1", "", 11, -0.5, 10.5);
-    hists->h_n_ep1 = new TH1D("h_n_ep1", "", 11, -0.5, 10.5);
-    hists->h_n_p1 = new TH1D("h_n_p1", "", 11, -0.5, 10.5);
-
+    //------------------------------------ FS Histograms -----------------------------------
     hists->h_MXRecoil1 = new TH1D("h_MXRecoil1", "", 200, 0., 3.5);
     hists->h_MXRecoil2 = new TH1D("h_MXRecoil2", "", 200, 0., 3.5);
-    hists->h_Minv12_1 = new TH2D("h_Minv12_1", "", 200, 0., 3., 200, 0., 3.);
+    hists->h_MXRecoil3 = new TH1D("h_MXRecoil3", "", 200, 0., 3.5);
 
-    hists->h_Phi_LH_12_1 = new TH2D("h_Phi_LH_12_1", "", 200, 0., 360., 200, 0., 360);
-    hists->h_xip_xi_1_1 = new TH2D("h_xip_xi_1_1", "", 200, 0., 1, 200, 0., 1.);
-    hists->h_xip_xi_2_1 = new TH2D("h_xip_xi_2_1", "", 200, 0., 1, 200, 0., 1.);
-    hists->h_Q2_12_1 = new TH2D("h_Q2_12_1", "", 200, 0., 3., 200, 0., 3.);
-    hists->h_nu_12_1 = new TH2D("h_nu_12_1", "", 200, 0., 10., 200, 0., 10.);
-    hists->h_W_12_1 = new TH2D("h_W_12_1", "", 200, 0., 5., 200, 0., 5.);
-    hists->h_tM_1 = new TH1D("h_tM_1", "", 200, 0., 2.);
-    hists->h_xB_12_1 = new TH2D("h_xB_12_1", "", 200, 0., 2., 200, 0., 2.);
-    hists->h_xxGPD_12_1 = new TH2D("h_xxGPD_12_1", "", 200, -1., 1., 200, -1., 1.);
+    hists->h_vt_em1_1 = new TH1D("h_vt_em1_1", "", 200, -15., 15.);
+    hists->h_vt_em2_1 = new TH1D("h_vt_em2_1", "", 200, -15., 15.);
+    hists->h_vt_ep1 = new TH1D("h_vt_ep1", "", 200, -15., 15.);
+    hists->h_vt_prot1 = new TH1D("h_vt_prot1", "", 200, -15., 15.);
 
+    hists->h_Minv12_1 = new TH2D("h_Minv12_1", "", 200, 0., 3., 200, 0.,3.);
+    hists->h_MxRecoil_Minv1_1 = new TH2D("h_MxRecoil_Minv1_1", "", 200, 0., 3., 200, 0.,2.);
+    hists->h_MxRecoil_Minv2_1 = new TH2D("h_MxRecoil_Minv2_1", "", 200, 0., 3., 200, 0.,2.);
 }
 
 void InitCuts(AnaDB &db, int run, AnaCuts &cuts) {
@@ -167,6 +152,9 @@ void InitCuts(AnaDB &db, int run, AnaCuts &cuts) {
     cuts.PCalUmin = eTable->Get<double>(run, "PCalUmin").value();
     cuts.PCalVmin = eTable->Get<double>(run, "PCalVmin").value();
     cuts.PCalWmin = eTable->Get<double>(run, "PCalWmin").value();
+
+    cuts.Eb = eTable->Get<double>(run, "Eb").value();
+    DDVCSTools::Eb = cuts.Eb;
     std::cout<<"Kuku 1"<<std::endl;
 }
 
@@ -174,4 +162,5 @@ bool ep_PCalECin_SF_Cut(const AnaCuts& cuts, const RecParticle& part) {
     return (part.energyECin() < 0.001 && part.SFPCal() > cuts.epPCalSFMin) || (part.energyECin() > 0.001 && (part.SFPCal() + part.SFECin() > cuts.epSFSumMin));
 }
 
-#endif //DDVCS_STUDIES_ELDDVCSHELPER_H
+
+#endif //DDVCS_STUDIES_ANAELDDVCSHELPER_H

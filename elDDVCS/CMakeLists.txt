@@ -13,16 +13,24 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 add_executable(SkimDDVCS Skim_DDVCS.cc)
 set_target_properties(SkimDDVCS PROPERTIES OUTPUT_NAME "SkimDDVCS.exe")
 target_link_libraries(SkimDDVCS Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib AnaDB::anadb)
+
+add_executable(AnaElDDVCS AnaElDDVCS.cc)
+set_target_properties(AnaElDDVCS PROPERTIES OUTPUT_NAME "AnaElDDVCS.exe" )
+target_link_libraries(AnaElDDVCS Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib AnaDB::anadb)
+
+add_executable( JPsiTest JPsiTest.cc )
+set_target_properties(JPsiTest PROPERTIES OUTPUT_NAME "JPsiTest.exe")
+target_link_libraries(JPsiTest Hipo4 ${ROOT_LIBRARIES} ${CLAS12AnaTools_LIBRARIES} DDVCSToolslib AnaDB::anadb)
 #################################################################################################
 
 ################################ Installing Executable targets #############################
-install( TARGETS SkimDDVCS
+install( TARGETS SkimDDVCS AnaElDDVCS JPsiTest
   DESTINATION ${CMAKE_INSTALL_PREFIX}/elDDVCS/bin )
 
 ################################ Installing Non target files ###############################
-install( FILES
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/elDDVCS/bin)
+install( FILES run_AnaElDDVCS.py
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/elDDVCS)
 
 ################################ Installing needed directores ##############################
-install( DIRECTORY Train SkimDDVCS OutHists
+install( DIRECTORY Train SkimDDVCS OutHists SkimDDVCS/hipo OutHists/SkimElDDVCS OutHists/AnaElDDVCS
   DESTINATION ${CMAKE_INSTALL_PREFIX}/elDDVCS/ )
