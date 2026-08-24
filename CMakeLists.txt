@@ -20,6 +20,13 @@ add_definitions(-D__LZ4__) # I might need to remove this completely (Rafo)
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# Baked-in run paths, so installed executables work without LD_LIBRARY_PATH:
+#  - <prefix>/lib holds our own libDDVCSToolslib, which USE_LINK_PATH does not add.
+#  - XXHASH_LIB_DIR: ROOT's libCore needs libxxhash.so.0, but that ROOT build only
+#    records RPATH=$ORIGIN/, so the external xxhash has to be found through us.
+set(XXHASH_LIB_DIR "$ENV{HOME}/work/builds/xxhash/lib" CACHE PATH
+    "Directory holding libxxhash.so.0, needed by ROOT's libCore")
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;${XXHASH_LIB_DIR}")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)   # shared libs
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)   # static libs
